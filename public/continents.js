@@ -126,16 +126,18 @@ export function validSession(session, ids) {
     )
   );
 }
-export function createSession(ids, previous) {
-  const answers = Array.isArray(previous?.answers)
-    ? previous.answers.filter(
-        (a, i, all) =>
-          a &&
-          ids.includes(a.id) &&
-          typeof a.correct === "boolean" &&
-          all.findIndex((b) => b?.id === a.id) === i,
-      )
-    : [];
+export function createSession(ids, ...previous) {
+  ids = [...new Set(ids)];
+  const records = previous.flatMap((session) =>
+    Array.isArray(session?.answers) ? session.answers : [],
+  );
+  const answers = records.filter(
+    (a, i, all) =>
+      a &&
+      ids.includes(a.id) &&
+      typeof a.correct === "boolean" &&
+      all.findIndex((b) => b?.id === a.id) === i,
+  );
   return {
     order: [
       ...answers.map((a) => a.id),
@@ -144,4 +146,15 @@ export function createSession(ids, previous) {
     index: answers.length,
     answers,
   };
+}
+
+// Preserve progress when a dataset changes or another tab has newer answers.
+export function restoreSession(ids, saved, previous) {
+  const recovered = createSession(ids, saved, previous);
+  if (
+    validSession(saved, ids) &&
+    recovered.answers.length === saved.answers.length
+  )
+    return saved;
+  return recovered;
 }

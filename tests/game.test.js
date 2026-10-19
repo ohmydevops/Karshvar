@@ -48,6 +48,7 @@ import {
   continentFor,
   createSession,
   validSession,
+  restoreSession,
   labels,
 } from "../public/continents.js";
 test("each playable country belongs to exactly one populated continent", () => {
@@ -86,6 +87,75 @@ test("continent sessions preserve relevant answers and exclude other continents"
   assert.equal(b.index, 1);
   assert(!validSession(a, ["3", "4"]));
   assert(validSession(createSession(["1"], old), ["1"]));
+});
+
+test("Europe progress survives changed country lists and damaged session order", () => {
+  const names = JSON.parse(fs.readFileSync("public/data/names.json"));
+  const world = JSON.parse(fs.readFileSync("public/data/countries.json"));
+  const represented = new Set(
+    world.objects.countries.geometries.map((f) => f.id),
+  );
+  const ids = names
+    .filter(
+      (n) =>
+        n.independent &&
+        represented.has(n.ccn3) &&
+        continentFor(n) === "Europe",
+    )
+    .map((n) => n.ccn3);
+  const saved = createSession(ids.slice(1));
+  saved.answers = saved.order
+    .slice(0, 10)
+    .map((id, i) => ({ id, correct: i % 2 === 0 }));
+  saved.index = 9;
+  for (const previous of [
+    saved,
+    { ...saved, order: [saved.order[0]], index: 999 },
+  ]) {
+    const restored = restoreSession(ids, previous);
+    assert(validSession(restored, ids));
+    assert.deepEqual(restored.answers, saved.answers);
+    const visited = new Set(saved.answers.map((a) => a.id));
+    assert(
+      restored.order.slice(restored.index).every((id) => !visited.has(id)),
+    );
+    assert.equal(new Set(restored.order).size, ids.length);
+  }
+});
+
+test("stale tabs merge answered and revealed countries without losing progress", () => {
+  const ids = ["1", "2", "3", "4"];
+  const stale = { order: ids, index: 0, answers: [{ id: "1", correct: true }] };
+  const latest = {
+    order: ids,
+    index: 2,
+    answers: [
+      { id: "1", correct: true },
+      { id: "2", correct: false },
+    ],
+  };
+  const merged = restoreSession(ids, stale, latest);
+  assert(validSession(merged, ids));
+  assert.equal(merged.index, 2);
+  assert.deepEqual(merged.answers, latest.answers);
+  assert.deepEqual(
+    new Set(merged.order.slice(merged.index)),
+    new Set(["3", "4"]),
+  );
+  assert.equal(restoreSession(ids, latest, stale), latest);
+});
+
+test("completed progress stays complete during recovery and duplicate input cannot repeat countries", () => {
+  const answers = [
+    { id: "1", correct: false },
+    { id: "2", correct: true },
+  ];
+  const restored = restoreSession(["1", "2"], { answers, index: -1 });
+  assert(validSession(restored, ["1", "2"]));
+  assert.equal(restored.index, restored.order.length);
+  const deduplicated = createSession(["1", "1", "2"], { answers }, { answers });
+  assert(validSession(deduplicated, ["1", "2"]));
+  assert.equal(deduplicated.answers.length, 2);
 });
 
 test("all localized pages and assets resolve beneath the GitHub Pages project path", () => {

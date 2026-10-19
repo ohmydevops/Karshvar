@@ -13,7 +13,7 @@ import {
   continents,
   labels,
   continentFor,
-  validSession,
+  restoreSession,
   createSession,
 } from "./continents.js";
 import { matches, formatNumber, formatRatio } from "./logic.js";
@@ -230,9 +230,30 @@ const number = (value) => formatNumber(value, lang);
 const ratio = (answered, total) => formatRatio(answered, total, lang);
 const navigate = (target, continent) =>
   location.assign(new URL(pagePath(lang, target, continent), document.baseURI));
-function save() {
+// Refresh stale game pages when another tab answers or resets progress.
+window.addEventListener("storage", (event) => {
+  if (event.key === "atlas-continents" || event.key === null) location.reload();
+});
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) location.reload();
+});
+function save(replaceProgress = false) {
   try {
     if (selected && state) sessions[selected] = state;
+    if (!replaceProgress) {
+      const latest = JSON.parse(localStorage.getItem("atlas-continents")) || {};
+      for (const continent of continents) {
+        if (!latest[continent]) continue;
+        sessions[continent] = features.length
+          ? restoreSession(
+              idsFor(continent),
+              sessions[continent],
+              latest[continent],
+            )
+          : latest[continent];
+      }
+      if (selected) state = sessions[selected];
+    }
     localStorage.setItem("atlas-continents", JSON.stringify(sessions));
     localStorage.setItem("atlas-language", lang);
     localStorage.setItem(
@@ -856,6 +877,7 @@ $("answerForm").addEventListener("submit", (e) => {
 });
 $("skip").onclick = () => answer(true);
 $("next").onclick = () => {
+  if (!state.answers[state.index]) return;
   state.index++;
   $("answer").value = "";
   save();
@@ -870,7 +892,7 @@ $("next").onclick = () => {
 $("restartContinent").onclick = () => {
   track("continent-restart");
   state = createSession(idsFor(selected));
-  save();
+  save(true);
   navigate("play", selected);
 };
 $("center").onclick = () => {
@@ -925,7 +947,7 @@ $("resetDialog").addEventListener("close", () => {
   } catch {
     storage = false;
   }
-  save();
+  save(true);
   navigate("home");
 });
 $("startGame").onclick = () => track("game-start");
@@ -966,8 +988,11 @@ if (["continents", "play", "results", "explore"].includes(page)) {
       sessions = {};
     for (const continent of continents) {
       const ids = idsFor(continent);
-      if (!validSession(sessions[continent], ids))
-        sessions[continent] = createSession(ids, legacy);
+      sessions[continent] = restoreSession(
+        ids,
+        sessions[continent],
+        sessions[continent] ? undefined : legacy,
+      );
     }
     $("resetOpen").disabled = false;
     $("selectionStatus").textContent = "";
@@ -979,6 +1004,8 @@ if (["continents", "play", "results", "explore"].includes(page)) {
     else {
       selected = routeContinent;
       state = sessions[selected];
+      // Returning to a continent starts at its first unanswered country.
+      if (page === "play") state.index = state.answers.length;
       if (page === "results") {
         if (state.answers.length < state.order.length)
           location.replace(
