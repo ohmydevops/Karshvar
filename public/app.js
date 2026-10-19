@@ -363,20 +363,51 @@ const marker = svg
   .attr("stroke", "#ffbd4a")
   .attr("stroke-width", 3)
   .attr("pointer-events", "none");
-function focusGeometry(f) {
+const geography = new WeakMap();
+function countryGeometry(f) {
+  if (geography.has(f)) return geography.get(f);
   let geometry = f.geometry;
   if (geometry.type === "MultiPolygon") {
     const polys = geometry.coordinates.map((c) => ({
       type: "Polygon",
       coordinates: c,
     }));
-    geometry = polys.sort((a, b) => d3.geoArea(b) - d3.geoArea(a))[0];
+    geometry = polys
+      .map((polygon) => ({ polygon, area: d3.geoArea(polygon) }))
+      .sort((a, b) => b.area - a.area)[0].polygon;
   }
-  return geometry;
+  const result = {
+    geometry,
+    point: d3.geoCentroid(geometry),
+    area: d3.geoArea(f),
+  };
+  geography.set(f, result);
+  return result;
+}
+function focusGeometry(f) {
+  return countryGeometry(f).geometry;
 }
 function focusPoint(f) {
-  return d3.geoCentroid(focusGeometry(f));
+  return countryGeometry(f).point;
 }
+// Measure labels together, only when their content or font changes. Reading
+// text length between SVG writes forces a synchronous layout for every label.
+let labelWidths = new WeakMap();
+let labelsNeedMeasurement = true;
+let labelOrderCurrent;
+function measureLabels() {
+  if (!labelsNeedMeasurement) return;
+  const texts = countryLabels.selectAll("text");
+  texts.attr("display", null).style("font-size", "10px");
+  texts.each(function () {
+    labelWidths.set(this, this.getComputedTextLength() / 10);
+  });
+  labelsNeedMeasurement = false;
+}
+document.fonts?.ready.then(() => {
+  labelsNeedMeasurement = true;
+  queueDraw();
+});
 function queueDraw() {
   if (!pendingDraw)
     pendingDraw = requestAnimationFrame(() => {
@@ -386,6 +417,9 @@ function queueDraw() {
 }
 window.addEventListener("resize", queueDraw);
 function draw() {
+  // Read layout before changing paths or label attributes.
+  const mapScale = $("globe").getScreenCTM()?.a || 1;
+  measureLabels();
   projection.rotate(rotation).scale(220 * zoom);
   sphere.attr("d", path);
   grid.attr("d", path);
@@ -394,32 +428,34 @@ function draw() {
     .attr("d", path)
     .attr("fill", (f) => (f.id === current?.id ? "#ffbd4a" : "var(--land)"));
   shadow.attr("d", path);
-  const mapScale = $("globe").getScreenCTM()?.a || 1;
   const labelSize = Math.max(9, Math.min(14, 8 + zoom * 1.5));
   const occupied = [];
-  countryLabels
-    .selectAll("text")
-    .sort(
+  const viewCenter = projection.invert([300, 267]);
+  const texts = countryLabels.selectAll("text");
+  if (labelOrderCurrent !== current) {
+    texts.sort(
       (a, b) =>
         (b.id === current?.id) - (a.id === current?.id) ||
-        d3.geoArea(b) - d3.geoArea(a),
-    )
-    .attr("display", null)
+        countryGeometry(b).area - countryGeometry(a).area,
+    );
+    labelOrderCurrent = current;
+  }
+  countryLabels
+    .selectAll("text")
     .style("font-size", labelSize / mapScale + "px")
     .style("stroke-width", 2 / mapScale + "px")
-    .attr("transform", (f) => "translate(" + projection(focusPoint(f)) + ")")
     .attr("display", function (f) {
-      const p = projection(focusPoint(f));
+      const point = focusPoint(f);
+      const p = projection(point);
       if (
-        d3.geoDistance(focusPoint(f), projection.invert([300, 267])) >=
-          Math.PI / 2 ||
+        d3.geoDistance(point, viewCenter) >= Math.PI / 2 ||
         p[0] < 0 ||
         p[0] > 600 ||
         p[1] < 0 ||
         p[1] > 530
       )
         return "none";
-      const width = this.getComputedTextLength() + 8 / mapScale,
+      const width = (labelWidths.get(this) * labelSize + 8) / mapScale,
         height = (labelSize + 6) / mapScale;
       const box = [
         p[0] - width / 2,
@@ -435,6 +471,7 @@ function draw() {
       )
         return "none";
       occupied.push(box);
+      this.setAttribute("transform", "translate(" + p + ")");
       return null;
     });
   if (current) {
@@ -445,8 +482,8 @@ function draw() {
       .attr("cy", p[1])
       .attr(
         "display",
-        d3.geoArea(current) < 0.00015 &&
-          d3.geoDistance(point, projection.invert([300, 267])) < Math.PI / 2
+        countryGeometry(current).area < 0.00015 &&
+          d3.geoDistance(point, viewCenter) < Math.PI / 2
           ? null
           : "none",
       );
@@ -766,6 +803,8 @@ function openExplore(continent) {
     .text(name)
     .attr("text-anchor", "middle")
     .attr("dy", ".35em");
+  labelsNeedMeasurement = true;
+  labelOrderCurrent = undefined;
   const nav = $("exploreContinents");
   nav.replaceChildren();
   ["All", ...continents].forEach((c, i) => {
