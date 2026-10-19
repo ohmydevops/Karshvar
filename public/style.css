@@ -1281,3 +1281,44 @@ html[data-page="explore"] .map-controls {
     opacity: 1;
   }
 }
+
+.answer-entry {
+  grid-row: 4;
+  grid-column: 1;
+  position: relative;
+  min-width: 0;
+  align-self: stretch;
+}
+.answer-entry #answer {
+  height: 100%;
+  margin: 0;
+}
+.country-suggestions {
+  position: absolute;
+  inset-inline: 0;
+  bottom: calc(100% + 6px);
+  max-height: min(240px, 35dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px #0003;
+  padding: 4px;
+  z-index: 10;
+}
+.country-suggestions [role="option"] {
+  padding: 10px 12px;
+  min-height: 44px;
+  line-height: 1.5;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-size: 15px;
+  color: var(--text);
+  touch-action: manipulation;
+}
+.country-suggestions [role="option"]:hover,
+.country-suggestions [aria-selected="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}

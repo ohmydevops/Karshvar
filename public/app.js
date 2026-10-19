@@ -1,3 +1,4 @@
+import { bindCountrySuggestions } from "./suggestions.js";
 import { countryAliases } from "./country-aliases.js";
 import { pageCopy, pagePath } from "./navigation.js";
 import { bindGlobeGestures } from "./gestures.js";
@@ -260,6 +261,25 @@ function aliases(f) {
     f.properties.name,
   );
 }
+
+let suggestionCacheKey = "",
+  suggestionCandidates = [];
+const countrySuggestions = bindCountrySuggestions(
+  $("answer"),
+  $("countrySuggestions"),
+  () => {
+    const key = lang + ":" + selected;
+    if (key !== suggestionCacheKey) {
+      suggestionCacheKey = key;
+      const ids = idsFor(selected);
+      suggestionCandidates = features
+        .filter((f) => ids.includes(f.id))
+        .map((f) => ({ id: f.id, label: name(f), aliases: aliases(f) }));
+    }
+    return suggestionCandidates;
+  },
+  () => lang,
+);
 
 const svg = d3.select("#globe").attr("viewBox", "0 0 600 530");
 const defs = svg.append("defs");
@@ -534,6 +554,7 @@ function localize() {
     .querySelectorAll("[data-text]")
     .forEach((el) => (el.textContent = t(el.dataset.text)));
   $("answer").placeholder = t("placeholder");
+  $("countrySuggestions").setAttribute("aria-label", t("label"));
   $("center").title = t("center");
   for (const id of ["globe", "theme", "zoomIn", "zoomOut", "center"])
     $(id).setAttribute("aria-label", t(id));
@@ -714,6 +735,7 @@ $("changeContinent").onclick = () => {
   navigate("continents");
 };
 function render() {
+  countrySuggestions.close();
   const record = state.answers[state.index];
   const done = state.index >= state.order.length;
   current = features.find((f) => f.id === state.order[state.index]);

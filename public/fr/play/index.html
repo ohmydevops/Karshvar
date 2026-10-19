@@ -225,19 +225,32 @@
             <h2 data-text="question"></h2>
           </div>
           <form id="answerForm">
-            <label
-              class="visually-hidden"
-              for="answer"
-              data-text="label"
-            ></label
-            ><input
-              id="answer"
-              autocomplete="off"
-              autocapitalize="words"
-              spellcheck="false"
-              required
-              disabled
-            /><button
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
               class="primary"
               id="check"
               type="submit"

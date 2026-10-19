@@ -294,3 +294,84 @@ test("reviewed source-data mistakes cannot award an answer for the wrong country
   ])
     assert(matches(right, aliases(code)), code + " accepts " + right);
 });
+
+import { suggestCountries } from "../public/suggestions.js";
+test("localized suggestions start at two characters and match aliases without changing the displayed name", () => {
+  const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
+  const candidates = (codes, language) =>
+    codes.map((code) => {
+      const c = countries.find((n) => n.cca3 === code);
+      return {
+        id: code,
+        label: new Intl.DisplayNames([language], { type: "region" }).of(c.cca2),
+        aliases: countryAliases(c),
+      };
+    });
+  const asia = candidates(["SAU", "ARE", "IND", "IRN", "IRQ"], "fa");
+  assert.deepEqual(suggestCountries("ع", asia, "fa"), []);
+  assert.deepEqual(suggestCountries("  ", asia, "fa"), []);
+  assert.equal(suggestCountries("عرب", asia, "fa")[0].id, "SAU");
+  assert.equal(
+    suggestCountries("عربستان صعودی", asia, "fa")[0].label,
+    "عربستان سعودی",
+  );
+  assert.equal(suggestCountries("هندوستان", asia, "fa")[0].id, "IND");
+  assert.equal(
+    suggestCountries("IRAQ", candidates(["IRN", "IRQ"], "en"), "en")[0].id,
+    "IRQ",
+  );
+  for (const [language, query] of [
+    ["ar", "الهند"],
+    ["tr", "HİND"],
+    ["fr", "Inde"],
+    ["ru", "ИНДИЯ"],
+  ])
+    assert.equal(
+      suggestCountries(query, candidates(["IND", "IRN"], language), language)[0]
+        .id,
+      "IND",
+    );
+  assert.deepEqual(
+    suggestCountries("عربستان", candidates(["EGY", "MAR"], "fa"), "fa"),
+    [],
+  );
+  assert(
+    suggestCountries(
+      "an",
+      candidates(
+        ["IRN", "IRQ", "IND", "SAU", "ARE", "AFG", "KAZ", "PAK"],
+        "en",
+      ),
+      "en",
+    ).length <= 5,
+  );
+});
+
+test("Persian spelling variants remain country-specific", () => {
+  const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
+  for (const [code, values] of Object.entries({
+    SAU: ["عربستان", "عربستان سعودی", "عربستان صعودی"],
+    PRT: ["پرتغال", "پرتقال"],
+    NIC: ["نیکاراگوآ", "نیکاراگوئه", "نیکاراگوا"],
+    KGZ: ["قرقیزستان", "قرغیزستان", "قرغزستان"],
+    URY: ["اروگوئه", "اوروگوئه"],
+  }))
+    for (const value of values)
+      assert(
+        matches(value, countryAliases(countries.find((c) => c.cca3 === code))),
+        value,
+      );
+  for (const [code, wrong] of [
+    ["IRQ", "ایران"],
+    ["IRN", "عراق"],
+    ["NER", "نیجریه"],
+    ["NGA", "نیجر"],
+    ["DOM", "دومینیکا"],
+    ["DMA", "دومینیکن"],
+    ["SAU", "امارات"],
+  ])
+    assert(
+      !matches(wrong, countryAliases(countries.find((c) => c.cca3 === code))),
+      wrong,
+    );
+});
