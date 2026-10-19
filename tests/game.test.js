@@ -109,9 +109,10 @@ test("all localized pages and assets resolve beneath the GitHub Pages project pa
     }
     assert(html.includes(`rel="canonical" href="${root}${locale}/"`));
     assert(html.includes(`content="${root}social/karshvar.png"`));
-    assert.equal((html.match(/data-website-id=/g) || []).length, 1);
-    assert(html.includes("c99dd2e3-8541-4d92-84c9-df74a8919c18"));
-    assert(html.includes('data-domains="ohmydevops.github.io"'));
+    assert(
+      !html.includes("https://cloud.umami.is/script.js"),
+      "Analytics must be gated by the production loader",
+    );
     const schema = JSON.parse(
       html.match(
         /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,

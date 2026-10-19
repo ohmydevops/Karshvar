@@ -1,3 +1,29 @@
+export function isProduction(location) {
+  return (
+    location?.protocol === "https:" &&
+    location.hostname === "ohmydevops.github.io" &&
+    (location.pathname === "/Karshvar" ||
+      location.pathname.startsWith("/Karshvar/"))
+  );
+}
+export function loadProductionAnalytics(document, location) {
+  if (!isProduction(location)) return null;
+  try {
+    const existing = document.getElementById("umamiAnalytics");
+    if (existing) return existing;
+    const script = document.createElement("script");
+    script.id = "umamiAnalytics";
+    script.defer = true;
+    script.src = "https://cloud.umami.is/script.js";
+    script.dataset.websiteId = "c99dd2e3-8541-4d92-84c9-df74a8919c18";
+    script.dataset.domains = "ohmydevops.github.io";
+    document.head.append(script);
+    return script;
+  } catch {
+    return null;
+  }
+}
+
 const events = new Set([
   "continent-select",
   "answer-submit",
@@ -28,7 +54,7 @@ const fields = new Set([
 // Analytics must never affect gameplay or include the player's typed answer.
 export function createAnalytics({
   getTracker = () => globalThis.umami,
-  enabled = true,
+  enabled = isProduction(globalThis.location),
 } = {}) {
   const queue = [];
   function flush() {

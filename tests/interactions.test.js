@@ -1,7 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { bindGlobeGestures } from "../public/gestures.js";
-import { createAnalytics } from "../public/analytics.js";
+import {
+  createAnalytics,
+  isProduction,
+  loadProductionAnalytics,
+} from "../public/analytics.js";
 
 class GestureSurface extends EventTarget {
   captures = new Set();
@@ -95,7 +99,10 @@ test("mouse drag still works and touch can start later without reinitialization"
 test("analytics buffers early events and omits raw answers and unrelated properties", () => {
   let tracker;
   const events = [];
-  const analytics = createAnalytics({ getTracker: () => tracker });
+  const analytics = createAnalytics({
+    enabled: true,
+    getTracker: () => tracker,
+  });
   analytics.track("answer-submit", {
     language: "fa",
     result: "correct",
@@ -124,12 +131,16 @@ test("blocked or failing analytics never interrupts gameplay", async () => {
   assert.doesNotThrow(() =>
     disabled.track("map-control", { action: "recenter" }),
   );
-  const blocked = createAnalytics({ getTracker: () => undefined });
+  const blocked = createAnalytics({
+    enabled: true,
+    getTracker: () => undefined,
+  });
   for (let i = 0; i < 50; i++)
     assert.doesNotThrow(() =>
       blocked.track("map-control", { action: "zoom-in" }),
     );
   const throws = createAnalytics({
+    enabled: true,
     getTracker: () => ({
       track() {
         throw Error("blocked");
@@ -140,10 +151,64 @@ test("blocked or failing analytics never interrupts gameplay", async () => {
     throws.track("answer-submit", { result: "incorrect" }),
   );
   const rejects = createAnalytics({
+    enabled: true,
     getTracker: () => ({ track: () => Promise.reject(Error("offline")) }),
   });
   assert.doesNotThrow(() =>
     rejects.track("continent-select", { continent: "Asia" }),
   );
   await new Promise((resolve) => setImmediate(resolve));
+});
+
+test("analytics never loads or sends events on localhost and preview URLs", () => {
+  for (const address of [
+    "http://localhost:5174/",
+    "http://127.0.0.1:5174/en/",
+    "http://[::1]:5174/",
+    "http://192.168.1.10:5174/",
+    "https://preview.example.com/Karshvar/",
+    "https://ohmydevops.github.io/other/",
+    "http://ohmydevops.github.io/Karshvar/",
+  ]) {
+    const location = new URL(address);
+    assert.equal(isProduction(location), false, address);
+    const document = {
+      getElementById() {
+        throw Error("must not touch document");
+      },
+    };
+    assert.equal(loadProductionAnalytics(document, location), null);
+    let sent = 0;
+    const analytics = createAnalytics({
+      enabled: isProduction(location),
+      getTracker: () => ({ track: () => sent++ }),
+    });
+    analytics.track("continent-select", { continent: "Asia" });
+    analytics.flush();
+    assert.equal(sent, 0);
+  }
+});
+test("production loads the configured Umami tracker once and allows events", () => {
+  const location = new URL("https://ohmydevops.github.io/Karshvar/fa/");
+  assert(isProduction(location));
+  const scripts = [];
+  const document = {
+    getElementById: (id) => scripts.find((s) => s.id === id),
+    createElement: () => ({ dataset: {} }),
+    head: { append: (script) => scripts.push(script) },
+  };
+  const script = loadProductionAnalytics(document, location);
+  assert.equal(script.src, "https://cloud.umami.is/script.js");
+  assert.equal(
+    script.dataset.websiteId,
+    "c99dd2e3-8541-4d92-84c9-df74a8919c18",
+  );
+  assert.equal(loadProductionAnalytics(document, location), script);
+  assert.equal(scripts.length, 1);
+  const events = [];
+  createAnalytics({
+    enabled: isProduction(location),
+    getTracker: () => ({ track: (...args) => events.push(args) }),
+  }).track("continent-select", { continent: "Asia" });
+  assert.equal(events.length, 1);
 });

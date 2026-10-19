@@ -1,5 +1,9 @@
 import { bindGlobeGestures } from "./gestures.js";
-import { createAnalytics } from "./analytics.js";
+import {
+  createAnalytics,
+  isProduction,
+  loadProductionAnalytics,
+} from "./analytics.js";
 import { resetCopy } from "./reset.js";
 import { aboutCopy, seoCopy } from "./about.js";
 import {
@@ -266,11 +270,12 @@ try {
   storage = false;
 }
 const analytics = createAnalytics({
-  enabled: location.hostname === "ohmydevops.github.io",
+  enabled: isProduction(location),
 });
-document
-  .querySelector("script[data-website-id]")
-  ?.addEventListener("load", analytics.flush);
+loadProductionAnalytics(document, location)?.addEventListener(
+  "load",
+  analytics.flush,
+);
 function track(event, data = {}) {
   analytics.track(event, {
     language: lang,
