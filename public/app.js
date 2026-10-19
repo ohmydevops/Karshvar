@@ -930,5 +930,11 @@ if (page === "home") {
     .then(({ mountHomeGlobe }) =>
       mountHomeGlobe(document.querySelector(".welcome-art")),
     )
-    .catch(console.warn);
+    .catch((error) => {
+      const host = document.querySelector(".welcome-art");
+      host.classList.add("globe-failed");
+      const fallback = host.querySelector(".home-earth");
+      if (fallback) fallback.hidden = false;
+      console.warn(error);
+    });
 }

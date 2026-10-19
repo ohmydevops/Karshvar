@@ -622,11 +622,7 @@ dialog p {
     transform: translateY(-12px) rotate(3deg);
   }
 }
-@keyframes orbit {
-  to {
-    transform: rotate(342deg);
-  }
-}
+
 @media (max-width: 760px) {
   header {
     padding: 10px 18px;
@@ -1041,24 +1037,6 @@ html[data-page="explore"] .globe-panel {
   filter: drop-shadow(0 25px 30px #10264f30);
   animation: float 7s ease-in-out infinite;
 }
-.orbit {
-  position: absolute;
-  inset: 5%;
-  border: 1px dashed var(--line);
-  border-radius: 50%;
-  animation: orbit 45s linear infinite;
-}
-.orbit::before {
-  content: "";
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: #ffbd4a;
-  border-radius: 50%;
-  left: 15%;
-  top: 12%;
-  box-shadow: 0 0 0 7px #ffbd4a15;
-}
 @media (max-width: 760px) {
   .welcome-art {
     grid-row: 1;
@@ -1275,5 +1253,31 @@ html[data-page="explore"] .map-controls {
   }
   html[data-page="explore"] .explore-heading {
     width: calc(100% - 32px);
+  }
+}
+
+.welcome-art:not(.globe-ready):not(.globe-failed)::after {
+  content: "";
+  width: 30px;
+  height: 30px;
+  border: 2px solid #7895bb33;
+  border-top-color: #9dbbdf;
+  border-radius: 50%;
+  animation: globe-loading 1.2s linear infinite;
+}
+@keyframes globe-loading {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.home-canvas {
+  animation: globe-reveal 0.25s ease-out;
+}
+@keyframes globe-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

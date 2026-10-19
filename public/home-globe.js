@@ -117,7 +117,7 @@ export async function mountHomeGlobe(host) {
     canvas.className = "home-canvas";
     canvas.setAttribute("aria-hidden", "true");
     host.replaceChildren(canvas);
-    host.classList.add("globe-ready");
+
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     let drag = null,
       targetX = 0,
@@ -188,6 +188,7 @@ export async function mountHomeGlobe(host) {
     canvas.addEventListener("pointercancel", end);
     canvas.addEventListener("lostpointercapture", end);
     resize();
+    host.classList.add("globe-ready");
     frame = requestAnimationFrame(tick);
     addEventListener(
       "pagehide",
@@ -206,6 +207,12 @@ export async function mountHomeGlobe(host) {
     );
   } catch (error) {
     renderer?.dispose();
+    host.classList.add("globe-failed");
+    const fallback = document.createElement("img");
+    fallback.src = new URL("./art/earth.svg", import.meta.url).href;
+    fallback.className = "home-earth";
+    fallback.alt = "";
+    host.replaceChildren(fallback);
     console.warn("Home globe unavailable; using illustration.", error);
   }
 }
