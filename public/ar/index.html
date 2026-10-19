@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-locale="ar">
+<html lang="ar" dir="rtl" data-locale="ar" data-page="home">
   <head>
     <base href="../" />
     <meta charset="UTF-8" />
@@ -7,10 +7,10 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#101c19" />
+    <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="اختر قارة واستكشف الكرة الأرضية وخمن البلد المميز. العب على الهاتف أو الكمبيوتر دون مؤقت."
+      content="خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة."
     />
     <title>Karshvar — لعبة تخمين البلدان</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -24,7 +24,7 @@
     <meta property="og:title" content="Karshvar — لعبة تخمين البلدان" />
     <meta
       property="og:description"
-      content="اختر قارة واستكشف الكرة الأرضية وخمن البلد المميز. العب على الهاتف أو الكمبيوتر دون مؤقت."
+      content="خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة."
     />
     <meta property="og:locale" content="ar_SA" />
     <meta
@@ -38,7 +38,7 @@
     <meta name="twitter:title" content="Karshvar — لعبة تخمين البلدان" />
     <meta
       name="twitter:description"
-      content="اختر قارة واستكشف الكرة الأرضية وخمن البلد المميز. العب على الهاتف أو الكمبيوتر دون مؤقت."
+      content="خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة."
     />
     <meta
       name="twitter:image"
@@ -48,13 +48,13 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Karshvar",
-        "description": "اختر قارة واستكشف الكرة الأرضية وخمن البلد المميز. العب على الهاتف أو الكمبيوتر دون مؤقت.",
+        "name": "Karshvar — لعبة تخمين البلدان",
+        "description": "خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة.",
+        "url": "https://ohmydevops.github.io/Karshvar/ar/",
         "inLanguage": "ar",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
-        "isAccessibleForFree": true,
-        "url": "https://ohmydevops.github.io/Karshvar/ar/"
+        "isAccessibleForFree": true
       }
     </script>
     <link rel="canonical" href="https://ohmydevops.github.io/Karshvar/ar/" />
@@ -100,7 +100,7 @@
   </head>
   <body class="light">
     <header>
-      <a class="brand" href="./">Karshvar</a>
+      <a class="brand" href="./ar/">Karshvar</a>
       <div class="settings">
         <button id="resetOpen" disabled>
           <svg
@@ -149,18 +149,29 @@
       </div>
     </header>
     <main>
-      <section class="intro">
-        <span class="eyebrow" data-text="eyebrow"></span>
-        <h1 data-text="heading">Karshvar — لعبة تخمين البلدان</h1>
-        <p data-text="description">
-          اختر قارة واستكشف الكرة الأرضية وخمن البلد المميز. العب على الهاتف أو
-          الكمبيوتر دون مؤقت.
-        </p>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome">
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">كم تعرف عن العالم؟</h1>
+          <p id="welcomeDescription">
+            خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة.
+          </p>
+          <a id="startGame" class="primary" href="./ar/continents/"
+            >ابدأ اللعب</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="orbit"></div>
+          <img src="./art/earth.svg" class="home-earth" alt="" />
+        </div>
       </section>
-      <section id="continentSelection" aria-labelledby="chooseTitle">
-        <h2 id="chooseTitle" tabindex="-1"></h2>
+      <section class="intro" hidden>
+        <h1>أين تود أن تلعب؟</h1>
+        <p>اختر قارة، ثم خمن أسماء البلدان المميزة فيها.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">اختر مغامرتك</h2>
         <div id="continentChoices" class="continent-choices"></div>
-        <p id="selectionStatus" role="status"></p>
       </section>
       <div id="gameNavigation" class="game-navigation" hidden>
         <strong id="activeContinent"></strong
@@ -168,9 +179,6 @@
       </div>
       <section class="game" id="gameSection" hidden>
         <div class="globe-panel">
-          <div class="map-label">
-            <span class="live-dot"></span><span data-text="explore"></span>
-          </div>
           <svg
             id="globe"
             role="img"
@@ -194,7 +202,6 @@
               </svg></button
             ><button id="zoomIn" aria-label="Zoom in">+</button>
           </div>
-          <p class="gesture" data-text="gesture"></p>
         </div>
         <div class="answer-panel">
           <div class="progress">
@@ -202,12 +209,14 @@
           </div>
           <div class="progress-track"><div id="bar"></div></div>
           <div class="question">
-            <span class="eyebrow" data-text="challenge"></span>
             <h2 data-text="question"></h2>
-            <p data-text="hint"></p>
           </div>
           <form id="answerForm">
-            <label for="answer" data-text="label"></label
+            <label
+              class="visually-hidden"
+              for="answer"
+              data-text="label"
+            ></label
             ><input
               id="answer"
               autocomplete="off"
@@ -231,12 +240,45 @@
             data-text="skip"
             disabled
           ></button>
-          <div class="session-note" data-text="saved"></div>
+          <div class="session-note" hidden role="status"></div>
         </div>
+      </section>
+      <section
+        id="aboutPage"
+        class="content-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">عن Karshvar</h1>
+        <p id="aboutBody">
+          يستلهم اسم Karshvar كلمة إيرانية قديمة ترتبط بالكلمة الفارسية الحديثة
+          التي تعني البلد. وفي التصور الأفستي للكون، وُصف العالم بأنه سبع مناطق.
+        </p>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+        <a id="aboutClose" class="primary" href="./ar/">الرئيسية</a>
+      </section>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">اكتشافاتك</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          العب هذه القارة مجددًا</button
+        ><a id="chooseAgain" class="text-button" href="./ar/continents/"
+          >اختر قارة أخرى</a
+        >
       </section>
     </main>
     <footer>
-      <button id="aboutOpen" class="footer-about" type="button"></button
+      <a class="explore-link" href="./ar/explore/">استكشف الخريطة</a>
+      <a id="aboutOpen" class="footer-about" href="./ar/about/">عن Karshvar</a
       ><a
         href="https://www.naturalearthdata.com/about/terms-of-use/"
         target="_blank"
@@ -244,22 +286,7 @@
         data-text="credits"
       ></a>
     </footer>
-    <dialog id="aboutDialog" aria-labelledby="aboutTitle">
-      <h2 id="aboutTitle">عن Karshvar</h2>
-      <p id="aboutBody">
-        يستلهم اسم Karshvar كلمة إيرانية قديمة ترتبط بالكلمة الفارسية الحديثة
-        التي تعني البلد. وفي التصور الأفستي للكون، وُصف العالم بأنه سبع مناطق.
-      </p>
-      <a
-        id="aboutSource"
-        href="https://fa.wikipedia.org/wiki/%DA%A9%D8%A7%D8%B1%D8%B4%D9%88%D8%B1"
-        target="_blank"
-        rel="noreferrer"
-      ></a>
-      <form method="dialog">
-        <button id="aboutClose" class="primary"></button>
-      </form>
-    </dialog>
+
     <dialog
       id="resetDialog"
       aria-labelledby="resetTitle"

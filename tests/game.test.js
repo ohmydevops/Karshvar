@@ -1,10 +1,16 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalize, matches, shuffled } from "../public/logic.js";
+import {
+  normalize,
+  matches,
+  shuffled,
+  formatNumber,
+  formatRatio,
+} from "../public/logic.js";
 import fs from "node:fs";
 test("accepts equivalent spelling, accents, punctuation and Persian variants", () => {
   assert(matches("  Côte d’Ivoire ", ["Cote d Ivoire"]));
-  assert(matches("ايـران".replace("ـ", ""), ["ایران"]));
+  assert(matches("ايـران", ["ایران"]));
   assert(!matches("", [""]));
   assert(!matches("Iran", ["Iraq"]));
 });
@@ -85,45 +91,93 @@ test("continent sessions preserve relevant answers and exclude other continents"
 test("all localized pages and assets resolve beneath the GitHub Pages project path", () => {
   const root = "https://ohmydevops.github.io/Karshvar/";
   for (const locale of ["en", "fa", "ar", "tr", "fr", "ru"]) {
-    const html = fs.readFileSync(`public/${locale}/index.html`, "utf8");
-    const base = new URL(
-      html.match(/<base href="([^"]+)"/)[1],
-      `${root}${locale}/`,
-    );
-    for (const match of html.matchAll(
-      /<(?:a|link|script)\b[^>]*?\b(?:src|href)="([^"]+)"/g,
-    )) {
-      const url = new URL(match[1], base);
-      if (url.origin !== new URL(root).origin) continue;
+    for (const suffix of [
+      "",
+      "continents/",
+      "play/",
+      "results/",
+      "about/",
+      "explore/",
+    ]) {
+      const html = fs.readFileSync(
+        `public/${locale}/${suffix}index.html`,
+        "utf8",
+      );
+      const base = new URL(
+        html.match(/<base href="([^"]+)"/)[1],
+        `${root}${locale}/${suffix}`,
+      );
+      for (const match of html.matchAll(
+        /<(?:a|link|script|img)\b[^>]*?\b(?:src|href)="([^"]+)"/g,
+      )) {
+        const url = new URL(match[1], base);
+        if (url.origin !== new URL(root).origin) continue;
+        assert(
+          url.pathname.startsWith("/Karshvar/"),
+          `Asset escapes project path: ${url}`,
+        );
+        const relative = decodeURIComponent(
+          url.pathname.slice("/Karshvar/".length),
+        );
+        assert(
+          fs.existsSync(`public/${relative}`),
+          `Missing asset or page: ${relative}`,
+        );
+      }
+      assert.equal(
+        html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/)[1],
+        `${root}${locale}/${suffix}`,
+      );
+      assert(html.includes(`content="${root}social/karshvar.png"`));
       assert(
-        url.pathname.startsWith("/Karshvar/"),
-        `Asset escapes project path: ${url}`,
+        !html.includes("https://cloud.umami.is/script.js"),
+        "Analytics must be gated by the production loader",
       );
-      const relative = decodeURIComponent(
-        url.pathname.slice("/Karshvar/".length),
+      const schema = JSON.parse(
+        html.match(
+          /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+        )[1],
       );
-      assert(
-        fs.existsSync(`public/${relative}`),
-        `Missing asset or page: ${relative}`,
-      );
+      assert.equal(schema.url, `${root}${locale}/${suffix}`);
+      assert.equal(schema.inLanguage, locale);
     }
-    assert(html.includes(`rel="canonical" href="${root}${locale}/"`));
-    assert(html.includes(`content="${root}social/karshvar.png"`));
-    assert(
-      !html.includes("https://cloud.umami.is/script.js"),
-      "Analytics must be gated by the production loader",
-    );
-    const schema = JSON.parse(
-      html.match(
-        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
-      )[1],
-    );
-    assert.equal(schema.url, `${root}${locale}/`);
-    assert.equal(schema.inLanguage, locale);
   }
   assert(
     fs.readFileSync("public/robots.txt", "utf8").includes(`${root}sitemap.xml`),
   );
   const sitemap = fs.readFileSync("public/sitemap.xml", "utf8");
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 6);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 24);
+});
+import { pagePath, pageTypes, routeLanguages } from "../public/navigation.js";
+test("Persian UI numbers use Persian digits without changing other languages", () => {
+  assert.equal(formatNumber(1234567890, "fa"), "۱۲۳۴۵۶۷۸۹۰");
+  assert.equal(formatNumber(0, "fa"), "۰");
+  for (const language of ["en", "ar", "tr", "fr", "ru"])
+    assert.equal(formatNumber(45, language), "45");
+  assert.equal(formatRatio(1, 45, "fa"), "\u2066۱ / ۴۵\u2069");
+});
+test("page links retain language, page, and selected continent without hash routes", () => {
+  assert.equal(pagePath("fa"), "./fa/");
+  assert.equal(pagePath("fa", "continents"), "./fa/continents/");
+  assert.equal(
+    pagePath("en", "play", "North America"),
+    "./en/play/?continent=North%20America",
+  );
+  assert.equal(
+    pagePath("fa", "results", "Asia"),
+    "./fa/results/?continent=Asia",
+  );
+  for (const language of routeLanguages)
+    for (const page of pageTypes) {
+      const path = pagePath(language, page);
+      assert(!path.includes("#"));
+      assert(path.startsWith("./" + language + "/"));
+    }
+});
+
+test("answer normalization accepts spacing, Persian letters and Arabic marks", () => {
+  assert(matches("  عربستان   سعودی  ", ["عربستان سعودی"]));
+  assert(matches("پاكستان", ["پاکستان"]));
+  assert(matches("إِيرَان", ["ایران"]));
+  assert(matches("کره\u200cجنوبی", ["کره جنوبی"]));
 });

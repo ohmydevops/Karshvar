@@ -1,3 +1,4 @@
+import { pageCopy, pagePath } from "./navigation.js";
 import { bindGlobeGestures } from "./gestures.js";
 import {
   createAnalytics,
@@ -13,23 +14,14 @@ import {
   validSession,
   createSession,
 } from "./continents.js";
-import { matches, shuffled } from "./logic.js";
+import { matches, formatNumber, formatRatio } from "./logic.js";
 const keys = [
-  "eyebrow",
-  "heading",
-  "description",
-  "explore",
   "center",
-  "gesture",
-  "challenge",
   "question",
-  "hint",
   "label",
   "check",
   "next",
   "skip",
-  "saved",
-  "footer",
   "credits",
   "correct",
   "incorrect",
@@ -48,21 +40,12 @@ const keys = [
 ];
 const copy = {
   en: [
-    "A little curiosity. A whole world.",
-    "How well do you know Earth?",
-    "One highlighted country. Take a look around, then make your guess.",
-    "World explorer",
     "Recenter",
-    "Drag to explore · Scroll or use + / − to zoom",
-    "Your next discovery",
     "Which country is this?",
-    "Name the country highlighted in green. Take your time.",
     "Country name",
     "Check answer",
     "Next country →",
     "I don’t know — reveal answer",
-    "Your progress stays in this browser.",
-    "No timer. Just you and the world.",
     "Map data: Natural Earth",
     "That’s right!",
     "Not quite. The correct answer is",
@@ -72,7 +55,7 @@ const copy = {
     "Correct",
     "Loading the world…",
     "Could not load the map. Please reload to try again.",
-    "Type a country name…",
+    "Type the country name in English…",
     "Interactive globe. Use arrow keys to rotate; plus and minus to zoom.",
     "Switch theme",
     "Zoom in",
@@ -80,21 +63,12 @@ const copy = {
     "Progress cannot be saved in this browser.",
   ],
   fa: [
-    "کمی کنجکاوی، یک دنیا کشف",
-    "زمین رو چقدر می‌شناسی؟",
-    "کشور روشن‌شده رو نگاه کن، دورش بچرخ و اسمش رو حدس بزن.",
-    "جهان‌گردی",
     "برگشت به کشور",
-    "بکش تا بچرخه · با + و − بزرگ‌نمایی کن",
-    "کشف بعدی تو",
     "این کدوم کشوره؟",
-    "اسم کشوری که سبز شده رو بنویس. عجله‌ای نیست.",
     "اسم کشور",
     "بررسی جواب",
     "کشور بعدی ←",
     "نمی‌دونم — جواب رو نشون بده",
-    "پیشرفتت توی همین مرورگر ذخیره می‌شه.",
-    "بدون زمان‌سنج؛ فقط تو و دنیا.",
     "داده‌های نقشه: Natural Earth",
     "درسته!",
     "این نبود. جواب درست:",
@@ -104,7 +78,7 @@ const copy = {
     "درست",
     "داریم دنیا رو آماده می‌کنیم…",
     "نقشه بارگیری نشد. صفحه رو دوباره باز کن.",
-    "اسم کشور رو بنویس…",
+    "اسم کشور رو به فارسی بنویس…",
     "کرهٔ تعاملی؛ با کلیدهای جهت بچرخان و با مثبت و منفی بزرگ‌نمایی کن.",
     "تغییر ظاهر",
     "بزرگ‌نمایی",
@@ -112,21 +86,12 @@ const copy = {
     "پیشرفتت توی این مرورگر ذخیره نمی‌شه.",
   ],
   ar: [
-    "قليل من الفضول، عالم من الاكتشاف",
-    "إلى أي حد تعرف الأرض؟",
-    "تأمل البلد المميز، أدر الكرة، ثم خمن اسمه.",
-    "استكشاف العالم",
     "إعادة التوسيط",
-    "اسحب للتدوير · استخدم + و − للتكبير",
-    "اكتشافك التالي",
     "ما هذا البلد؟",
-    "اكتب اسم البلد المميز بالأخضر. خذ وقتك.",
     "اسم البلد",
     "تحقق من الإجابة",
     "البلد التالي ←",
     "لا أعرف — أظهر الإجابة",
-    "يُحفظ تقدمك في هذا المتصفح.",
-    "بلا مؤقت. أنت والعالم فقط.",
     "بيانات الخريطة: Natural Earth",
     "إجابة صحيحة!",
     "ليست صحيحة. الإجابة الصحيحة هي",
@@ -136,7 +101,7 @@ const copy = {
     "صحيح",
     "جارٍ تحميل العالم…",
     "تعذر تحميل الخريطة. أعد تحميل الصفحة.",
-    "اكتب اسم بلد…",
+    "اكتب اسم البلد بالعربية…",
     "كرة أرضية تفاعلية. استخدم الأسهم للتدوير وزري الجمع والطرح للتكبير.",
     "تغيير المظهر",
     "تكبير",
@@ -144,21 +109,12 @@ const copy = {
     "لا يمكن حفظ التقدم في هذا المتصفح.",
   ],
   tr: [
-    "Biraz merak. Koca bir dünya.",
-    "Dünyayı ne kadar tanıyorsun?",
-    "Vurgulanan ülkeye bak, küreyi döndür ve tahmin et.",
-    "Dünyayı keşfet",
     "Ortala",
-    "Döndürmek için sürükle · Yakınlaştırmak için + / −",
-    "Sıradaki keşfin",
     "Bu hangi ülke?",
-    "Yeşil renkle vurgulanan ülkenin adını yaz. Acele etme.",
     "Ülke adı",
     "Yanıtı kontrol et",
     "Sonraki ülke →",
     "Bilmiyorum — yanıtı göster",
-    "İlerlemen bu tarayıcıda saklanır.",
-    "Süre sınırı yok. Sadece sen ve dünya.",
     "Harita verileri: Natural Earth",
     "Doğru!",
     "Tam değil. Doğru yanıt",
@@ -168,7 +124,7 @@ const copy = {
     "Doğru",
     "Dünya yükleniyor…",
     "Harita yüklenemedi. Sayfayı yenile.",
-    "Bir ülke adı yaz…",
+    "Ülkenin adını Türkçe yaz…",
     "Etkileşimli küre. Döndürmek için okları, yakınlaştırmak için artı ve eksiyi kullan.",
     "Temayı değiştir",
     "Yakınlaştır",
@@ -176,21 +132,12 @@ const copy = {
     "İlerleme bu tarayıcıda kaydedilemiyor.",
   ],
   fr: [
-    "Un peu de curiosité. Tout un monde.",
-    "Connaissez-vous notre planète ?",
-    "Un pays en surbrillance. Explorez le globe, puis devinez son nom.",
-    "Explorer le monde",
     "Recentrer",
-    "Glissez pour tourner · + / − pour zoomer",
-    "Votre prochaine découverte",
     "Quel est ce pays ?",
-    "Nommez le pays en vert. Prenez votre temps.",
     "Nom du pays",
     "Vérifier",
     "Pays suivant →",
     "Je ne sais pas — révéler",
-    "Votre progression reste dans ce navigateur.",
-    "Sans chrono. Juste vous et le monde.",
     "Carte : Natural Earth",
     "Bonne réponse !",
     "Pas tout à fait. La bonne réponse est",
@@ -200,7 +147,7 @@ const copy = {
     "Correct",
     "Chargement du monde…",
     "Impossible de charger la carte. Rechargez la page.",
-    "Saisissez un pays…",
+    "Écrivez le nom du pays en français…",
     "Globe interactif. Flèches pour tourner, plus et moins pour zoomer.",
     "Changer le thème",
     "Zoom avant",
@@ -208,21 +155,12 @@ const copy = {
     "Impossible de sauvegarder dans ce navigateur.",
   ],
   ru: [
-    "Немного любопытства. Целый мир.",
-    "Хорошо ли вы знаете Землю?",
-    "Посмотрите на выделенную страну, поверните глобус и угадайте её название.",
-    "Исследуйте мир",
     "По центру",
-    "Перетаскивайте для вращения · + / − для масштаба",
-    "Следующее открытие",
     "Что это за страна?",
-    "Назовите страну, выделенную зелёным. Не торопитесь.",
     "Название страны",
     "Проверить",
     "Следующая страна →",
     "Не знаю — показать ответ",
-    "Прогресс сохраняется в этом браузере.",
-    "Без таймера. Только вы и мир.",
     "Данные карты: Natural Earth",
     "Верно!",
     "Не совсем. Правильный ответ:",
@@ -232,7 +170,7 @@ const copy = {
     "Верно",
     "Загружаем мир…",
     "Не удалось загрузить карту. Обновите страницу.",
-    "Введите название страны…",
+    "Напишите название страны по-русски…",
     "Интерактивный глобус. Стрелки вращают, плюс и минус меняют масштаб.",
     "Сменить тему",
     "Приблизить",
@@ -241,6 +179,8 @@ const copy = {
   ],
 };
 const $ = (id) => document.getElementById(id);
+const page = document.documentElement.dataset.page || "home";
+const routeContinent = new URLSearchParams(location.search).get("continent");
 let lang = "en",
   state,
   sessions = {},
@@ -284,6 +224,10 @@ function track(event, data = {}) {
   });
 }
 const t = (key) => copy[lang][keys.indexOf(key)];
+const number = (value) => formatNumber(value, lang);
+const ratio = (answered, total) => formatRatio(answered, total, lang);
+const navigate = (target, continent) =>
+  location.assign(new URL(pagePath(lang, target, continent), document.baseURI));
 function save() {
   try {
     if (selected && state) sessions[selected] = state;
@@ -296,6 +240,7 @@ function save() {
   } catch {
     storage = false;
     document.querySelector(".session-note").textContent = t("storage");
+    document.querySelector(".session-note").hidden = storage;
   }
 }
 function name(f) {
@@ -336,8 +281,8 @@ function aliases(f) {
 const svg = d3.select("#globe").attr("viewBox", "0 0 600 530");
 const defs = svg.append("defs");
 const glow = defs.append("radialGradient").attr("id", "ocean");
-glow.append("stop").attr("offset", "0%").attr("stop-color", "#38594c");
-glow.append("stop").attr("offset", "100%").attr("stop-color", "#182d25");
+glow.append("stop").attr("offset", "0%").attr("stop-color", "#366194");
+glow.append("stop").attr("offset", "100%").attr("stop-color", "#10243f");
 const shade = defs
   .append("radialGradient")
   .attr("id", "shade")
@@ -360,13 +305,13 @@ const sphere = svg
   .append("path")
   .datum({ type: "Sphere" })
   .attr("fill", "url(#ocean)")
-  .attr("stroke", "#8cad7f")
+  .attr("stroke", "#7b9bce")
   .attr("stroke-opacity", 0.35);
 const grid = svg
   .append("path")
   .datum(d3.geoGraticule10())
   .attr("fill", "none")
-  .attr("stroke", "#aacbb4")
+  .attr("stroke", "#a2c5ff")
   .attr("stroke-opacity", 0.08)
   .attr("stroke-width", 0.6);
 const land = svg.append("g");
@@ -375,11 +320,15 @@ const shadow = svg
   .datum({ type: "Sphere" })
   .attr("fill", "url(#shade)")
   .attr("pointer-events", "none");
+const countryLabels = svg
+  .append("g")
+  .attr("class", "country-labels")
+  .attr("pointer-events", "none");
 const marker = svg
   .append("circle")
   .attr("r", 14)
   .attr("fill", "none")
-  .attr("stroke", "#e3ffab")
+  .attr("stroke", "#ffbd4a")
   .attr("stroke-width", 3)
   .attr("pointer-events", "none");
 function focusGeometry(f) {
@@ -403,6 +352,7 @@ function queueDraw() {
       draw();
     });
 }
+window.addEventListener("resize", queueDraw);
 function draw() {
   projection.rotate(rotation).scale(220 * zoom);
   sphere.attr("d", path);
@@ -410,8 +360,51 @@ function draw() {
   land
     .selectAll("path")
     .attr("d", path)
-    .attr("fill", (f) => (f.id === current?.id ? "#e4ff69" : "var(--land)"));
+    .attr("fill", (f) => (f.id === current?.id ? "#ffbd4a" : "var(--land)"));
   shadow.attr("d", path);
+  const mapScale = $("globe").getScreenCTM()?.a || 1;
+  const labelSize = Math.max(9, Math.min(14, 8 + zoom * 1.5));
+  const occupied = [];
+  countryLabels
+    .selectAll("text")
+    .sort(
+      (a, b) =>
+        (b.id === current?.id) - (a.id === current?.id) ||
+        d3.geoArea(b) - d3.geoArea(a),
+    )
+    .attr("display", null)
+    .style("font-size", labelSize / mapScale + "px")
+    .style("stroke-width", 2 / mapScale + "px")
+    .attr("transform", (f) => "translate(" + projection(focusPoint(f)) + ")")
+    .attr("display", function (f) {
+      const p = projection(focusPoint(f));
+      if (
+        d3.geoDistance(focusPoint(f), projection.invert([300, 267])) >=
+          Math.PI / 2 ||
+        p[0] < 0 ||
+        p[0] > 600 ||
+        p[1] < 0 ||
+        p[1] > 530
+      )
+        return "none";
+      const width = this.getComputedTextLength() + 8 / mapScale,
+        height = (labelSize + 6) / mapScale;
+      const box = [
+        p[0] - width / 2,
+        p[1] - height / 2,
+        p[0] + width / 2,
+        p[1] + height / 2,
+      ];
+      if (
+        occupied.some(
+          (b) =>
+            box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1],
+        )
+      )
+        return "none";
+      occupied.push(box);
+      return null;
+    });
   if (current) {
     const point = focusPoint(current),
       p = projection(point);
@@ -428,6 +421,10 @@ function draw() {
   } else marker.attr("display", "none");
 }
 function center() {
+  if (page === "explore") {
+    openExplore(selected);
+    return;
+  }
   if (!current) return;
   cancelAnimationFrame(animation);
   const point = focusPoint(current),
@@ -557,18 +554,45 @@ function localize() {
   $("center").title = t("center");
   for (const id of ["globe", "theme", "zoomIn", "zoomOut", "center"])
     $(id).setAttribute("aria-label", t(id));
-  document.title = seoCopy[lang][0];
+  document.title =
+    page === "home"
+      ? seoCopy[lang][0]
+      : `${page === "about" ? aboutCopy[lang][0] : pageCopy[lang][page]} — Karshvar`;
+  document.querySelector(".brand").href = pagePath(lang);
+  document.querySelector(".brand").textContent =
+    lang === "fa" ? "کَرشوَر" : "Karshvar";
+  $("startGame").textContent = pageCopy[lang].start;
+  $("startGame").href = pagePath(lang, "continents");
+  $("welcomeTitle").textContent = pageCopy[lang].homeTitle;
+  $("welcomeDescription").textContent = pageCopy[lang].homeDescription;
+  $("aboutOpen").href = pagePath(lang, "about");
+  $("aboutClose").textContent = pageCopy[lang].home;
+  $("aboutClose").href = pagePath(lang);
+  $("resultsTitle").textContent = pageCopy[lang].results;
+  $("restartContinent").textContent = labels[lang][5];
+  $("chooseAgain").textContent = pageCopy[lang].again;
+  $("chooseAgain").href = pagePath(lang, "continents");
+  document
+    .querySelectorAll("[data-language]")
+    .forEach(
+      (link) =>
+        (link.href = pagePath(link.dataset.language, page, routeContinent)),
+    );
   const about = aboutCopy[lang];
   ["aboutOpen", "aboutTitle"].forEach((id) => ($(id).textContent = about[0]));
   $("aboutBody").textContent = about[1];
   $("aboutSource").textContent = about[2];
-  $("aboutClose").textContent = about[3];
-  document.querySelector('meta[name="description"]').content = seoCopy[lang][1];
+  $("aboutSource").href =
+    lang === "fa"
+      ? "https://fa.wikipedia.org/wiki/%DA%A9%D8%A7%D8%B1%D8%B4%D9%88%D8%B1"
+      : "https://en.wikipedia.org/wiki/Karshvar";
+
   if (!storage)
     document.querySelector(".session-note").textContent = t("storage");
+  document.querySelector(".session-note").hidden = storage;
   document.querySelector(".intro h1").textContent = labels[lang][1];
   document.querySelector(".intro p").textContent = labels[lang][2];
-  $("chooseTitle").textContent = labels[lang][0];
+  $("chooseTitle").textContent = pageCopy[lang].continents;
   $("changeContinent").textContent = labels[lang][3];
   renderContinents();
   if (state && features.length) render();
@@ -586,69 +610,134 @@ function renderContinents() {
   $("selectionStatus").textContent = "";
   for (const [index, continent] of continents.entries()) {
     const session = sessions[continent];
-    const button = document.createElement("button");
+    const button = document.createElement("a");
     button.className = "continent-card";
     const title = document.createElement("strong");
     title.textContent = labels[lang][7 + index];
     const count = document.createElement("span");
     count.textContent =
-      session.answers.length +
-      " / " +
-      session.order.length +
+      ratio(session.answers.length, session.order.length) +
       " · " +
       labels[lang][6];
-    button.append(title, count);
-    button.onclick = () => {
-      selected = continent;
-      document.body.classList.add("playing");
-      state = sessions[continent];
+    const art = document.createElement("img");
+    art.src = new URL(
+      "./art/" + continent.toLowerCase().replaceAll(" ", "-") + ".svg",
+      import.meta.url,
+    ).href;
+    art.alt = "";
+    art.className = "continent-art";
+    const badge = document.createElement("span");
+    badge.className = "continent-number";
+    badge.textContent = number(index + 1).padStart(
+      lang === "fa" ? 1 : 2,
+      lang === "fa" ? "۰" : "0",
+    );
+    badge.setAttribute("aria-hidden", "true");
+    button.append(art, badge, title, count);
+    button.href = pagePath(lang, "play", continent);
+    button.addEventListener("click", () => {
       track("continent-select", {
-        answered: state.answers.length,
-        total: state.order.length,
+        continent,
+        answered: session.answers.length,
+        total: session.order.length,
       });
-      $("answer").value = "";
-      $("continentSelection").hidden = true;
-      $("gameSection").hidden = false;
-      $("gameNavigation").hidden = false;
-      land
-        .selectAll("path")
-        .data(
-          features.filter((f) => idsFor(selected).includes(f.id)),
-          (f) => f.id,
-        )
-        .join("path")
-        .attr("stroke", "var(--ocean)")
-        .attr("stroke-width", 0.7)
-        .attr("stroke-linejoin", "round");
-      render();
-      center();
-      $("changeContinent").focus();
-    };
+      save();
+    });
     $("continentChoices").append(button);
   }
+}
+function openExplore(continent) {
+  selected = continent;
+  current = null;
+  const countries = features.filter((f) => idsFor(continent).includes(f.id));
+  $("gameSection").hidden = false;
+  document.querySelector(".answer-panel").hidden = true;
+
+  const centers = {
+    Africa: [20, 2],
+    Asia: [90, 30],
+    Europe: [20, 52],
+    "North America": [-100, 35],
+    "South America": [-60, -20],
+    Oceania: [155, -22],
+  };
+  const point = centers[continent];
+  rotation = [-point[0], -point[1], 0];
+  zoom = 1.5;
+  land
+    .selectAll("path")
+    .data(countries, (f) => f.id)
+    .join("path")
+    .attr("stroke", "var(--ocean)")
+    .attr("stroke-width", 0.7);
+  land
+    .selectAll("path")
+    .attr("tabindex", 0)
+    .attr("role", "button")
+    .attr("aria-label", name)
+    .on("click", (_, f) => {
+      current = f;
+      draw();
+    })
+    .on("keydown", (event, f) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        current = f;
+        draw();
+      }
+    });
+  countryLabels
+    .selectAll("text")
+    .data(countries, (f) => f.id)
+    .join("text")
+    .text(name)
+    .attr("text-anchor", "middle")
+    .attr("dy", ".35em");
+  const nav = $("exploreContinents");
+  nav.replaceChildren();
+  continents.forEach((c, i) => {
+    const a = document.createElement("a");
+    a.href = pagePath(lang, "explore", c);
+    a.textContent = labels[lang][7 + i];
+    if (c === continent) a.setAttribute("aria-current", "page");
+    nav.append(a);
+  });
+  draw();
+}
+function openGame(continent) {
+  selected = continent;
+  document.body.classList.add("playing");
+  state = sessions[continent];
+  $("answer").value = "";
+  $("continentSelection").hidden = true;
+  $("gameSection").hidden = false;
+  $("gameNavigation").hidden = false;
+  land
+    .selectAll("path")
+    .data(
+      features.filter((f) => idsFor(selected).includes(f.id)),
+      (f) => f.id,
+    )
+    .join("path")
+    .attr("stroke", "var(--ocean)")
+    .attr("stroke-width", 0.7)
+    .attr("stroke-linejoin", "round");
+  render();
+  center();
 }
 $("changeContinent").onclick = () => {
   track("continent-change");
   save();
-  cancelAnimationFrame(animation);
-  $("gameSection").hidden = true;
-  $("gameNavigation").hidden = true;
-  $("continentSelection").hidden = false;
-  document.body.classList.remove("playing");
-  selected = null;
-  state = null;
-  current = null;
-  renderContinents();
-  $("chooseTitle").focus();
+  navigate("continents");
 };
 function render() {
   const record = state.answers[state.index];
   const done = state.index >= state.order.length;
   current = features.find((f) => f.id === state.order[state.index]);
   $("position").textContent =
-    `${t("country")} ${Math.min(state.index + 1, state.order.length)} / ${state.order.length}`;
+    `${t("country")} ${ratio(Math.min(state.index + 1, state.order.length), state.order.length)}`;
   $("score").textContent =
-    `${state.answers.filter((a) => a.correct).length} ${t("score")}`;
+    `${number(state.answers.filter((a) => a.correct).length)} ${t("score")}`;
   $("bar").style.width =
     `${(state.answers.length / state.order.length) * 100}%`;
   $("answerForm").hidden = done || !!record;
@@ -660,8 +749,9 @@ function render() {
   $("next").textContent = done ? labels[lang][5] : t("next");
   $("activeContinent").textContent =
     labels[lang][7 + continents.indexOf(selected)];
+  $("feedback").hidden = !record && !done;
   $("feedback").textContent = done
-    ? `${labels[lang][4]} ${state.answers.filter((a) => a.correct).length} / ${state.order.length}`
+    ? `${labels[lang][4]} ${number(state.answers.filter((a) => a.correct).length)} / ${number(state.order.length)}`
     : record
       ? `${t(record.correct ? "correct" : "incorrect")} ${name(current)}.`
       : "";
@@ -699,18 +789,21 @@ $("answerForm").addEventListener("submit", (e) => {
 });
 $("skip").onclick = () => answer(true);
 $("next").onclick = () => {
-  if (state.index >= state.order.length) {
-    track("continent-restart");
-    state = {
-      order: shuffled(idsFor(selected)),
-      index: 0,
-      answers: [],
-    };
-  } else state.index++;
+  state.index++;
   $("answer").value = "";
   save();
+  if (state.index >= state.order.length) {
+    navigate("results", selected);
+    return;
+  }
   render();
   center();
+};
+$("restartContinent").onclick = () => {
+  track("continent-restart");
+  state = createSession(idsFor(selected));
+  save();
+  navigate("play", selected);
 };
 $("center").onclick = () => {
   track("map-control", { action: "recenter" });
@@ -754,8 +847,7 @@ $("resetDialog").addEventListener("close", () => {
   }
   track("progress-reset");
   cancelAnimationFrame(animation);
-  for (const continent of continents)
-    sessions[continent] = createSession(idsFor(continent));
+  sessions = {};
   legacy = null;
   selected = null;
   state = null;
@@ -766,17 +858,11 @@ $("resetDialog").addEventListener("close", () => {
     storage = false;
   }
   save();
-  document.body.classList.remove("playing");
-  $("gameSection").hidden = true;
-  $("gameNavigation").hidden = true;
-  $("continentSelection").hidden = false;
-  $("answer").value = "";
-  renderContinents();
-  $("chooseTitle").focus();
+  navigate("home");
 });
+$("startGame").onclick = () => track("game-start");
 $("aboutOpen").onclick = () => {
   track("about-open");
-  $("aboutDialog").showModal();
 };
 $("theme").onclick = () => {
   document.body.classList.toggle("light");
@@ -787,37 +873,79 @@ $("theme").onclick = () => {
   draw();
 };
 localize();
-$("selectionStatus").textContent = t("loading");
-try {
-  const responses = await Promise.all(
-    [
-      new URL("./data/countries.json", import.meta.url),
-      new URL("./data/names.json", import.meta.url),
-    ].map((url) =>
-      fetch(url).then((r) => {
-        if (!r.ok) throw Error(r.status);
-        return r.json();
-      }),
-    ),
-  );
-  names = responses[1];
-  features = topojson
-    .feature(responses[0], responses[0].objects.countries)
-    .features.filter((f) =>
-      names.some((n) => n.ccn3 === f.id && n.independent === true),
+$("resetOpen").disabled = false;
+if (["continents", "play", "results", "explore"].includes(page)) {
+  $("selectionStatus").textContent = t("loading");
+  try {
+    const responses = await Promise.all(
+      [
+        new URL("./data/countries.json", import.meta.url),
+        new URL("./data/names.json", import.meta.url),
+      ].map((url) =>
+        fetch(url).then((r) => {
+          if (!r.ok) throw Error(r.status);
+          return r.json();
+        }),
+      ),
     );
-  if (!sessions || typeof sessions !== "object" || Array.isArray(sessions))
-    sessions = {};
-  for (const continent of continents) {
-    const ids = idsFor(continent);
-    if (!validSession(sessions[continent], ids))
-      sessions[continent] = createSession(ids, legacy);
+    names = responses[1];
+    features = topojson
+      .feature(responses[0], responses[0].objects.countries)
+      .features.filter((f) =>
+        names.some((n) => n.ccn3 === f.id && n.independent === true),
+      );
+    if (!sessions || typeof sessions !== "object" || Array.isArray(sessions))
+      sessions = {};
+    for (const continent of continents) {
+      const ids = idsFor(continent);
+      if (!validSession(sessions[continent], ids))
+        sessions[continent] = createSession(ids, legacy);
+    }
+    $("resetOpen").disabled = false;
+    $("selectionStatus").textContent = "";
+    if (page === "explore")
+      openExplore(
+        continents.includes(routeContinent) ? routeContinent : "Africa",
+      );
+    else if (page === "continents") renderContinents();
+    else if (!continents.includes(routeContinent))
+      location.replace(new URL(pagePath(lang, "continents"), document.baseURI));
+    else {
+      selected = routeContinent;
+      state = sessions[selected];
+      if (page === "results") {
+        if (state.answers.length < state.order.length)
+          location.replace(
+            new URL(pagePath(lang, "play", selected), document.baseURI),
+          );
+        else {
+          state.index = state.order.length;
+          $("resultsContinent").textContent =
+            labels[lang][7 + continents.indexOf(selected)];
+          $("resultsScore").textContent =
+            number(state.answers.filter((a) => a.correct).length) +
+            " / " +
+            number(state.order.length);
+          $("resultsMessage").textContent = labels[lang][4];
+        }
+      } else if (state.index >= state.order.length)
+        location.replace(
+          new URL(pagePath(lang, "results", selected), document.baseURI),
+        );
+      else openGame(selected);
+    }
+    draw();
+    save();
+  } catch (error) {
+    console.error(error);
+    $("selectionStatus").textContent = t("error");
   }
-  $("resetOpen").disabled = false;
-  renderContinents();
-  draw();
-  save();
-} catch (error) {
-  console.error(error);
-  $("selectionStatus").textContent = t("error");
+}
+
+if (page === "home") {
+  import("./home-globe.js")
+    .then(({ mountHomeGlobe }) =>
+      mountHomeGlobe(document.querySelector(".welcome-art")),
+    )
+    .catch(console.warn);
 }

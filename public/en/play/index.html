@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-locale="en" data-page="play">
+  <head>
+    <base href="../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f9ff" />
+    <meta
+      name="description"
+      content="Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop."
+    />
+    <title>Country quiz — Karshvar</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <meta name="robots" content="noindex,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta property="og:title" content="Country quiz — Karshvar" />
+    <meta
+      property="og:description"
+      content="Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop."
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Karshvar" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Country quiz — Karshvar" />
+    <meta
+      name="twitter:description"
+      content="Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Country quiz — Karshvar",
+        "description": "Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop.",
+        "url": "https://ohmydevops.github.io/Karshvar/en/play/",
+        "inLanguage": "en",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true
+      }
+    </script>
+    <link
+      rel="canonical"
+      href="https://ohmydevops.github.io/Karshvar/en/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://ohmydevops.github.io/Karshvar/fa/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://ohmydevops.github.io/Karshvar/ar/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://ohmydevops.github.io/Karshvar/tr/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://ohmydevops.github.io/Karshvar/fr/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://ohmydevops.github.io/Karshvar/ru/play/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/en/play/"
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/en/"
+    />
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./en/">Karshvar</a>
+      <div class="settings">
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+        </button>
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Language">
+            <span id="languageLabel">EN</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Language">
+            <a
+              href="./en/play/"
+              lang="en"
+              hreflang="en"
+              data-language="en"
+              aria-current="page"
+              >EN</a
+            ><a href="./fa/play/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/play/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a href="./tr/play/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a href="./fr/play/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a href="./ru/play/" lang="ru" hreflang="ru" data-language="ru"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button id="theme" aria-label="Theme">◐</button>
+      </div>
+    </header>
+    <main>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">How well do you know the world?</h1>
+          <p id="welcomeDescription">
+            Guess the country on the map. Discover a new corner of the world
+            with every turn.
+          </p>
+          <a id="startGame" class="primary" href="./en/continents/"
+            >Start game</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="orbit"></div>
+          <img src="./art/earth.svg" class="home-earth" alt="" />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Where would you like to play?</h1>
+        <p>Choose a continent, then guess its highlighted countries.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Choose your adventure</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+          </div>
+          <form id="answerForm">
+            <label
+              class="visually-hidden"
+              for="answer"
+              data-text="label"
+            ></label
+            ><input
+              id="answer"
+              autocomplete="off"
+              autocapitalize="words"
+              spellcheck="false"
+              required
+              disabled
+            /><button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <section
+        id="aboutPage"
+        class="content-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">About Karshvar</h1>
+        <p id="aboutBody">
+          Karshvar takes its name from an ancient Iranian word related to
+          today’s Persian word for country. In Avestan cosmology, the world was
+          described as seven regions.
+        </p>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+        <a id="aboutClose" class="primary" href="./en/">Home</a>
+      </section>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Your discoveries</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Play this continent again</button
+        ><a id="chooseAgain" class="text-button" href="./en/continents/"
+          >Choose another continent</a
+        >
+      </section>
+    </main>
+    <footer>
+      <a class="explore-link" href="./en/explore/">Explore the map</a>
+      <a id="aboutOpen" class="footer-about" href="./en/about/"
+        >About Karshvar</a
+      ><a
+        href="https://www.naturalearthdata.com/about/terms-of-use/"
+        target="_blank"
+        rel="noreferrer"
+        data-text="credits"
+      ></a>
+    </footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

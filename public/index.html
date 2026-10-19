@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="en" dir="ltr" data-locale="en">
+<html lang="en" dir="ltr" data-locale="en" data-page="home">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#101c19" />
+    <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop."
+      content="Guess the country on the map. Discover a new corner of the world with every turn."
     />
     <title>Karshvar — Country guessing game</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -23,7 +23,7 @@
     <meta property="og:title" content="Karshvar — Country guessing game" />
     <meta
       property="og:description"
-      content="Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop."
+      content="Guess the country on the map. Discover a new corner of the world with every turn."
     />
     <meta property="og:locale" content="en_US" />
     <meta
@@ -37,7 +37,7 @@
     <meta name="twitter:title" content="Karshvar — Country guessing game" />
     <meta
       name="twitter:description"
-      content="Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop."
+      content="Guess the country on the map. Discover a new corner of the world with every turn."
     />
     <meta
       name="twitter:image"
@@ -47,13 +47,13 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Karshvar",
-        "description": "Choose a continent, explore an interactive globe, and guess the highlighted country. Play at your own pace on mobile or desktop.",
+        "name": "Karshvar — Country guessing game",
+        "description": "Guess the country on the map. Discover a new corner of the world with every turn.",
+        "url": "https://ohmydevops.github.io/Karshvar/en/",
         "inLanguage": "en",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
-        "isAccessibleForFree": true,
-        "url": "https://ohmydevops.github.io/Karshvar/en/"
+        "isAccessibleForFree": true
       }
     </script>
     <link rel="canonical" href="https://ohmydevops.github.io/Karshvar/en/" />
@@ -99,7 +99,7 @@
   </head>
   <body class="light">
     <header>
-      <a class="brand" href="./">Karshvar</a>
+      <a class="brand" href="./en/">Karshvar</a>
       <div class="settings">
         <button id="resetOpen" disabled>
           <svg
@@ -148,18 +148,30 @@
       </div>
     </header>
     <main>
-      <section class="intro">
-        <span class="eyebrow" data-text="eyebrow"></span>
-        <h1 data-text="heading">Karshvar — Country guessing game</h1>
-        <p data-text="description">
-          Choose a continent, explore an interactive globe, and guess the
-          highlighted country. Play at your own pace on mobile or desktop.
-        </p>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome">
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">How well do you know the world?</h1>
+          <p id="welcomeDescription">
+            Guess the country on the map. Discover a new corner of the world
+            with every turn.
+          </p>
+          <a id="startGame" class="primary" href="./en/continents/"
+            >Start game</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="orbit"></div>
+          <img src="./art/earth.svg" class="home-earth" alt="" />
+        </div>
       </section>
-      <section id="continentSelection" aria-labelledby="chooseTitle">
-        <h2 id="chooseTitle" tabindex="-1"></h2>
+      <section class="intro" hidden>
+        <h1>Where would you like to play?</h1>
+        <p>Choose a continent, then guess its highlighted countries.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Choose your adventure</h2>
         <div id="continentChoices" class="continent-choices"></div>
-        <p id="selectionStatus" role="status"></p>
       </section>
       <div id="gameNavigation" class="game-navigation" hidden>
         <strong id="activeContinent"></strong
@@ -167,9 +179,6 @@
       </div>
       <section class="game" id="gameSection" hidden>
         <div class="globe-panel">
-          <div class="map-label">
-            <span class="live-dot"></span><span data-text="explore"></span>
-          </div>
           <svg
             id="globe"
             role="img"
@@ -193,7 +202,6 @@
               </svg></button
             ><button id="zoomIn" aria-label="Zoom in">+</button>
           </div>
-          <p class="gesture" data-text="gesture"></p>
         </div>
         <div class="answer-panel">
           <div class="progress">
@@ -201,12 +209,14 @@
           </div>
           <div class="progress-track"><div id="bar"></div></div>
           <div class="question">
-            <span class="eyebrow" data-text="challenge"></span>
             <h2 data-text="question"></h2>
-            <p data-text="hint"></p>
           </div>
           <form id="answerForm">
-            <label for="answer" data-text="label"></label
+            <label
+              class="visually-hidden"
+              for="answer"
+              data-text="label"
+            ></label
             ><input
               id="answer"
               autocomplete="off"
@@ -230,12 +240,47 @@
             data-text="skip"
             disabled
           ></button>
-          <div class="session-note" data-text="saved"></div>
+          <div class="session-note" hidden role="status"></div>
         </div>
+      </section>
+      <section
+        id="aboutPage"
+        class="content-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">About Karshvar</h1>
+        <p id="aboutBody">
+          Karshvar takes its name from an ancient Iranian word related to
+          today’s Persian word for country. In Avestan cosmology, the world was
+          described as seven regions.
+        </p>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+        <a id="aboutClose" class="primary" href="./en/">Home</a>
+      </section>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Your discoveries</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Play this continent again</button
+        ><a id="chooseAgain" class="text-button" href="./en/continents/"
+          >Choose another continent</a
+        >
       </section>
     </main>
     <footer>
-      <button id="aboutOpen" class="footer-about" type="button"></button
+      <a class="explore-link" href="./en/explore/">Explore the map</a>
+      <a id="aboutOpen" class="footer-about" href="./en/about/"
+        >About Karshvar</a
       ><a
         href="https://www.naturalearthdata.com/about/terms-of-use/"
         target="_blank"
@@ -243,23 +288,7 @@
         data-text="credits"
       ></a>
     </footer>
-    <dialog id="aboutDialog" aria-labelledby="aboutTitle">
-      <h2 id="aboutTitle">About Karshvar</h2>
-      <p id="aboutBody">
-        Karshvar takes its name from an ancient Iranian word related to today’s
-        Persian word for country. In Avestan cosmology, the world was described
-        as seven regions.
-      </p>
-      <a
-        id="aboutSource"
-        href="https://fa.wikipedia.org/wiki/%DA%A9%D8%A7%D8%B1%D8%B4%D9%88%D8%B1"
-        target="_blank"
-        rel="noreferrer"
-      ></a>
-      <form method="dialog">
-        <button id="aboutClose" class="primary"></button>
-      </form>
-    </dialog>
+
     <dialog
       id="resetDialog"
       aria-labelledby="resetTitle"

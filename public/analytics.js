@@ -25,6 +25,7 @@ export function loadProductionAnalytics(document, location) {
 }
 
 const events = new Set([
+  "game-start",
   "continent-select",
   "answer-submit",
   "continent-complete",
