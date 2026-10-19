@@ -2,7 +2,8 @@ export function normalize(value) {
   return value
     .normalize("NFKD")
     .replace(/\p{M}/gu, "")
-    .toLocaleLowerCase()
+    .toLowerCase()
+    .replace(/ı/g, "i")
     .replace(/ي/g, "ی")
     .replace(/ك/g, "ک")
     .replace(/[^\p{L}\p{N}]/gu, "");

@@ -8,6 +8,18 @@ test("accepts equivalent spelling, accents, punctuation and Persian variants", (
   assert(!matches("", [""]));
   assert(!matches("Iran", ["Iraq"]));
 });
+test("country answers ignore case consistently, including Turkish I variants", () => {
+  for (const answer of ["iraq", "Iraq", "IRAQ", "iRaQ", "ıraq", "İRAQ"]) {
+    assert(matches(answer, ["Iraq"]), answer);
+  }
+  for (const answer of ["türkiye", "TÜRKİYE", "TÜRKıYE", "Türkiye"]) {
+    assert(matches(answer, ["Türkiye"]), answer);
+  }
+  assert(matches("франция", ["Франция"]));
+  assert(matches("ФРАНЦИЯ", ["Франция"]));
+  assert(!matches("IRAN", ["Iraq"]));
+});
+
 test("shuffle preserves every country exactly once", () => {
   const values = Array.from({ length: 200 }, (_, i) => i);
   assert.deepEqual(
