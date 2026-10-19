@@ -212,3 +212,64 @@ test("production loads the configured Umami tracker once and allows events", () 
   }).track("continent-select", { continent: "Asia" });
   assert.equal(events.length, 1);
 });
+
+import { bindCountrySuggestions } from "../public/suggestions.js";
+class SuggestionElement extends EventTarget {
+  children = [];
+  attributes = new Map();
+  value = "";
+  hidden = true;
+  disabled = false;
+  setAttribute(name, value) {
+    this.attributes.set(name, value);
+  }
+  removeAttribute(name) {
+    this.attributes.delete(name);
+  }
+  replaceChildren() {
+    this.children = [];
+  }
+  append(child) {
+    this.children.push(child);
+  }
+  scrollIntoView() {}
+  send(type, details = {}) {
+    const event = new Event(type, { cancelable: true });
+    Object.assign(event, details);
+    this.dispatchEvent(event);
+    return event;
+  }
+}
+for (const method of ["pointer", "keyboard"])
+  test("suggestion selection submits exactly once by " + method, () => {
+    const input = new SuggestionElement(),
+      list = new SuggestionElement();
+    input.ownerDocument = { createElement: () => new SuggestionElement() };
+    let submitted = 0,
+      value = "";
+    bindCountrySuggestions(
+      input,
+      list,
+      () => [{ id: "CHN", label: "China", aliases: ["China"] }],
+      () => "en",
+      () => {
+        submitted++;
+        value = input.value;
+      },
+    );
+    input.value = "Ch";
+    input.send("input");
+    assert.equal(submitted, 0);
+    assert.equal(list.children.length, 1);
+    if (method === "pointer") list.children[0].send("click");
+    else {
+      input.send("keydown", { key: "ArrowDown" });
+      assert(input.send("keydown", { key: "Enter" }).defaultPrevented);
+    }
+    assert.equal(submitted, 1);
+    assert.equal(value, "China");
+    assert(list.hidden);
+    assert.equal(list.children.length, 0);
+    input.send("keydown", { key: "Enter" });
+    assert.equal(submitted, 1);
+  });

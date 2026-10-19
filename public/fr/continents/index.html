@@ -201,7 +201,59 @@
       </section>
       <section id="continentSelection" aria-labelledby="chooseTitle">
         <h2 id="chooseTitle" tabindex="-1">Choisissez votre aventure</h2>
-        <div id="continentChoices" class="continent-choices"></div>
+        <div id="continentChoices" class="continent-choices" aria-busy="true">
+          <a class="continent-card" href="./fr/play/?continent=Africa"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/africa.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >01</span
+            ><strong>Afrique</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fr/play/?continent=Asia"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/asia.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >02</span
+            ><strong>Asie</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fr/play/?continent=Europe"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/europe.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >03</span
+            ><strong>Europe</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fr/play/?continent=North%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/north-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true"
+              >04</span
+            ><strong>Amérique du Nord</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fr/play/?continent=South%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/south-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true"
+              >05</span
+            ><strong>Amérique du Sud</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fr/play/?continent=Oceania"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/oceania.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >06</span
+            ><strong>Océanie</strong
+            ><span class="skeleton-line" aria-hidden="true"></span
+          ></a>
+        </div>
       </section>
       <div id="gameNavigation" class="game-navigation" hidden>
         <strong id="activeContinent"></strong
@@ -286,18 +338,34 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section
+      <article
         id="aboutPage"
-        class="content-page"
+        class="about-page"
         aria-labelledby="aboutTitle"
         hidden
       >
         <h1 id="aboutTitle">À propos de Karshvar</h1>
-        <p id="aboutBody">
-          Karshvar doit son nom à un ancien mot iranien lié au mot persan actuel
-          désignant un pays. Dans la cosmologie avestique, le monde était décrit
-          en sept régions.
-        </p>
+        <div id="aboutBody">
+          <p>
+            J’ai créé Karshvar pour faciliter la découverte du monde aux
+            personnes qui aiment lire l’histoire. Ma plus grande difficulté
+            était la géographie : de l’Anatolie au Caucase, du plateau iranien à
+            Byzance, je perdais le fil des lieux où se déroulaient les
+            événements importants.
+          </p>
+          <p>
+            J’ai donc commencé à étudier la géographie, et ce jeu est né de cet
+            apprentissage. C’est à la fois une façon de me tester et un pas vers
+            le compagnon hors ligne dont je rêvais pour explorer le monde. Je
+            compte ajouter progressivement de nouvelles fonctionnalités
+            historiques.
+          </p>
+          <p>
+            Karshvar doit son nom à un ancien mot iranien lié au mot persan
+            actuel désignant un pays. Dans la cosmologie avestique, le monde
+            était décrit en sept régions.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -305,8 +373,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./fr/">Accueil</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">Vos découvertes</h1>
@@ -321,6 +388,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./fr/">Accueil</a>
       <a class="explore-link" href="./fr/explore/">Explorer la carte</a>
       <a id="aboutOpen" class="footer-about" href="./fr/about/"
         >À propos de Karshvar</a

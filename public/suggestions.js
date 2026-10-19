@@ -33,6 +33,7 @@ export function bindCountrySuggestions(
   list,
   getCandidates,
   getLanguage,
+  onSelect,
 ) {
   let active = -1,
     results = [];
@@ -49,7 +50,7 @@ export function bindCountrySuggestions(
     if (!result) return;
     input.value = result.label;
     close();
-    input.focus();
+    onSelect(result);
   }
   function highlight(index) {
     active = index;
@@ -69,7 +70,7 @@ export function bindCountrySuggestions(
     list.replaceChildren();
     input.removeAttribute("aria-activedescendant");
     results.forEach((result, index) => {
-      const option = document.createElement("div");
+      const option = input.ownerDocument.createElement("div");
       option.id = "country-suggestion-" + index;
       option.setAttribute("role", "option");
       option.setAttribute("aria-selected", "false");

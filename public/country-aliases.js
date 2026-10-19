@@ -318,3 +318,40 @@ export function countryAliases(country, fallbackName = "") {
     ),
   ].filter((alias) => !blocked.has(normalize(alias)));
 }
+
+// Suggestions use the selected language; answer validation remains multilingual.
+export function localizedCountryAliases(country, language) {
+  if (!country) return [];
+  const code = {
+    en: "eng",
+    fa: "per",
+    ar: "ara",
+    tr: "tur",
+    fr: "fra",
+    ru: "rus",
+  }[language];
+  const translated =
+    language === "en" ? country.name : country.translations?.[code];
+  const native = country.name.nativeName?.[code];
+  const script =
+    language === "fa" || language === "ar"
+      ? /\p{Script=Arabic}/u
+      : language === "ru"
+        ? /\p{Script=Cyrillic}/u
+        : /\p{Script=Latin}/u;
+  const extras = (additionalNames[country.cca3] || []).filter((value) =>
+    script.test(value),
+  );
+  return [
+    translated?.common,
+    translated?.official,
+    native?.common,
+    native?.official,
+    ...(language === "en" ||
+    language === "fa" ||
+    language === "ar" ||
+    language === "ru"
+      ? extras
+      : []),
+  ].filter(Boolean);
+}

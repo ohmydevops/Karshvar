@@ -1,5 +1,5 @@
 import { bindCountrySuggestions } from "./suggestions.js";
-import { countryAliases } from "./country-aliases.js";
+import { countryAliases, localizedCountryAliases } from "./country-aliases.js";
 import { pageCopy, pagePath } from "./navigation.js";
 import { bindGlobeGestures } from "./gestures.js";
 import {
@@ -274,11 +274,19 @@ const countrySuggestions = bindCountrySuggestions(
       const ids = idsFor(selected);
       suggestionCandidates = features
         .filter((f) => ids.includes(f.id))
-        .map((f) => ({ id: f.id, label: name(f), aliases: aliases(f) }));
+        .map((f) => ({
+          id: f.id,
+          label: name(f),
+          aliases: localizedCountryAliases(
+            names.find((n) => n.ccn3 === f.id),
+            lang,
+          ),
+        }));
     }
     return suggestionCandidates;
   },
   () => lang,
+  () => answer(),
 );
 
 const svg = d3.select("#globe").attr("viewBox", "0 0 600 530");
@@ -570,8 +578,13 @@ function localize() {
   $("welcomeTitle").textContent = pageCopy[lang].homeTitle;
   $("welcomeDescription").textContent = pageCopy[lang].homeDescription;
   $("aboutOpen").href = pagePath(lang, "about");
-  $("aboutClose").textContent = pageCopy[lang].home;
-  $("aboutClose").href = pagePath(lang);
+  $("footerHome").textContent = pageCopy[lang].home;
+  $("footerHome").href = pagePath(lang);
+  document.querySelectorAll("footer a").forEach((link) => {
+    const active = new URL(link.href).pathname === location.pathname;
+    if (active) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
   $("resultsTitle").textContent = pageCopy[lang].results;
   $("restartContinent").textContent = labels[lang][5];
   $("chooseAgain").textContent = pageCopy[lang].again;
@@ -584,7 +597,13 @@ function localize() {
     );
   const about = aboutCopy[lang];
   ["aboutOpen", "aboutTitle"].forEach((id) => ($(id).textContent = about[0]));
-  $("aboutBody").textContent = about[1];
+  $("aboutBody").replaceChildren(
+    ...about[1].split("\n\n").map((text) => {
+      const p = document.createElement("p");
+      p.textContent = text;
+      return p;
+    }),
+  );
   $("aboutSource").textContent = about[2];
   $("aboutSource").href =
     lang === "fa"
@@ -608,9 +627,28 @@ function idsFor(continent) {
     )
     .map((f) => f.id);
 }
+function prepareContinentImages(root) {
+  root.querySelectorAll(".continent-art").forEach((image) => {
+    if (image.dataset.loadingBound) return;
+    image.dataset.loadingBound = "true";
+    const finish = () => {
+      image.closest(".continent-card").classList.add("image-ready");
+      if (!image.naturalWidth) image.hidden = true;
+    };
+    if (image.complete) finish();
+    else {
+      image.addEventListener("load", finish, { once: true });
+      image.addEventListener("error", finish, { once: true });
+    }
+  });
+}
 function renderContinents() {
+  if (!features.length) {
+    prepareContinentImages($("continentChoices"));
+    return;
+  }
+  $("continentChoices").setAttribute("aria-busy", "false");
   $("continentChoices").replaceChildren();
-  if (!features.length) return;
   $("selectionStatus").textContent = "";
   for (const [index, continent] of continents.entries()) {
     const session = sessions[continent];
@@ -637,7 +675,10 @@ function renderContinents() {
       lang === "fa" ? "۰" : "0",
     );
     badge.setAttribute("aria-hidden", "true");
-    button.append(art, badge, title, count);
+    const imagePlaceholder = document.createElement("span");
+    imagePlaceholder.className = "continent-art-placeholder";
+    imagePlaceholder.setAttribute("aria-hidden", "true");
+    button.append(imagePlaceholder, art, badge, title, count);
     button.href = pagePath(lang, "play", continent);
     button.addEventListener("click", () => {
       track("continent-select", {
@@ -648,6 +689,7 @@ function renderContinents() {
       save();
     });
     $("continentChoices").append(button);
+    prepareContinentImages(button);
   }
 }
 function openExplore(continent) {
@@ -708,6 +750,9 @@ function openExplore(continent) {
   });
   draw();
 }
+function focusAnswer() {
+  if (!$("answerForm").hidden) $("answer").focus({ preventScroll: true });
+}
 function openGame(continent) {
   selected = continent;
   document.body.classList.add("playing");
@@ -728,6 +773,7 @@ function openGame(continent) {
     .attr("stroke-linejoin", "round");
   render();
   center();
+  focusAnswer();
 }
 $("changeContinent").onclick = () => {
   track("continent-change");
@@ -803,6 +849,7 @@ $("next").onclick = () => {
   }
   render();
   center();
+  focusAnswer();
 };
 $("restartContinent").onclick = () => {
   track("continent-restart");
@@ -944,6 +991,10 @@ if (["continents", "play", "results", "explore"].includes(page)) {
   } catch (error) {
     console.error(error);
     $("selectionStatus").textContent = t("error");
+    $("continentChoices").setAttribute("aria-busy", "false");
+    $("continentChoices")
+      .querySelectorAll(".skeleton-line")
+      .forEach((el) => el.remove());
   }
 }
 

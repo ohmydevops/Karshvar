@@ -1,3 +1,4 @@
+import { createHomeScene, earthAxialTilt } from "./home-scene.js";
 import * as THREE from "./vendor/three.module.min.js";
 export async function mountHomeGlobe(host) {
   let renderer;
@@ -8,9 +9,15 @@ export async function mountHomeGlobe(host) {
       powerPreference: "low-power",
     });
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    const texture = await new THREE.TextureLoader().loadAsync(
-      new URL("./art/earth-texture.jpg", import.meta.url).href,
-    );
+    const settings = createHomeScene();
+    const loader = new THREE.TextureLoader();
+    const [texture, nightTexture] = await Promise.all([
+      loader.loadAsync(
+        new URL("./art/earth-texture.jpg", import.meta.url).href,
+      ),
+      loader.loadAsync(new URL("./art/earth-night.png", import.meta.url).href),
+    ]);
+    nightTexture.colorSpace = THREE.SRGBColorSpace;
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
     const scene = new THREE.Scene();
@@ -18,21 +25,39 @@ export async function mountHomeGlobe(host) {
     camera.position.set(0, 0.2, 4.6);
     scene.add(new THREE.AmbientLight(0xe3edff, 1.8));
     const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-    sun.position.set(-3, 3, 5);
+    sun.position.fromArray(settings.sunDirection);
     scene.add(sun);
     const system = new THREE.Group();
     scene.add(system);
+    const axialFrame = new THREE.Group();
+    axialFrame.rotation.set(0, settings.axisHeading, earthAxialTilt);
+    system.add(axialFrame);
     const earth = new THREE.Mesh(
       new THREE.SphereGeometry(1, 96, 64),
-      new THREE.MeshPhongMaterial({
-        map: texture,
-        shininess: 9,
-        specular: 0x172334,
+      new THREE.ShaderMaterial({
+        uniforms: {
+          dayMap: { value: texture },
+          nightMap: { value: nightTexture },
+          sunDirection: { value: sun.position.clone().normalize() },
+        },
+        vertexShader: `varying vec2 vUv;varying vec3 vNormalWorld;
+      void main(){vUv=uv;vNormalWorld=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+        fragmentShader: `uniform sampler2D dayMap;uniform sampler2D nightMap;uniform vec3 sunDirection;
+      varying vec2 vUv;varying vec3 vNormalWorld;
+      void main(){
+        float sunlight=dot(normalize(vNormalWorld),normalize(sunDirection));
+        float day=smoothstep(-0.12,0.15,sunlight);
+        vec3 surface=texture2D(dayMap,vUv).rgb;
+        vec3 cities=texture2D(nightMap,vUv).rgb;
+        vec3 color=surface*(0.055+max(sunlight,0.0)*1.15)+cities*(1.0-day)*1.6;
+        gl_FragColor=vec4(color,1.0);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`,
       }),
     );
-    earth.rotation.y = 2.4;
-    earth.rotation.z = 0.12;
-    system.add(earth);
+    earth.rotation.y = settings.earthRotation;
+    axialFrame.add(earth);
     const atmosphere = new THREE.Mesh(
       new THREE.SphereGeometry(1.025, 48, 32),
       new THREE.ShaderMaterial({
@@ -48,11 +73,11 @@ export async function mountHomeGlobe(host) {
     );
     system.add(atmosphere);
     const orbiters = [];
-    for (let i = 0; i < 3; i++) {
+    for (const [i, configuration] of settings.satellites.entries()) {
       const orbit = new THREE.Group();
-      orbit.rotation.set(0.35 + i * 0.65, 0, i * 0.75);
+      orbit.rotation.set(configuration.inclination, 0, configuration.node);
       system.add(orbit);
-      const radius = 1.23 + i * 0.11;
+      const radius = configuration.radius;
       const points = Array.from(
         { length: 128 },
         (_, k) =>
@@ -67,14 +92,14 @@ export async function mountHomeGlobe(host) {
           new THREE.TubeGeometry(
             new THREE.CatmullRomCurve3(points, true),
             192,
-            0.0025,
+            0.0018,
             5,
             true,
           ),
           new THREE.MeshBasicMaterial({
-            color: [0x7194c7, 0xc89f5c, 0x558c91][i],
+            color: [0x7194c7, 0xc89f5c, 0x558c91][i % 3],
             transparent: true,
-            opacity: 0.5,
+            opacity: 0.32,
             depthWrite: false,
           }),
         ),
@@ -94,12 +119,13 @@ export async function mountHomeGlobe(host) {
         panel.position.x = side * 0.08;
         satellite.add(panel);
       }
+      satellite.scale.setScalar(configuration.scale);
       orbit.add(satellite);
       orbiters.push({
         satellite,
         radius,
-        phase: i * 2,
-        speed: 0.24 + i * 0.05,
+        phase: configuration.phase,
+        speed: configuration.speed,
       });
     }
     const traffic = document.createElement("div");
@@ -120,7 +146,6 @@ export async function mountHomeGlobe(host) {
 
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     let drag = null,
-      targetX = 0,
       last = 0,
       time = 0,
       frame;
@@ -154,7 +179,6 @@ export async function mountHomeGlobe(host) {
         earth.rotation.y += dt * 0.16;
         time += dt;
       }
-      system.rotation.x += (targetX - system.rotation.x) * 0.06;
       orbiters.forEach((o) => {
         const a = time * o.speed + o.phase;
         o.satellite.position.set(
@@ -166,17 +190,22 @@ export async function mountHomeGlobe(host) {
       });
       render();
     }
+    const dragSensitivity = 0.009;
+    const horizontalAxis = new THREE.Vector3(0, 1, 0);
+    const verticalAxis = new THREE.Vector3(1, 0, 0);
     canvas.addEventListener("pointerdown", (e) => {
       drag = { x: e.clientX, y: e.clientY };
       canvas.setPointerCapture(e.pointerId);
     });
     canvas.addEventListener("pointermove", (e) => {
       if (drag) {
-        earth.rotation.y += (e.clientX - drag.x) * 0.009;
-        targetX = THREE.MathUtils.clamp(
-          targetX + (e.clientY - drag.y) * 0.005,
-          -0.7,
-          0.7,
+        system.rotateOnWorldAxis(
+          horizontalAxis,
+          (e.clientX - drag.x) * dragSensitivity,
+        );
+        system.rotateOnWorldAxis(
+          verticalAxis,
+          (e.clientY - drag.y) * dragSensitivity,
         );
         drag = { x: e.clientX, y: e.clientY };
       }
@@ -201,6 +230,7 @@ export async function mountHomeGlobe(host) {
           o.material?.dispose();
         });
         texture.dispose();
+        nightTexture.dispose();
         renderer.dispose();
       },
       { once: true },

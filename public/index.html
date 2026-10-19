@@ -14,7 +14,18 @@
     <title>Karshvar — Country guessing game</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./style.css" />
-    <link rel="preload" as="image" href="./art/earth-texture.jpg" />
+    <link
+      rel="preload"
+      as="image"
+      href="./art/earth-texture.jpg"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="./art/earth-night.png"
+      crossorigin="anonymous"
+    />
     <script src="./vendor/d3.min.js" defer></script>
     <script src="./vendor/topojson-client.min.js" defer></script>
     <script type="module" src="./app.js"></script>
@@ -262,18 +273,32 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section
+      <article
         id="aboutPage"
-        class="content-page"
+        class="about-page"
         aria-labelledby="aboutTitle"
         hidden
       >
         <h1 id="aboutTitle">About Karshvar</h1>
-        <p id="aboutBody">
-          Karshvar takes its name from an ancient Iranian word related to
-          today’s Persian word for country. In Avestan cosmology, the world was
-          described as seven regions.
-        </p>
+        <div id="aboutBody">
+          <p>
+            I built Karshvar to make discovering the world easier for people who
+            love reading history. My biggest difficulty was always geography:
+            from Anatolia to the Caucasus, from the Iranian plateau to
+            Byzantium, I kept losing track of where important events happened.
+          </p>
+          <p>
+            So I started studying geography, and this game grew out of that
+            learning. It is both a way to test myself and a step toward the
+            offline companion I wanted for exploring the world. I plan to add
+            more historical features over time.
+          </p>
+          <p>
+            Karshvar takes its name from an ancient Iranian word related to
+            today’s Persian word for country. In Avestan cosmology, the world
+            was described as seven regions.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -281,8 +306,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./en/">Home</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">Your discoveries</h1>
@@ -297,6 +321,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./en/">Home</a>
       <a class="explore-link" href="./en/explore/">Explore the map</a>
       <a id="aboutOpen" class="footer-about" href="./en/about/"
         >About Karshvar</a

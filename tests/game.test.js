@@ -184,7 +184,10 @@ test("answer normalization accepts spacing, Persian letters and Arabic marks", (
   assert(matches("کره\u200cجنوبی", ["کره جنوبی"]));
 });
 
-import { countryAliases } from "../public/country-aliases.js";
+import {
+  countryAliases,
+  localizedCountryAliases,
+} from "../public/country-aliases.js";
 test("common country aliases work across all six quiz languages", () => {
   const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
   const aliases = (code) =>
@@ -374,4 +377,38 @@ test("Persian spelling variants remain country-specific", () => {
       !matches(wrong, countryAliases(countries.find((c) => c.cca3 === code))),
       wrong,
     );
+});
+
+import { createHomeScene, earthAxialTilt } from "../public/home-scene.js";
+test("home scene varies its starting view while preserving Earth's axial tilt", () => {
+  const a = createHomeScene(() => 0.1),
+    b = createHomeScene(() => 0.8);
+  assert.notEqual(a.earthRotation, b.earthRotation);
+  assert.notEqual(a.axisHeading, b.axisHeading);
+  assert.notDeepEqual(a.sunDirection, b.sunDirection);
+  assert(Math.abs((earthAxialTilt * 180) / Math.PI - 23.44) < 0.0001);
+  for (const scene of [a, b]) {
+    assert.equal(scene.satellites.length, 6);
+    for (const satellite of scene.satellites) {
+      assert(satellite.scale < 1);
+      assert(satellite.radius > 1 && satellite.radius < 1.5);
+      assert(satellite.phase >= 0 && satellite.phase < Math.PI * 2);
+    }
+  }
+  assert.notEqual(a.satellites[0].phase, b.satellites[0].phase);
+});
+
+test("English suggestions do not match Turkish names such as Mısır for Egypt", () => {
+  const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
+  const egypt = countries.find((country) => country.cca3 === "EGY");
+  const candidates = [
+    {
+      id: "818",
+      label: "Egypt",
+      aliases: localizedCountryAliases(egypt, "en"),
+    },
+  ];
+  assert.deepEqual(suggestCountries("ir", candidates, "en"), []);
+  assert.equal(suggestCountries("eg", candidates, "en")[0].label, "Egypt");
+  assert.ok(localizedCountryAliases(egypt, "tr").includes("Mısır"));
 });

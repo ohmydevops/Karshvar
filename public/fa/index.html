@@ -15,7 +15,18 @@
     <title>کَرشوَر — بازی حدس کشور</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./style.css" />
-    <link rel="preload" as="image" href="./art/earth-texture.jpg" />
+    <link
+      rel="preload"
+      as="image"
+      href="./art/earth-texture.jpg"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="./art/earth-night.png"
+      crossorigin="anonymous"
+    />
     <script src="./vendor/d3.min.js" defer></script>
     <script src="./vendor/topojson-client.min.js" defer></script>
     <script type="module" src="./app.js"></script>
@@ -262,18 +273,32 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section
+      <article
         id="aboutPage"
-        class="content-page"
+        class="about-page"
         aria-labelledby="aboutTitle"
         hidden
       >
         <h1 id="aboutTitle">دربارهٔ کَرشوَر</h1>
-        <p id="aboutBody">
-          اسم کَرشوَر از واژه‌ای کهن در زبان‌های ایرانی الهام گرفته که با «کشور»
-          امروزی پیوند داره. در جهان‌شناسی اوستایی، جهان به هفت ناحیه تقسیم
-          می‌شده.
-        </p>
+        <div id="aboutBody">
+          <p>
+            کَرشوَر رو ساختم تا کشف کردن دنیا برای کسایی که به خوندن تاریخ علاقه
+            دارن راحت‌تر باشه. همیشه مهم‌ترین مشکل من این بود که وقتی تاریخ
+            می‌خوندم، از آناتولی تا قفقاز، از فلات ایران تا بیزانس، جای همهٔ
+            اتفاقات مهم رو توی جغرافیا گم می‌کردم.
+          </p>
+          <p>
+            مجبور شدم جغرافیا بخونم و این بازی نتیجهٔ همهٔ جغرافیا خوندن‌های
+            منه؛ هم بهونه‌ای برای سنجیدن خودم، هم قدمی به سمت یه ابزار آفلاین
+            کنار دستم که بتونم باهاش توی دنیا بچرخم. به‌مرور کلی ویژگی جالب
+            تاریخی هم بهش اضافه می‌کنم.
+          </p>
+          <p>
+            اسم کَرشوَر از واژه‌ای کهن در زبان‌های ایرانی الهام گرفته که با
+            «کشور» امروزی پیوند داره. در جهان‌شناسی اوستایی، جهان به هفت ناحیه
+            تقسیم می‌شده.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -281,8 +306,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./fa/">خانه</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">کشف‌های تو</h1>
@@ -297,6 +321,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./fa/">خانه</a>
       <a class="explore-link" href="./fa/explore/">کاوش در نقشه</a>
       <a id="aboutOpen" class="footer-about" href="./fa/about/"
         >دربارهٔ کَرشوَر</a

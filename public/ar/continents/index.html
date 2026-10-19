@@ -202,7 +202,59 @@
       </section>
       <section id="continentSelection" aria-labelledby="chooseTitle">
         <h2 id="chooseTitle" tabindex="-1">اختر مغامرتك</h2>
-        <div id="continentChoices" class="continent-choices"></div>
+        <div id="continentChoices" class="continent-choices" aria-busy="true">
+          <a class="continent-card" href="./ar/play/?continent=Africa"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/africa.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >01</span
+            ><strong>أفريقيا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./ar/play/?continent=Asia"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/asia.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >02</span
+            ><strong>آسيا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./ar/play/?continent=Europe"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/europe.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >03</span
+            ><strong>أوروبا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./ar/play/?continent=North%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/north-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true"
+              >04</span
+            ><strong>أمريكا الشمالية</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./ar/play/?continent=South%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/south-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true"
+              >05</span
+            ><strong>أمريكا الجنوبية</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./ar/play/?continent=Oceania"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/oceania.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >06</span
+            ><strong>أوقيانوسيا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span
+          ></a>
+        </div>
       </section>
       <div id="gameNavigation" class="game-navigation" hidden>
         <strong id="activeContinent"></strong
@@ -287,17 +339,31 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section
+      <article
         id="aboutPage"
-        class="content-page"
+        class="about-page"
         aria-labelledby="aboutTitle"
         hidden
       >
         <h1 id="aboutTitle">عن Karshvar</h1>
-        <p id="aboutBody">
-          يستلهم اسم Karshvar كلمة إيرانية قديمة ترتبط بالكلمة الفارسية الحديثة
-          التي تعني البلد. وفي التصور الأفستي للكون، وُصف العالم بأنه سبع مناطق.
-        </p>
+        <div id="aboutBody">
+          <p>
+            صنعت Karshvar لأجعل اكتشاف العالم أسهل لمن يحبون قراءة التاريخ. كانت
+            الجغرافيا أكبر صعوبة أواجهها: من الأناضول إلى القوقاز، ومن الهضبة
+            الإيرانية إلى بيزنطة، كنت أفقد تصور الأماكن التي جرت فيها الأحداث
+            المهمة.
+          </p>
+          <p>
+            لذلك بدأت أدرس الجغرافيا، وهذه اللعبة ثمرة ذلك التعلم. إنها وسيلة
+            لاختبار نفسي وخطوة نحو أداة تعمل دون اتصال أردت أن ترافقني في
+            استكشاف العالم. وسأضيف إليها تدريجيًا مزايا تاريخية جديدة.
+          </p>
+          <p>
+            يستلهم اسم کَرشوَر كلمة إيرانية قديمة ترتبط بالكلمة الفارسية الحديثة
+            التي تعني البلد. وفي التصور الأفستي للكون، وُصف العالم بأنه سبع
+            مناطق.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -305,8 +371,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./ar/">الرئيسية</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">اكتشافاتك</h1>
@@ -321,6 +386,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./ar/">الرئيسية</a>
       <a class="explore-link" href="./ar/explore/">استكشف الخريطة</a>
       <a id="aboutOpen" class="footer-about" href="./ar/about/">عن Karshvar</a
       ><a

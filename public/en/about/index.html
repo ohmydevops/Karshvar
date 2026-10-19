@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Karshvar takes its name from an ancient Iranian word related to today’s Persian word for country. In Avestan cosmology, the world was described as seven regions."
+      content="We created Karshvar to make learning world geography feel like exploring, not memorising a list. A country’s shape, coastline and neighbours can tell a story. The game gives you a simple way to notice those clues and gradually build a picture of the world."
     />
     <title>About Karshvar — Karshvar</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -24,7 +24,7 @@
     <meta property="og:title" content="About Karshvar — Karshvar" />
     <meta
       property="og:description"
-      content="Karshvar takes its name from an ancient Iranian word related to today’s Persian word for country. In Avestan cosmology, the world was described as seven regions."
+      content="We created Karshvar to make learning world geography feel like exploring, not memorising a list. A country’s shape, coastline and neighbours can tell a story. The game gives you a simple way to notice those clues and gradually build a picture of the world."
     />
     <meta property="og:locale" content="en_US" />
     <meta
@@ -38,7 +38,7 @@
     <meta name="twitter:title" content="About Karshvar — Karshvar" />
     <meta
       name="twitter:description"
-      content="Karshvar takes its name from an ancient Iranian word related to today’s Persian word for country. In Avestan cosmology, the world was described as seven regions."
+      content="We created Karshvar to make learning world geography feel like exploring, not memorising a list. A country’s shape, coastline and neighbours can tell a story. The game gives you a simple way to notice those clues and gradually build a picture of the world."
     />
     <meta
       name="twitter:image"
@@ -49,7 +49,7 @@
         "@context": "https://schema.org",
         "@type": "AboutPage",
         "name": "About Karshvar — Karshvar",
-        "description": "Karshvar takes its name from an ancient Iranian word related to today’s Persian word for country. In Avestan cosmology, the world was described as seven regions.",
+        "description": "We created Karshvar to make learning world geography feel like exploring, not memorising a list. A country’s shape, coastline and neighbours can tell a story. The game gives you a simple way to notice those clues and gradually build a picture of the world.",
         "url": "https://ohmydevops.github.io/Karshvar/en/about/",
         "inLanguage": "en"
       }
@@ -268,13 +268,27 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section id="aboutPage" class="content-page" aria-labelledby="aboutTitle">
+      <article id="aboutPage" class="about-page" aria-labelledby="aboutTitle">
         <h1 id="aboutTitle">About Karshvar</h1>
-        <p id="aboutBody">
-          Karshvar takes its name from an ancient Iranian word related to
-          today’s Persian word for country. In Avestan cosmology, the world was
-          described as seven regions.
-        </p>
+        <div id="aboutBody">
+          <p>
+            I built Karshvar to make discovering the world easier for people who
+            love reading history. My biggest difficulty was always geography:
+            from Anatolia to the Caucasus, from the Iranian plateau to
+            Byzantium, I kept losing track of where important events happened.
+          </p>
+          <p>
+            So I started studying geography, and this game grew out of that
+            learning. It is both a way to test myself and a step toward the
+            offline companion I wanted for exploring the world. I plan to add
+            more historical features over time.
+          </p>
+          <p>
+            Karshvar takes its name from an ancient Iranian word related to
+            today’s Persian word for country. In Avestan cosmology, the world
+            was described as seven regions.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -282,8 +296,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./en/">Home</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">Your discoveries</h1>
@@ -298,6 +311,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./en/">Home</a>
       <a class="explore-link" href="./en/explore/">Explore the map</a>
       <a id="aboutOpen" class="footer-about" href="./en/about/"
         >About Karshvar</a

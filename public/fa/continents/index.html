@@ -202,7 +202,57 @@
       </section>
       <section id="continentSelection" aria-labelledby="chooseTitle">
         <h2 id="chooseTitle" tabindex="-1">ماجراجویی‌ات رو انتخاب کن</h2>
-        <div id="continentChoices" class="continent-choices"></div>
+        <div id="continentChoices" class="continent-choices" aria-busy="true">
+          <a class="continent-card" href="./fa/play/?continent=Africa"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/africa.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >۱</span
+            ><strong>آفریقا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fa/play/?continent=Asia"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/asia.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >۲</span
+            ><strong>آسیا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fa/play/?continent=Europe"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/europe.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >۳</span
+            ><strong>اروپا</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fa/play/?continent=North%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/north-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true">۴</span
+            ><strong>آمریکای شمالی</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fa/play/?continent=South%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/south-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true">۵</span
+            ><strong>آمریکای جنوبی</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./fa/play/?continent=Oceania"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/oceania.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >۶</span
+            ><strong>اقیانوسیه</strong
+            ><span class="skeleton-line" aria-hidden="true"></span
+          ></a>
+        </div>
       </section>
       <div id="gameNavigation" class="game-navigation" hidden>
         <strong id="activeContinent"></strong
@@ -287,18 +337,32 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section
+      <article
         id="aboutPage"
-        class="content-page"
+        class="about-page"
         aria-labelledby="aboutTitle"
         hidden
       >
         <h1 id="aboutTitle">دربارهٔ کَرشوَر</h1>
-        <p id="aboutBody">
-          اسم کَرشوَر از واژه‌ای کهن در زبان‌های ایرانی الهام گرفته که با «کشور»
-          امروزی پیوند داره. در جهان‌شناسی اوستایی، جهان به هفت ناحیه تقسیم
-          می‌شده.
-        </p>
+        <div id="aboutBody">
+          <p>
+            کَرشوَر رو ساختم تا کشف کردن دنیا برای کسایی که به خوندن تاریخ علاقه
+            دارن راحت‌تر باشه. همیشه مهم‌ترین مشکل من این بود که وقتی تاریخ
+            می‌خوندم، از آناتولی تا قفقاز، از فلات ایران تا بیزانس، جای همهٔ
+            اتفاقات مهم رو توی جغرافیا گم می‌کردم.
+          </p>
+          <p>
+            مجبور شدم جغرافیا بخونم و این بازی نتیجهٔ همهٔ جغرافیا خوندن‌های
+            منه؛ هم بهونه‌ای برای سنجیدن خودم، هم قدمی به سمت یه ابزار آفلاین
+            کنار دستم که بتونم باهاش توی دنیا بچرخم. به‌مرور کلی ویژگی جالب
+            تاریخی هم بهش اضافه می‌کنم.
+          </p>
+          <p>
+            اسم کَرشوَر از واژه‌ای کهن در زبان‌های ایرانی الهام گرفته که با
+            «کشور» امروزی پیوند داره. در جهان‌شناسی اوستایی، جهان به هفت ناحیه
+            تقسیم می‌شده.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -306,8 +370,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./fa/">خانه</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">کشف‌های تو</h1>
@@ -322,6 +385,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./fa/">خانه</a>
       <a class="explore-link" href="./fa/explore/">کاوش در نقشه</a>
       <a id="aboutOpen" class="footer-about" href="./fa/about/"
         >دربارهٔ کَرشوَر</a

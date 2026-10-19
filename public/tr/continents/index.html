@@ -203,7 +203,59 @@
       </section>
       <section id="continentSelection" aria-labelledby="chooseTitle">
         <h2 id="chooseTitle" tabindex="-1">Maceranı seç</h2>
-        <div id="continentChoices" class="continent-choices"></div>
+        <div id="continentChoices" class="continent-choices" aria-busy="true">
+          <a class="continent-card" href="./tr/play/?continent=Africa"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/africa.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >01</span
+            ><strong>Afrika</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./tr/play/?continent=Asia"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/asia.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >02</span
+            ><strong>Asya</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./tr/play/?continent=Europe"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/europe.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >03</span
+            ><strong>Avrupa</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./tr/play/?continent=North%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/north-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true"
+              >04</span
+            ><strong>Kuzey Amerika</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./tr/play/?continent=South%20America"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img
+              class="continent-art"
+              src="./art/south-america.svg"
+              alt="" /><span class="continent-number" aria-hidden="true"
+              >05</span
+            ><strong>Güney Amerika</strong
+            ><span class="skeleton-line" aria-hidden="true"></span></a
+          ><a class="continent-card" href="./tr/play/?continent=Oceania"
+            ><span class="continent-art-placeholder" aria-hidden="true"></span
+            ><img class="continent-art" src="./art/oceania.svg" alt="" /><span
+              class="continent-number"
+              aria-hidden="true"
+              >06</span
+            ><strong>Okyanusya</strong
+            ><span class="skeleton-line" aria-hidden="true"></span
+          ></a>
+        </div>
       </section>
       <div id="gameNavigation" class="game-navigation" hidden>
         <strong id="activeContinent"></strong
@@ -288,18 +340,32 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section
+      <article
         id="aboutPage"
-        class="content-page"
+        class="about-page"
         aria-labelledby="aboutTitle"
         hidden
       >
         <h1 id="aboutTitle">Karshvar hakkında</h1>
-        <p id="aboutBody">
-          Karshvar adını, günümüzde Farsçada ülke anlamına gelen sözcükle
-          ilişkili eski bir İran sözcüğünden alır. Avesta kozmolojisinde dünya
-          yedi bölge olarak anlatılır.
-        </p>
+        <div id="aboutBody">
+          <p>
+            Karshvar’ı tarih okumayı sevenler için dünyayı keşfetmeyi
+            kolaylaştırmak amacıyla yaptım. En büyük zorluğum hep coğrafyaydı:
+            Anadolu’dan Kafkasya’ya, İran platosundan Bizans’a kadar önemli
+            olayların nerede geçtiğini zihnimde kaybediyordum.
+          </p>
+          <p>
+            Bu yüzden coğrafya çalışmaya başladım ve bu oyun o öğrenme
+            sürecinden doğdu. Hem kendimi sınamanın bir yolu hem de dünyayı
+            keşfetmek için istediğim çevrimdışı yardımcıya doğru bir adım.
+            Zamanla yeni tarih özellikleri eklemeyi planlıyorum.
+          </p>
+          <p>
+            Karshvar adını, günümüzde Farsçada ülke anlamına gelen sözcükle
+            ilişkili eski bir İran sözcüğünden alır. Avesta kozmolojisinde dünya
+            yedi bölge olarak anlatılır.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -307,8 +373,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./tr/">Ana sayfa</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">Keşiflerin</h1>
@@ -323,6 +388,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./tr/">Ana sayfa</a>
       <a class="explore-link" href="./tr/explore/">Haritayı keşfet</a>
       <a id="aboutOpen" class="footer-about" href="./tr/about/"
         >Karshvar hakkında</a

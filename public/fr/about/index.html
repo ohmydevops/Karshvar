@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Karshvar doit son nom à un ancien mot iranien lié au mot persan actuel désignant un pays. Dans la cosmologie avestique, le monde était décrit en sept régions."
+      content="Nous avons créé Karshvar pour apprendre la géographie en explorant, plutôt qu’en mémorisant une liste de noms. La forme d’un pays, ses côtes et ses voisins donnent des indices pour le reconnaître. Le jeu invite à remarquer ces détails et à construire peu à peu sa propre carte du monde."
     />
     <title>À propos de Karshvar — Karshvar</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -24,7 +24,7 @@
     <meta property="og:title" content="À propos de Karshvar — Karshvar" />
     <meta
       property="og:description"
-      content="Karshvar doit son nom à un ancien mot iranien lié au mot persan actuel désignant un pays. Dans la cosmologie avestique, le monde était décrit en sept régions."
+      content="Nous avons créé Karshvar pour apprendre la géographie en explorant, plutôt qu’en mémorisant une liste de noms. La forme d’un pays, ses côtes et ses voisins donnent des indices pour le reconnaître. Le jeu invite à remarquer ces détails et à construire peu à peu sa propre carte du monde."
     />
     <meta property="og:locale" content="fr_FR" />
     <meta
@@ -38,7 +38,7 @@
     <meta name="twitter:title" content="À propos de Karshvar — Karshvar" />
     <meta
       name="twitter:description"
-      content="Karshvar doit son nom à un ancien mot iranien lié au mot persan actuel désignant un pays. Dans la cosmologie avestique, le monde était décrit en sept régions."
+      content="Nous avons créé Karshvar pour apprendre la géographie en explorant, plutôt qu’en mémorisant une liste de noms. La forme d’un pays, ses côtes et ses voisins donnent des indices pour le reconnaître. Le jeu invite à remarquer ces détails et à construire peu à peu sa propre carte du monde."
     />
     <meta
       name="twitter:image"
@@ -49,7 +49,7 @@
         "@context": "https://schema.org",
         "@type": "AboutPage",
         "name": "À propos de Karshvar — Karshvar",
-        "description": "Karshvar doit son nom à un ancien mot iranien lié au mot persan actuel désignant un pays. Dans la cosmologie avestique, le monde était décrit en sept régions.",
+        "description": "Nous avons créé Karshvar pour apprendre la géographie en explorant, plutôt qu’en mémorisant une liste de noms. La forme d’un pays, ses côtes et ses voisins donnent des indices pour le reconnaître. Le jeu invite à remarquer ces détails et à construire peu à peu sa propre carte du monde.",
         "url": "https://ohmydevops.github.io/Karshvar/fr/about/",
         "inLanguage": "fr"
       }
@@ -266,13 +266,29 @@
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>
-      <section id="aboutPage" class="content-page" aria-labelledby="aboutTitle">
+      <article id="aboutPage" class="about-page" aria-labelledby="aboutTitle">
         <h1 id="aboutTitle">À propos de Karshvar</h1>
-        <p id="aboutBody">
-          Karshvar doit son nom à un ancien mot iranien lié au mot persan actuel
-          désignant un pays. Dans la cosmologie avestique, le monde était décrit
-          en sept régions.
-        </p>
+        <div id="aboutBody">
+          <p>
+            J’ai créé Karshvar pour faciliter la découverte du monde aux
+            personnes qui aiment lire l’histoire. Ma plus grande difficulté
+            était la géographie : de l’Anatolie au Caucase, du plateau iranien à
+            Byzance, je perdais le fil des lieux où se déroulaient les
+            événements importants.
+          </p>
+          <p>
+            J’ai donc commencé à étudier la géographie, et ce jeu est né de cet
+            apprentissage. C’est à la fois une façon de me tester et un pas vers
+            le compagnon hors ligne dont je rêvais pour explorer le monde. Je
+            compte ajouter progressivement de nouvelles fonctionnalités
+            historiques.
+          </p>
+          <p>
+            Karshvar doit son nom à un ancien mot iranien lié au mot persan
+            actuel désignant un pays. Dans la cosmologie avestique, le monde
+            était décrit en sept régions.
+          </p>
+        </div>
         <a
           class="source-link"
           id="aboutSource"
@@ -280,8 +296,7 @@
           target="_blank"
           rel="noreferrer"
         ></a>
-        <a id="aboutClose" class="primary" href="./fr/">Accueil</a>
-      </section>
+      </article>
       <section id="resultsPage" class="content-page results-page" hidden>
         <div class="results-badge" aria-hidden="true">✦</div>
         <h1 id="resultsTitle">Vos découvertes</h1>
@@ -296,6 +311,7 @@
       </section>
     </main>
     <footer>
+      <a id="footerHome" href="./fr/">Accueil</a>
       <a class="explore-link" href="./fr/explore/">Explorer la carte</a>
       <a id="aboutOpen" class="footer-about" href="./fr/about/"
         >À propos de Karshvar</a
