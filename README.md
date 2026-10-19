@@ -18,4 +18,6 @@ Serve `public/` with any static web host. All game dependencies and map data are
 
 ## Credits
 
+Umami tracks pageviews and game events on the published site. Typed answers stay in browser storage and are excluded from events.
+
 D3 (ISC), TopoJSON client (ISC), world-atlas / Natural Earth public-domain map data, and mledoze/countries (ODbL country metadata). Boundaries follow Natural Earth and are not a statement on sovereignty. The quiz includes independent countries represented in the supplied map; very small areas receive a locator ring. Country-name variants are accepted across supported languages.

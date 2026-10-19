@@ -1,3 +1,5 @@
+import { bindGlobeGestures } from "./gestures.js";
+import { createAnalytics } from "./analytics.js";
 import { resetCopy } from "./reset.js";
 import { aboutCopy, seoCopy } from "./about.js";
 import {
@@ -263,6 +265,19 @@ try {
 } catch {
   storage = false;
 }
+const analytics = createAnalytics({
+  enabled: location.hostname === "ohmydevops.github.io",
+});
+document
+  .querySelector("script[data-website-id]")
+  ?.addEventListener("load", analytics.flush);
+function track(event, data = {}) {
+  analytics.track(event, {
+    language: lang,
+    ...(selected ? { continent: selected } : {}),
+    ...data,
+  });
+}
 const t = (key) => copy[lang][keys.indexOf(key)];
 function save() {
   try {
@@ -451,19 +466,21 @@ function center() {
   }
   animation = requestAnimationFrame(step);
 }
-svg.call(
-  d3
-    .drag()
-    .on("start", () => cancelAnimationFrame(animation))
-    .on("drag", (e) => {
-      rotation[0] += (e.dx * 0.3) / zoom;
-      rotation[1] = Math.max(
-        -89,
-        Math.min(89, rotation[1] - (e.dy * 0.3) / zoom),
-      );
-      queueDraw();
-    }),
-);
+bindGlobeGestures($("globe"), {
+  onStart: () => cancelAnimationFrame(animation),
+  onRotate: (dx, dy) => {
+    const bounds = $("globe").getBoundingClientRect();
+    const viewScale = Math.min(bounds.width / 600, bounds.height / 530) || 1;
+    rotation[0] += (dx * 0.3) / (zoom * viewScale);
+    rotation[1] = Math.max(
+      -89,
+      Math.min(89, rotation[1] - (dy * 0.3) / (zoom * viewScale)),
+    );
+    queueDraw();
+  },
+  onZoom: scale,
+  onEnd: (input) => track("map-interaction", { input }),
+});
 function scale(amount) {
   cancelAnimationFrame(animation);
   zoom = Math.max(0.8, Math.min(12, zoom * amount));
@@ -580,6 +597,10 @@ function renderContinents() {
       selected = continent;
       document.body.classList.add("playing");
       state = sessions[continent];
+      track("continent-select", {
+        answered: state.answers.length,
+        total: state.order.length,
+      });
       $("answer").value = "";
       $("continentSelection").hidden = true;
       $("gameSection").hidden = false;
@@ -602,6 +623,7 @@ function renderContinents() {
   }
 }
 $("changeContinent").onclick = () => {
+  track("continent-change");
   save();
   cancelAnimationFrame(animation);
   $("gameSection").hidden = true;
@@ -651,6 +673,17 @@ function answer(skip = false) {
     correct: !skip && matches(value, aliases(current)),
     date: new Date().toISOString(),
   });
+  const record = state.answers.at(-1);
+  track("answer-submit", {
+    result: skip ? "revealed" : record.correct ? "correct" : "incorrect",
+    answered: state.answers.length,
+    total: state.order.length,
+  });
+  if (state.answers.length === state.order.length)
+    track("continent-complete", {
+      score: state.answers.filter((a) => a.correct).length,
+      total: state.order.length,
+    });
   save();
   render();
   $("next").focus();
@@ -661,23 +694,34 @@ $("answerForm").addEventListener("submit", (e) => {
 });
 $("skip").onclick = () => answer(true);
 $("next").onclick = () => {
-  if (state.index >= state.order.length)
+  if (state.index >= state.order.length) {
+    track("continent-restart");
     state = {
       order: shuffled(idsFor(selected)),
       index: 0,
       answers: [],
     };
-  else state.index++;
+  } else state.index++;
   $("answer").value = "";
   save();
   render();
   center();
 };
-$("center").onclick = center;
-$("zoomIn").onclick = () => scale(1.25);
-$("zoomOut").onclick = () => scale(0.8);
+$("center").onclick = () => {
+  track("map-control", { action: "recenter" });
+  center();
+};
+$("zoomIn").onclick = () => {
+  track("map-control", { action: "zoom-in" });
+  scale(1.25);
+};
+$("zoomOut").onclick = () => {
+  track("map-control", { action: "zoom-out" });
+  scale(0.8);
+};
 document.querySelectorAll("[data-language]").forEach((link) => {
   link.addEventListener("click", () => {
+    track("language-change", { to: link.dataset.language });
     lang = link.dataset.language;
     save();
   });
@@ -694,11 +738,16 @@ $("languagePicker").addEventListener("keydown", (event) => {
   }
 });
 $("resetOpen").onclick = () => {
+  track("reset-open");
   $("resetDialog").returnValue = "";
   $("resetDialog").showModal();
 };
 $("resetDialog").addEventListener("close", () => {
-  if ($("resetDialog").returnValue !== "confirm") return;
+  if ($("resetDialog").returnValue !== "confirm") {
+    track("reset-cancel");
+    return;
+  }
+  track("progress-reset");
   cancelAnimationFrame(animation);
   for (const continent of continents)
     sessions[continent] = createSession(idsFor(continent));
@@ -720,9 +769,15 @@ $("resetDialog").addEventListener("close", () => {
   renderContinents();
   $("chooseTitle").focus();
 });
-$("aboutOpen").onclick = () => $("aboutDialog").showModal();
+$("aboutOpen").onclick = () => {
+  track("about-open");
+  $("aboutDialog").showModal();
+};
 $("theme").onclick = () => {
   document.body.classList.toggle("light");
+  track("theme-change", {
+    theme: document.body.classList.contains("light") ? "light" : "dark",
+  });
   save();
   draw();
 };
