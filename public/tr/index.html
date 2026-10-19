@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="tr" dir="ltr" data-locale="tr">
+  <head>
+    <base href="../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#101c19" />
+    <meta
+      name="description"
+      content="Bir kıta seç, etkileşimli küreyi keşfet ve vurgulanan ülkeyi tahmin et. Telefonda veya bilgisayarda kendi hızında oyna."
+    />
+    <title>Karshvar — Ülke tahmin oyunu</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta property="og:title" content="Karshvar — Ülke tahmin oyunu" />
+    <meta
+      property="og:description"
+      content="Bir kıta seç, etkileşimli küreyi keşfet ve vurgulanan ülkeyi tahmin et. Telefonda veya bilgisayarda kendi hızında oyna."
+    />
+    <meta property="og:locale" content="tr_TR" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Karshvar" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Karshvar — Ülke tahmin oyunu" />
+    <meta
+      name="twitter:description"
+      content="Bir kıta seç, etkileşimli küreyi keşfet ve vurgulanan ülkeyi tahmin et. Telefonda veya bilgisayarda kendi hızında oyna."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Karshvar",
+        "description": "Bir kıta seç, etkileşimli küreyi keşfet ve vurgulanan ülkeyi tahmin et. Telefonda veya bilgisayarda kendi hızında oyna.",
+        "inLanguage": "tr",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "url": "https://ohmydevops.github.io/Karshvar/tr/"
+      }
+    </script>
+    <link rel="canonical" href="https://ohmydevops.github.io/Karshvar/tr/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://ohmydevops.github.io/Karshvar/fa/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://ohmydevops.github.io/Karshvar/ar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://ohmydevops.github.io/Karshvar/tr/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://ohmydevops.github.io/Karshvar/fr/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://ohmydevops.github.io/Karshvar/ru/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/"
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/tr/"
+    />
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./">Karshvar</a>
+      <div class="settings">
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+        </button>
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Dil">
+            <span id="languageLabel">TR</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Dil">
+            <a href="./en/" lang="en" hreflang="en" data-language="en">EN</a
+            ><a href="./fa/" lang="fa" hreflang="fa" data-language="fa">FA</a
+            ><a href="./ar/" lang="ar" hreflang="ar" data-language="ar">AR</a
+            ><a
+              href="./tr/"
+              lang="tr"
+              hreflang="tr"
+              data-language="tr"
+              aria-current="page"
+              >TR</a
+            ><a href="./fr/" lang="fr" hreflang="fr" data-language="fr">FR</a
+            ><a href="./ru/" lang="ru" hreflang="ru" data-language="ru">RU</a>
+          </nav>
+        </details>
+        <button id="theme" aria-label="Theme">◐</button>
+      </div>
+    </header>
+    <main>
+      <section class="intro">
+        <span class="eyebrow" data-text="eyebrow"></span>
+        <h1 data-text="heading">Karshvar — Ülke tahmin oyunu</h1>
+        <p data-text="description">
+          Bir kıta seç, etkileşimli küreyi keşfet ve vurgulanan ülkeyi tahmin
+          et. Telefonda veya bilgisayarda kendi hızında oyna.
+        </p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle">
+        <h2 id="chooseTitle" tabindex="-1"></h2>
+        <div id="continentChoices" class="continent-choices"></div>
+        <p id="selectionStatus" role="status"></p>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <div class="map-label">
+            <span class="live-dot"></span><span data-text="explore"></span>
+          </div>
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+          <p class="gesture" data-text="gesture"></p>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <span class="eyebrow" data-text="challenge"></span>
+            <h2 data-text="question"></h2>
+            <p data-text="hint"></p>
+          </div>
+          <form id="answerForm">
+            <label for="answer" data-text="label"></label
+            ><input
+              id="answer"
+              autocomplete="off"
+              autocapitalize="words"
+              spellcheck="false"
+              required
+              disabled
+            /><button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" data-text="saved"></div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <button id="aboutOpen" class="footer-about" type="button"></button
+      ><a
+        href="https://www.naturalearthdata.com/about/terms-of-use/"
+        target="_blank"
+        rel="noreferrer"
+        data-text="credits"
+      ></a>
+    </footer>
+    <dialog id="aboutDialog" aria-labelledby="aboutTitle">
+      <h2 id="aboutTitle">Karshvar hakkında</h2>
+      <p id="aboutBody">
+        Karshvar adını, günümüzde Farsçada ülke anlamına gelen sözcükle ilişkili
+        eski bir İran sözcüğünden alır. Avesta kozmolojisinde dünya yedi bölge
+        olarak anlatılır.
+      </p>
+      <a
+        id="aboutSource"
+        href="https://fa.wikipedia.org/wiki/%DA%A9%D8%A7%D8%B1%D8%B4%D9%88%D8%B1"
+        target="_blank"
+        rel="noreferrer"
+      ></a>
+      <form method="dialog">
+        <button id="aboutClose" class="primary"></button>
+      </form>
+    </dialog>
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

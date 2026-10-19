@@ -1,0 +1,16 @@
+{
+  "name": "karshvar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5174",
+    "test": "node --test",
+    "format": "prettier --write \"public/**/*.html\" public/*.css public/*.js tests/*.js package.json README.md .github/workflows/*.yml vite.config.js",
+    "format:check": "prettier --check \"public/**/*.html\" public/*.css public/*.js tests/*.js package.json README.md .github/workflows/*.yml vite.config.js"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0",
+    "prettier": "^3.6.0"
+  }
+}
