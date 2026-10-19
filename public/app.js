@@ -1,3 +1,4 @@
+import { countryAliases } from "./country-aliases.js";
 import { pageCopy, pagePath } from "./navigation.js";
 import { bindGlobeGestures } from "./gestures.js";
 import {
@@ -254,30 +255,12 @@ function name(f) {
   }
 }
 function aliases(f) {
-  const data = names.find((n) => n.ccn3 === f.id);
-  if (!data) return [f.properties.name];
-  return [
+  return countryAliases(
+    names.find((n) => n.ccn3 === f.id),
     f.properties.name,
-    data.name.common,
-    data.name.official,
-    ...data.altSpellings,
-    ...Object.values(data.translations).flatMap((n) => [n.common, n.official]),
-    ...Object.values(data.name.nativeName || {}).flatMap((n) => [
-      n.common,
-      n.official,
-    ]),
-    ...Object.keys(copy).map((l) =>
-      new Intl.DisplayNames([l], { type: "region" }).of(data.cca2),
-    ),
-    ...({
-      USA: ["USA", "US", "America"],
-      GBR: ["UK", "Britain", "Great Britain"],
-      ARE: ["UAE"],
-      KOR: ["South Korea"],
-      PRK: ["North Korea"],
-    }[data.cca3] || []),
-  ];
+  );
 }
+
 const svg = d3.select("#globe").attr("viewBox", "0 0 600 530");
 const defs = svg.append("defs");
 const glow = defs.append("radialGradient").attr("id", "ocean");

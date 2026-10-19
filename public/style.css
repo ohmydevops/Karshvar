@@ -648,8 +648,8 @@ dialog p {
     order: 0;
     min-height: 0;
     height: 100%;
-    max-height: 37dvh;
-    max-width: 330px;
+    max-height: 44dvh;
+    max-width: 430px;
     margin: auto;
     aspect-ratio: 1;
   }
@@ -1243,5 +1243,37 @@ html[data-page="home"] .welcome-copy {
 @media (prefers-reduced-motion: reduce) {
   .space-traffic {
     display: none;
+  }
+}
+
+html[data-page="explore"] main {
+  width: 100%;
+  max-width: none;
+  margin: 12px 0 0;
+}
+html[data-page="explore"] .explore-heading {
+  width: min(1128px, calc(100% - 48px));
+  margin-inline: auto;
+  flex: 0 0 auto;
+}
+html[data-page="explore"] #gameSection {
+  margin-top: 8px;
+  gap: 0;
+}
+html[data-page="explore"] .globe-panel {
+  border-inline: 0;
+  border-bottom: 0;
+  border-radius: 0;
+}
+html[data-page="explore"] .map-controls {
+  inset-inline-end: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+}
+@media (max-width: 760px) {
+  html[data-page="explore"] main {
+    margin-top: 8px;
+  }
+  html[data-page="explore"] .explore-heading {
+    width: calc(100% - 32px);
   }
 }

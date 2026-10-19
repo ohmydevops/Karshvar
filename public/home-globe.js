@@ -7,23 +7,23 @@ export async function mountHomeGlobe(host) {
       antialias: true,
       powerPreference: "low-power",
     });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     const texture = await new THREE.TextureLoader().loadAsync(
       new URL("./art/earth-texture.jpg", import.meta.url).href,
     );
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy());
+    texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     camera.position.set(0, 0.2, 4.6);
-    scene.add(new THREE.AmbientLight(0xc7ddff, 1.3));
-    const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+    scene.add(new THREE.AmbientLight(0xe3edff, 1.8));
+    const sun = new THREE.DirectionalLight(0xffffff, 2.5);
     sun.position.set(-3, 3, 5);
     scene.add(sun);
     const system = new THREE.Group();
     scene.add(system);
     const earth = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 64, 40),
+      new THREE.SphereGeometry(1, 96, 64),
       new THREE.MeshPhongMaterial({
         map: texture,
         shininess: 9,
@@ -43,7 +43,7 @@ export async function mountHomeGlobe(host) {
         vertexShader:
           "varying vec3 n; varying vec3 v; void main(){vec4 p=modelViewMatrix*vec4(position,1.0);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}",
         fragmentShader:
-          "varying vec3 n; varying vec3 v; void main(){float a=pow(1.0-abs(dot(normalize(n),normalize(v))),3.0);gl_FragColor=vec4(0.15,0.42,0.95,a*0.45);}",
+          "varying vec3 n; varying vec3 v; void main(){float a=pow(1.0-abs(dot(normalize(n),normalize(v))),3.0);gl_FragColor=vec4(0.15,0.42,0.95,a*0.25);}",
       }),
     );
     system.add(atmosphere);
@@ -121,7 +121,6 @@ export async function mountHomeGlobe(host) {
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     let drag = null,
       targetX = 0,
-      targetY = 0,
       last = 0,
       time = 0,
       frame;
@@ -138,7 +137,7 @@ export async function mountHomeGlobe(host) {
         Math.tan(verticalHalfFov) * camera.aspect,
       );
       const distance =
-        1.7 / Math.sin(Math.min(verticalHalfFov, horizontalHalfFov));
+        1.62 / Math.sin(Math.min(verticalHalfFov, horizontalHalfFov));
       camera.position.set(0, 0, distance);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
@@ -156,7 +155,6 @@ export async function mountHomeGlobe(host) {
         time += dt;
       }
       system.rotation.x += (targetX - system.rotation.x) * 0.06;
-      system.rotation.y += (targetY - system.rotation.y) * 0.06;
       orbiters.forEach((o) => {
         const a = time * o.speed + o.phase;
         o.satellite.position.set(
@@ -181,10 +179,6 @@ export async function mountHomeGlobe(host) {
           0.7,
         );
         drag = { x: e.clientX, y: e.clientY };
-      } else if (e.pointerType === "mouse") {
-        const r = canvas.getBoundingClientRect();
-        targetY = ((e.clientX - r.left) / r.width - 0.5) * 0.5;
-        targetX = ((e.clientY - r.top) / r.height - 0.5) * 0.3;
       }
     });
     const end = () => {
@@ -193,12 +187,6 @@ export async function mountHomeGlobe(host) {
     canvas.addEventListener("pointerup", end);
     canvas.addEventListener("pointercancel", end);
     canvas.addEventListener("lostpointercapture", end);
-    canvas.addEventListener("pointerleave", () => {
-      if (!drag) {
-        targetX = 0;
-        targetY = 0;
-      }
-    });
     resize();
     frame = requestAnimationFrame(tick);
     addEventListener(

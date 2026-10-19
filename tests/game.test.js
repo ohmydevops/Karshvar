@@ -178,6 +178,119 @@ test("page links retain language, page, and selected continent without hash rout
 test("answer normalization accepts spacing, Persian letters and Arabic marks", () => {
   assert(matches("  عربستان   سعودی  ", ["عربستان سعودی"]));
   assert(matches("پاكستان", ["پاکستان"]));
+  assert(matches("المان", ["آلمان"]));
+  assert(matches("آلمان", ["المان"]));
   assert(matches("إِيرَان", ["ایران"]));
   assert(matches("کره\u200cجنوبی", ["کره جنوبی"]));
+});
+
+import { countryAliases } from "../public/country-aliases.js";
+test("common country aliases work across all six quiz languages", () => {
+  const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
+  const aliases = (code) =>
+    countryAliases(countries.find((c) => c.cca3 === code));
+  for (const value of [
+    "Hind",
+    "HINDUSTAN",
+    "Bharat",
+    "هند",
+    "هندوستان",
+    "الهند",
+    "Hindistan",
+    "Inde",
+    "Hindoustan",
+    "Индия",
+    "Индостан",
+  ])
+    assert(matches(value, aliases("IND")), value);
+  for (const [code, values] of Object.entries({
+    NLD: ["Holland", "هلند", "هولندا", "Hollanda", "Hollande", "Голландия"],
+    MMR: ["Burma", "برمه", "بورما", "Birmanya", "Birmanie", "Бирма"],
+    USA: ["USA", "آمریکا", "أمريكا", "ABD", "États-Unis", "США"],
+    SWZ: [
+      "Swaziland",
+      "سوازیلند",
+      "إسواتيني",
+      "Esvatini",
+      "Eswatini",
+      "Эсватини",
+    ],
+  }))
+    for (const value of values)
+      assert(matches(value, aliases(code)), code + ":" + value);
+  for (const [country, wrong] of [
+    ["NER", "Nigeria"],
+    ["NGA", "Niger"],
+    ["AUS", "Austria"],
+    ["AUT", "Australia"],
+    ["IND", "Indonesia"],
+    ["PRK", "South Korea"],
+    ["KOR", "North Korea"],
+  ])
+    assert(
+      !matches(wrong, aliases(country)),
+      country + " must reject " + wrong,
+    );
+});
+
+test("every playable country accepts its name in all supported languages without cross-country alias collisions", () => {
+  const world = JSON.parse(fs.readFileSync("public/data/countries.json"));
+  const represented = new Set(
+    world.objects.countries.geometries.map((f) => f.id),
+  );
+  const countries = JSON.parse(
+    fs.readFileSync("public/data/names.json"),
+  ).filter((c) => c.independent && represented.has(c.ccn3));
+  const owners = new Map();
+  for (const country of countries) {
+    const aliases = countryAliases(country);
+    for (const language of routeLanguages) {
+      const name = new Intl.DisplayNames([language], { type: "region" }).of(
+        country.cca2,
+      );
+      assert(
+        matches(name, aliases),
+        country.cca3 + " must accept " + language + ": " + name,
+      );
+      assert(
+        matches("  " + name.toUpperCase() + "  ", aliases),
+        country.cca3 + " uppercase " + language,
+      );
+    }
+    for (const alias of aliases) {
+      const normalized = normalize(alias);
+      assert(normalized.length > 0);
+      const previous = owners.get(normalized);
+      assert(
+        !previous || previous === country.cca3,
+        alias + " is shared by " + previous + " and " + country.cca3,
+      );
+      owners.set(normalized, country.cca3);
+    }
+  }
+  assert(countries.length >= 190);
+});
+
+test("reviewed source-data mistakes cannot award an answer for the wrong country", () => {
+  const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
+  const aliases = (code) =>
+    countryAliases(countries.find((c) => c.cca3 === code));
+  for (const [code, wrong] of [
+    ["GIN", "پاپوآ گینه نو"],
+    ["TZA", "Tádzsikisztán"],
+    ["DMA", "도미니카 공화국"],
+    ["LTU", "لیتوانیایی‌ها"],
+  ])
+    assert(!matches(wrong, aliases(code)), code + " rejects " + wrong);
+  for (const [code, right] of [
+    ["GIN", "گینه"],
+    ["LTU", "لیتوانی"],
+    ["AZE", "آذربایجان"],
+    ["COM", "کومور"],
+    ["COD", "کنگو کینشاسا"],
+    ["COG", "کنگو برازاویل"],
+    ["KNA", "St Kitts and Nevis"],
+    ["JPN", "يابان"],
+  ])
+    assert(matches(right, aliases(code)), code + " accepts " + right);
 });
