@@ -695,11 +695,17 @@ function renderContinents() {
 function openExplore(continent) {
   selected = continent;
   current = null;
-  const countries = features.filter((f) => idsFor(continent).includes(f.id));
+  const countries = features.filter((f) =>
+    (continent === "All"
+      ? continents.flatMap(idsFor)
+      : idsFor(continent)
+    ).includes(f.id),
+  );
   $("gameSection").hidden = false;
   document.querySelector(".answer-panel").hidden = true;
 
   const centers = {
+    All: [20, 15],
     Africa: [20, 2],
     Asia: [90, 30],
     Europe: [20, 52],
@@ -709,7 +715,7 @@ function openExplore(continent) {
   };
   const point = centers[continent];
   rotation = [-point[0], -point[1], 0];
-  zoom = 1.5;
+  zoom = continent === "All" ? 1 : 1.5;
   land
     .selectAll("path")
     .data(countries, (f) => f.id)
@@ -741,10 +747,20 @@ function openExplore(continent) {
     .attr("dy", ".35em");
   const nav = $("exploreContinents");
   nav.replaceChildren();
-  continents.forEach((c, i) => {
+  ["All", ...continents].forEach((c, i) => {
     const a = document.createElement("a");
-    a.href = pagePath(lang, "explore", c);
-    a.textContent = labels[lang][7 + i];
+    a.href = pagePath(lang, "explore", c === "All" ? undefined : c);
+    a.textContent =
+      c === "All"
+        ? {
+            en: "All",
+            fa: "همه",
+            ar: "الكل",
+            tr: "Tümü",
+            fr: "Tous",
+            ru: "Все",
+          }[lang]
+        : labels[lang][6 + i];
     if (c === continent) a.setAttribute("aria-current", "page");
     nav.append(a);
   });
@@ -956,9 +972,7 @@ if (["continents", "play", "results", "explore"].includes(page)) {
     $("resetOpen").disabled = false;
     $("selectionStatus").textContent = "";
     if (page === "explore")
-      openExplore(
-        continents.includes(routeContinent) ? routeContinent : "Africa",
-      );
+      openExplore(continents.includes(routeContinent) ? routeContinent : "All");
     else if (page === "continents") renderContinents();
     else if (!continents.includes(routeContinent))
       location.replace(new URL(pagePath(lang, "continents"), document.baseURI));
