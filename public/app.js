@@ -719,10 +719,11 @@ function localize() {
   $("center").title = t("center");
   for (const id of ["globe", "theme", "zoomIn", "zoomOut", "center"])
     $(id).setAttribute("aria-label", t(id));
-  document.title =
-    page === "home"
-      ? seoCopy[lang][0]
-      : `${page === "about" ? aboutCopy[lang][0] : pageCopy[lang][page]} — Karshvar`;
+  if (page !== "blog")
+    document.title =
+      page === "home"
+        ? seoCopy[lang][0]
+        : `${page === "about" ? aboutCopy[lang][0] : pageCopy[lang][page]} — Karshvar`;
   document.querySelector(".brand").href = pagePath(lang);
   document.querySelector(".brand-name").textContent =
     lang === "fa" ? "کَرشوَر" : "Karshvar";
@@ -1452,3 +1453,8 @@ if (page === "home") {
       console.warn(error);
     });
 }
+
+// Track article-to-game clicks without interrupting normal link navigation.
+document.querySelector(".blog-cta a")?.addEventListener("click", (event) => {
+  track("blog-play-click", { article: event.currentTarget.dataset.article });
+});

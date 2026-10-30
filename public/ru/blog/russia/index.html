@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="ru" dir="ltr" data-locale="ru" data-page="blog">
+  <head>
+    <base href="../../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Россия: Пять исторических мест для знакомства — Karshvar</title>
+    <meta
+      name="description"
+      content="Дербент · Болгар · Троице-Сергиева лавра · Храмы Пскова · Казанский кремль"
+    />
+    <link
+      rel="canonical"
+      href="https://ohmydevops.github.io/Karshvar/ru/blog/russia/"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/russia/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://ohmydevops.github.io/Karshvar/ru/blog/russia/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/russia/"
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta
+      property="og:title"
+      content="Россия: Пять исторических мест для знакомства"
+    />
+    <meta
+      property="og:description"
+      content="Дербент · Болгар · Троице-Сергиева лавра · Храмы Пскова · Казанский кремль"
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/ru/blog/russia/"
+    />
+    <meta property="og:locale" content="ru_RU" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/blog-russia-ru.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Россия: Пять исторических мест для знакомства"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Россия: Пять исторических мест для знакомства"
+    />
+    <meta
+      name="twitter:description"
+      content="Дербент · Болгар · Троице-Сергиева лавра · Храмы Пскова · Казанский кремль"
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/blog-russia-ru.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Россия: Пять исторических мест для знакомства"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Россия: Пять исторических мест для знакомства",
+        "description": "Дербент · Болгар · Троице-Сергиева лавра · Храмы Пскова · Казанский кремль",
+        "inLanguage": "ru",
+        "url": "https://ohmydevops.github.io/Karshvar/ru/blog/russia/",
+        "image": "https://ohmydevops.github.io/Karshvar/social/blog-russia-ru.png",
+        "mainEntityOfPage": "https://ohmydevops.github.io/Karshvar/ru/blog/russia/",
+        "author": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://ohmydevops.github.io/Karshvar/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://ohmydevops.github.io/Karshvar/"
+        }
+      }
+    </script>
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./ru/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Язык">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">RU</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Язык">
+            <a href="./en/about/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a href="./fa/about/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/about/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a href="./tr/about/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a href="./fr/about/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a
+              href="./ru/about/"
+              lang="ru"
+              hreflang="ru"
+              data-language="ru"
+              aria-current="page"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Меню"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Меню</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Закрыть меню">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Меню">
+          <a id="footerHome" href="./ru/">Главная</a>
+          <a class="explore-link" href="./ru/explore/">Изучить карту</a>
+          <a id="aboutOpen" class="footer-about" href="./ru/about/"
+            >О Karshvar</a
+          ><a class="blog-link" href="./ru/blog/">Блог</a
+          ><a class="sources-link" href="./ru/sources/">Источники</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Настройки</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span><span>Проверить обновления</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">Как хорошо ты знаешь мир?</h1>
+          <p id="welcomeDescription">
+            Угадай страну на карте. Каждый ход — новый уголок мира.
+          </p>
+          <a id="startGame" class="primary" href="./ru/continents/"
+            >Начать игру</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Где хотите сыграть?</h1>
+        <p>Выберите континент и угадывайте выделенные страны в нём.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Выберите приключение</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">О Karshvar</h1>
+        <div id="aboutBody">
+          <p>
+            Я создал Karshvar, чтобы любителям истории было проще открывать для
+            себя мир. Главной трудностью для меня всегда была география: от
+            Анатолии до Кавказа, от Иранского нагорья до Византии я терял
+            представление о том, где происходили важные события.
+          </p>
+          <p>
+            Поэтому я начал изучать географию, и эта игра стала результатом
+            моего обучения. Это и способ проверить себя, и шаг к тому помощнику
+            для изучения мира без интернета, о котором я мечтал. Со временем я
+            планирую добавлять новые исторические возможности.
+          </p>
+          <p>
+            Название Karshvar восходит к древнему иранскому слову, связанному с
+            современным персидским словом «страна». В авестийской космологии мир
+            описывался как семь областей.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Ваши открытия</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Сыграть на этом континенте снова</button
+        ><a id="chooseAgain" class="text-button" href="./ru/continents/"
+          >Выбрать другой континент</a
+        >
+      </section>
+      <article class="blog-page info-page">
+        <header class="blog-heading">
+          <h1>Россия: Пять исторических мест для знакомства</h1>
+          <p class="info-intro">
+            Дербент · Болгар · Троице-Сергиева лавра · Храмы Пскова · Казанский
+            кремль
+          </p>
+          <nav class="blog-languages" aria-label="Languages">
+            <a href="./en/blog/russia/" lang="en" hreflang="en">English</a
+            ><a
+              href="./ru/blog/russia/"
+              lang="ru"
+              hreflang="ru"
+              aria-current="page"
+              >Русский</a
+            >
+          </nav>
+        </header>
+
+        <section class="blog-place" id="place-1">
+          <span class="blog-number">1</span>
+          <h2>Дербент</h2>
+          <p>
+            Между Каспийским морем и горами Дербент охранял узкий проход.
+            Сасанидские укрепления помогают понять значение этого места.
+            Обратите внимание на связь цитадели, стен и старого города: здесь
+            география буквально определила архитектуру.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/1070/"
+            >Страница ЮНЕСКО</a
+          >
+        </section>
+        <section class="blog-place" id="place-2">
+          <span class="blog-number">2</span>
+          <h2>Болгар</h2>
+          <p>
+            Болгар на Волге хранит память о волжских булгарах и последующих
+            эпохах. Здесь интересно проследить культурные связи. Рассматривайте
+            не только отдельные памятники, но и речной ландшафт, который
+            соединял людей и идеи.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/981/"
+            >Страница ЮНЕСКО</a
+          >
+        </section>
+        <section class="blog-place" id="place-3">
+          <span class="blog-number">3</span>
+          <h2>Троице-Сергиева лавра</h2>
+          <p>
+            Действующий монастырь в Сергиевом Посаде относится к историческим, а
+            не античным памятникам. Его ансамбль складывался в XV–XVIII веках.
+            Обратите внимание на контраст укреплённых стен и выразительной
+            архитектуры храмов внутри.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/657/"
+            >Страница ЮНЕСКО</a
+          >
+        </section>
+        <section class="blog-place" id="place-4">
+          <span class="blog-number">4</span>
+          <h2>Храмы Пскова</h2>
+          <p>
+            Средневековые храмы Пскова располагают к неспешному знакомству.
+            Небольшие объёмы, купола, крыльца и звонницы соседствуют с садами и
+            оградами. Ищите повторяющиеся детали: красота этого наследия
+            раскрывается постепенно.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/1523/"
+            >Страница ЮНЕСКО</a
+          >
+        </section>
+        <section class="blog-place" id="place-5">
+          <span class="blog-number">5</span>
+          <h2>Казанский кремль</h2>
+          <p>
+            Казанская крепость объединяет несколько исторических слоёв.
+            Большинство сохранившихся зданий относится к XVI–XIX векам, но здесь
+            есть и более ранние остатки. Ансамбль помогает увидеть
+            взаимодействие татарской и русской традиций.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/980/"
+            >Страница ЮНЕСКО</a
+          >
+        </section>
+        <aside class="blog-note">
+          <h2>Перед поездкой</h2>
+          <p>
+            Проверьте официальные условия доступа, часы работы и ограничения
+            охраны памятников. Эти статьи знакомят с историей и не являются
+            актуальными маршрутами поездок.
+          </p>
+        </aside>
+        <div class="blog-cta">
+          <p>Откройте истории за картой, страна за страной.</p>
+          <a class="primary" data-article="russia" href="./ru/"
+            >Играть в Karshvar</a
+          >
+        </div>
+      </article>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

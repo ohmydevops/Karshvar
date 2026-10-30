@@ -9,6 +9,7 @@ export const pageTypes = [
   "about",
   "explore",
   "sources",
+  "blog",
 ];
 export const pageCopy = {
   en: {

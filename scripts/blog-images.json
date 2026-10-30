@@ -1,0 +1,106 @@
+[
+  {
+    "l": "en",
+    "slug": "iran",
+    "title": "Iran: Five historic places to discover",
+    "country": "Iran",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-iran-en.png"
+  },
+  {
+    "l": "fa",
+    "slug": "iran",
+    "title": "ایران: پنج جای تاریخی برای کشف کردن",
+    "country": "ایران",
+    "subtitle": "پنج جای تاریخی برای کشف کردن",
+    "image": "social/blog-iran-fa.png"
+  },
+  {
+    "l": "en",
+    "slug": "russia",
+    "title": "Russia: Five historic places to discover",
+    "country": "Russia",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-russia-en.png"
+  },
+  {
+    "l": "ru",
+    "slug": "russia",
+    "title": "Россия: Пять исторических мест для знакомства",
+    "country": "Россия",
+    "subtitle": "Пять исторических мест для знакомства",
+    "image": "social/blog-russia-ru.png"
+  },
+  {
+    "l": "en",
+    "slug": "turkey",
+    "title": "Türkiye: Five historic places to discover",
+    "country": "Türkiye",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-turkey-en.png"
+  },
+  {
+    "l": "tr",
+    "slug": "turkey",
+    "title": "Türkiye: Keşfedilecek beş tarihî yer",
+    "country": "Türkiye",
+    "subtitle": "Keşfedilecek beş tarihî yer",
+    "image": "social/blog-turkey-tr.png"
+  },
+  {
+    "l": "en",
+    "slug": "france",
+    "title": "France: Five historic places to discover",
+    "country": "France",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-france-en.png"
+  },
+  {
+    "l": "fr",
+    "slug": "france",
+    "title": "France: Cinq lieux historiques à découvrir",
+    "country": "France",
+    "subtitle": "Cinq lieux historiques à découvrir",
+    "image": "social/blog-france-fr.png"
+  },
+  {
+    "l": "en",
+    "slug": "saudi-arabia",
+    "title": "Saudi Arabia: Five historic places to discover",
+    "country": "Saudi Arabia",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-saudi-arabia-en.png"
+  },
+  {
+    "l": "ar",
+    "slug": "saudi-arabia",
+    "title": "السعودية: خمسة أماكن تاريخية تستحق الاكتشاف",
+    "country": "السعودية",
+    "subtitle": "خمسة أماكن تاريخية تستحق الاكتشاف",
+    "image": "social/blog-saudi-arabia-ar.png"
+  },
+  {
+    "l": "en",
+    "slug": "iraq",
+    "title": "Iraq: Five historic places to discover",
+    "country": "Iraq",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-iraq-en.png"
+  },
+  {
+    "l": "ar",
+    "slug": "iraq",
+    "title": "العراق: خمسة أماكن تاريخية تستحق الاكتشاف",
+    "country": "العراق",
+    "subtitle": "خمسة أماكن تاريخية تستحق الاكتشاف",
+    "image": "social/blog-iraq-ar.png"
+  },
+  {
+    "l": "en",
+    "slug": "united-states",
+    "title": "United States: Five historic places to discover",
+    "country": "United States",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-united-states-en.png"
+  }
+]

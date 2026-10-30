@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-locale="ar" data-page="blog">
+  <head>
+    <base href="../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>المدونة — Karshvar</title>
+    <meta
+      name="description"
+      content="اكتشف القصص وراء الخريطة، بلداً بعد بلد."
+    />
+    <link
+      rel="canonical"
+      href="https://ohmydevops.github.io/Karshvar/ar/blog/"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://ohmydevops.github.io/Karshvar/fa/blog/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://ohmydevops.github.io/Karshvar/ar/blog/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://ohmydevops.github.io/Karshvar/tr/blog/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://ohmydevops.github.io/Karshvar/fr/blog/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://ohmydevops.github.io/Karshvar/ru/blog/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta property="og:title" content="المدونة" />
+    <meta
+      property="og:description"
+      content="اكتشف القصص وراء الخريطة، بلداً بعد بلد."
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/ar/blog/"
+    />
+    <meta property="og:locale" content="ar_SA" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar-ar.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="المدونة" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="المدونة" />
+    <meta
+      name="twitter:description"
+      content="اكتشف القصص وراء الخريطة، بلداً بعد بلد."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar-ar.png"
+    />
+    <meta name="twitter:image:alt" content="المدونة" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "headline": "المدونة",
+        "description": "اكتشف القصص وراء الخريطة، بلداً بعد بلد.",
+        "inLanguage": "ar",
+        "url": "https://ohmydevops.github.io/Karshvar/ar/blog/",
+        "image": "https://ohmydevops.github.io/Karshvar/social/karshvar-ar.png",
+        "mainEntityOfPage": "https://ohmydevops.github.io/Karshvar/ar/blog/"
+      }
+    </script>
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./ar/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="اللغة">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">AR</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="اللغة">
+            <a href="./en/about/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a href="./fa/about/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a
+              href="./ar/about/"
+              lang="ar"
+              hreflang="ar"
+              data-language="ar"
+              aria-current="page"
+              >AR</a
+            ><a href="./tr/about/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a href="./fr/about/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a href="./ru/about/" lang="ru" hreflang="ru" data-language="ru"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="القائمة"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">القائمة</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="إغلاق القائمة">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="القائمة">
+          <a id="footerHome" href="./ar/">الرئيسية</a>
+          <a class="explore-link" href="./ar/explore/">استكشف الخريطة</a>
+          <a id="aboutOpen" class="footer-about" href="./ar/about/"
+            >عن Karshvar</a
+          ><a class="blog-link" href="./ar/blog/">المدونة</a
+          ><a class="sources-link" href="./ar/sources/">المصادر</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">الإعدادات</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span><span>التحقق من التحديثات</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">كم تعرف عن العالم؟</h1>
+          <p id="welcomeDescription">
+            خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة.
+          </p>
+          <a id="startGame" class="primary" href="./ar/continents/"
+            >ابدأ اللعب</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>أين تود أن تلعب؟</h1>
+        <p>اختر قارة، ثم خمن أسماء البلدان المميزة فيها.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">اختر مغامرتك</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">عن Karshvar</h1>
+        <div id="aboutBody">
+          <p>
+            صنعت Karshvar لأجعل اكتشاف العالم أسهل لمن يحبون قراءة التاريخ. كانت
+            الجغرافيا أكبر صعوبة أواجهها: من الأناضول إلى القوقاز، ومن الهضبة
+            الإيرانية إلى بيزنطة، كنت أفقد تصور الأماكن التي جرت فيها الأحداث
+            المهمة.
+          </p>
+          <p>
+            لذلك بدأت أدرس الجغرافيا، وهذه اللعبة ثمرة ذلك التعلم. إنها وسيلة
+            لاختبار نفسي وخطوة نحو أداة تعمل دون اتصال أردت أن ترافقني في
+            استكشاف العالم. وسأضيف إليها تدريجيًا مزايا تاريخية جديدة.
+          </p>
+          <p>
+            يستلهم اسم کَرشوَر كلمة إيرانية قديمة ترتبط بالكلمة الفارسية الحديثة
+            التي تعني البلد. وفي التصور الأفستي للكون، وُصف العالم بأنه سبع
+            مناطق.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">اكتشافاتك</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          العب هذه القارة مجددًا</button
+        ><a id="chooseAgain" class="text-button" href="./ar/continents/"
+          >اختر قارة أخرى</a
+        >
+      </section>
+      <article class="blog-page info-page">
+        <header class="blog-heading">
+          <h1>المدونة</h1>
+        </header>
+        <div class="blog-grid">
+          <a
+            class="blog-card"
+            href="./en/blog/iran/"
+            hreflang="en"
+            lang="en"
+            dir="ltr"
+            ><img
+              class="blog-cover"
+              src="./social/blog-iran-en.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">English</span>
+              <h2>Iran: Five historic places to discover</h2>
+              <p>
+                The ceremonial terraces of the Achaemenid kings make a striking
+                introduction to ancient Iran. Slow down at the stairways: the
+                carved delegations and their clothing tell a more intimate story
+                than the scale of the palace alone.
+              </p>
+            </div></a
+          ><a
+            class="blog-card"
+            href="./en/blog/russia/"
+            hreflang="en"
+            lang="en"
+            dir="ltr"
+            ><img
+              class="blog-cover"
+              src="./social/blog-russia-en.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">English</span>
+              <h2>Russia: Five historic places to discover</h2>
+              <p>
+                Between the Caspian Sea and the mountains, Derbent guarded a
+                narrow passage. Its Sasanian fortifications explain that
+                geography in stone. Follow the relationship between the citadel,
+                the walls and the old town to understand why this location
+                mattered.
+              </p>
+            </div></a
+          ><a
+            class="blog-card"
+            href="./en/blog/turkey/"
+            hreflang="en"
+            lang="en"
+            dir="ltr"
+            ><img
+              class="blog-cover"
+              src="./social/blog-turkey-en.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">English</span>
+              <h2>Türkiye: Five historic places to discover</h2>
+              <p>
+                These Neolithic enclosures take the story far earlier than
+                classical cities. The T-shaped pillars are the first things to
+                notice, followed by their animal carvings. They offer a glimpse
+                of communal and ritual life long before the familiar empires of
+                Anatolia.
+              </p>
+            </div></a
+          ><a
+            class="blog-card"
+            href="./en/blog/france/"
+            hreflang="en"
+            lang="en"
+            dir="ltr"
+            ><img
+              class="blog-cover"
+              src="./social/blog-france-en.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">English</span>
+              <h2>France: Five historic places to discover</h2>
+              <p>
+                This Roman aqueduct bridge is an engineering lesson you can read
+                from the riverbank. Its stacked arches carried water across a
+                difficult landscape. Look at the rhythm of the stonework and
+                imagine the longer water supply system of which this was only
+                one part.
+              </p>
+            </div></a
+          ><a
+            class="blog-card"
+            href="./ar/blog/saudi-arabia/"
+            hreflang="ar"
+            lang="ar"
+            dir="rtl"
+            ><img
+              class="blog-cover"
+              src="./social/blog-saudi-arabia-ar.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">العربية</span>
+              <h2>السعودية: خمسة أماكن تاريخية تستحق الاكتشاف</h2>
+              <p>
+                حوّلت المقابر النبطية في الحِجر كتل الحجر الرملي إلى عمارة
+                مدهشة. الواجهات المنحوتة تلفت النظر أولاً، لكن النقوش والآبار
+                تكمل القصة. تأمل اختلاف التفاصيل بين الواجهات بدلاً من النظر
+                إليها بوصفها تصميماً واحداً متكرراً.
+              </p>
+            </div></a
+          ><a
+            class="blog-card"
+            href="./ar/blog/iraq/"
+            hreflang="ar"
+            lang="ar"
+            dir="rtl"
+            ><img
+              class="blog-cover"
+              src="./social/blog-iraq-ar.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">العربية</span>
+              <h2>العراق: خمسة أماكن تاريخية تستحق الاكتشاف</h2>
+              <p>
+                ترتبط بابل بتاريخ مدن بلاد الرافدين ارتباطاً وثيقاً. تدعوك
+                آثارها إلى تصور مركز سياسي وديني كبير. ميّز أثناء قراءة الموقع
+                بين المادة الأثرية القديمة وأعمال إعادة البناء اللاحقة، فكلاهما
+                يؤثر في المشهد الحالي.
+              </p>
+            </div></a
+          ><a
+            class="blog-card"
+            href="./en/blog/united-states/"
+            hreflang="en"
+            lang="en"
+            dir="ltr"
+            ><img
+              class="blog-cover"
+              src="./social/blog-united-states-en.png"
+              width="1200"
+              height="630"
+              alt=""
+              loading="lazy"
+            />
+            <div class="blog-card-copy">
+              <span class="blog-card-language">English</span>
+              <h2>United States: Five historic places to discover</h2>
+              <p>
+                Mesa Verde in Colorado preserves Ancestral Pueblo places,
+                including cliff dwellings and mesa-top settlements. Look beyond
+                the dramatic alcoves to the communities that lived and farmed
+                here. These are places of continuing significance to descendant
+                Indigenous peoples.
+              </p>
+            </div></a
+          >
+        </div>
+      </article>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

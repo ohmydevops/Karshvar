@@ -26,6 +26,7 @@ export function loadProductionAnalytics(document, location) {
 
 const events = new Set([
   "game-start",
+  "blog-play-click",
   "continent-select",
   "answer-submit",
   "continent-complete",
@@ -42,6 +43,7 @@ const events = new Set([
 ]);
 const fields = new Set([
   "language",
+  "article",
   "continent",
   "result",
   "answered",
