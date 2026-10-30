@@ -1849,3 +1849,117 @@ main:has(.map-loading) {
     animation: none;
   }
 }
+
+/* A shared, compact editorial layout for About and Sources. */
+html:is([data-page="about"], [data-page="sources"]) main {
+  width: min(880px, calc(100% - 48px));
+  margin: 0 auto;
+  padding-block: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.info-page,
+.about-page.info-page {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.info-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 24px;
+  align-items: center;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.info-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.info-page .info-hero h1 {
+  font-size: clamp(26px, 3.5vw, 36px);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+.info-page .info-intro {
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.8;
+}
+.info-content {
+  padding: 0 28px 20px;
+  max-width: 76ch;
+}
+.info-page #aboutBody p {
+  font-size: 15px;
+  line-height: 2;
+  margin: 0 0 20px;
+}
+.info-page a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 13px;
+  text-underline-offset: 4px;
+}
+.source-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.sources-page .source-cards section {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.sources-page .source-cards h2 {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+.sources-page .source-cards p {
+  font-size: 14px;
+  line-height: 1.9;
+  margin: 0 0 12px;
+}
+@media (max-width: 600px) {
+  html:is([data-page="about"], [data-page="sources"]) main {
+    width: calc(100% - 32px);
+    padding-block: 16px;
+  }
+  .info-hero {
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 8px;
+    padding: 18px 16px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+  }
+  .info-page .info-hero h1 {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  .info-page .info-intro {
+    font-size: 12px;
+  }
+  .info-content {
+    padding: 0 4px 16px;
+  }
+  .info-page #aboutBody p {
+    font-size: 14px;
+    line-height: 1.95;
+  }
+  .source-cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .sources-page .source-cards section {
+    padding: 20px;
+  }
+}
