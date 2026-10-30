@@ -1,3 +1,4 @@
+import { mountJourneyArt } from "./journey-art.js";
 import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
@@ -827,7 +828,7 @@ function renderContinents() {
     choices.id = "modeChoices";
     choices.className = "mode-choices";
     const back = document.createElement("a");
-    back.className = "text-button";
+    back.className = "mode-switch";
     back.textContent = copy[5];
     choices.hidden = selectionPage !== "modes";
     back.hidden = selectionPage === "modes";
@@ -926,6 +927,12 @@ function renderContinents() {
     $("continentChoices").before(section);
   }
 
+  if (["modes", "countries"].includes(selectionPage)) {
+    mountJourneyArt(
+      features,
+      $(selectionPage === "modes" ? "modeChoices" : "nearbyMode"),
+    );
+  }
   if (selectionPage !== "continents") return;
   if (!features.length) {
     prepareContinentImages($("continentChoices"));
