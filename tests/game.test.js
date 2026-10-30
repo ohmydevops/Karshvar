@@ -370,7 +370,7 @@ test("reviewed source-data mistakes cannot award an answer for the wrong country
 });
 
 import { suggestCountries } from "../public/suggestions.js";
-test("localized suggestions start at two characters and match aliases without changing the displayed name", () => {
+test("localized suggestions start at the first character and match aliases without changing the displayed name", () => {
   const countries = JSON.parse(fs.readFileSync("public/data/names.json"));
   const candidates = (codes, language) =>
     codes.map((code) => {
@@ -382,7 +382,9 @@ test("localized suggestions start at two characters and match aliases without ch
       };
     });
   const asia = candidates(["SAU", "ARE", "IND", "IRN", "IRQ"], "fa");
-  assert.deepEqual(suggestCountries("ع", asia, "fa"), []);
+  assert.ok(
+    suggestCountries("ع", asia, "fa").some((country) => country.id === "SAU"),
+  );
   assert.deepEqual(suggestCountries("  ", asia, "fa"), []);
   assert.equal(suggestCountries("عرب", asia, "fa")[0].id, "SAU");
   assert.equal(

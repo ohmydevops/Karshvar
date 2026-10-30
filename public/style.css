@@ -474,7 +474,8 @@ html[dir="rtl"] h2 {
 
 .map-controls {
   position: absolute;
-  inset-inline-end: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 10px;
   display: flex;
   gap: 5px;
@@ -978,8 +979,8 @@ dialog p {
     min-height: 44px;
   }
   .map-controls button {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1082,11 +1083,11 @@ html[data-page="explore"] .globe-panel {
 .country-labels text {
   font-size: 7px;
   font-family: inherit;
-  font-weight: 600;
-  fill: #fff;
+  font-weight: 400;
+  fill: #071a32;
   paint-order: stroke;
-  stroke: #183353;
-  stroke-width: 1.8px;
+  stroke: #f7f9ffe6;
+  stroke-width: 1px;
   stroke-linejoin: round;
 }
 
@@ -1389,7 +1390,6 @@ html[data-page="explore"] .globe-panel {
   border-radius: 0;
 }
 html[data-page="explore"] .map-controls {
-  inset-inline-end: max(12px, env(safe-area-inset-right));
   bottom: max(12px, env(safe-area-inset-bottom));
 }
 @media (max-width: 760px) {
@@ -2153,4 +2153,52 @@ body {
   @view-transition {
     navigation: none;
   }
+}
+
+/* Keep the active form above mobile keyboards; allow scrolling on small screens. */
+html.keyboard-open body {
+  height: var(--keyboard-height);
+  min-height: 0;
+}
+html.keyboard-open body > header,
+html.keyboard-open body > footer,
+html.keyboard-open .game-navigation {
+  display: none;
+}
+html.keyboard-open main {
+  min-height: 0;
+  overflow-y: auto;
+  margin-block: 6px;
+  padding-bottom: 8px;
+}
+html.keyboard-open .game {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(110px, 1fr) auto;
+  gap: 6px;
+  min-height: 310px;
+  margin-top: 0;
+}
+html.keyboard-open .answer-panel {
+  grid-template-rows: auto auto auto 44px 44px 32px;
+  gap: 4px;
+}
+html.keyboard-open .question h2 {
+  font-size: 17px;
+  margin: 2px 0;
+}
+html.keyboard-open .progress-track {
+  margin: 0;
+}
+html.keyboard-open #check,
+html.keyboard-open #next {
+  height: 44px;
+  min-height: 44px;
+  padding: 8px;
+}
+html.keyboard-open .country-suggestions {
+  max-height: min(140px, 35vh);
+}
+html.keyboard-open .country-picker .country-suggestions {
+  top: calc(100% + 4px);
+  bottom: auto;
 }

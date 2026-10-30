@@ -2,7 +2,7 @@ import { normalize } from "./logic.js";
 
 export function suggestCountries(query, candidates, language, limit = 5) {
   const needle = normalize(query);
-  if ([...needle].length < 2) return [];
+  if (!needle) return [];
   const collator = new Intl.Collator(language, { sensitivity: "base" });
   return candidates
     .map((country) => {

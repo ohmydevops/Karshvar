@@ -1,3 +1,5 @@
+import { bindKeyboardViewport } from "./keyboard-viewport.js";
+bindKeyboardViewport(window, document);
 import { modeCopy } from "./mode-copy.js";
 import "./offline.js";
 import { nearbyOrder, restoreNearbySession } from "./nearby.js";
@@ -438,7 +440,19 @@ let drawnLabelSize;
 let drawnLabelScale;
 function draw() {
   // Read layout before changing paths or label attributes.
-  const mapScale = $("globe").getScreenCTM()?.a || 1;
+  const globe = $("globe");
+  const matrix = globe.getScreenCTM();
+  const mapScale = matrix?.a || 1;
+  // SVG's default "meet" scaling can expose space beyond the viewBox on
+  // tall or wide screens. Cull labels against the real viewport instead.
+  const bounds = globe.getBoundingClientRect();
+  const inverse = matrix?.inverse();
+  const topLeft = inverse
+    ? new DOMPoint(bounds.left, bounds.top).matrixTransform(inverse)
+    : { x: 0, y: 0 };
+  const bottomRight = inverse
+    ? new DOMPoint(bounds.right, bounds.bottom).matrixTransform(inverse)
+    : { x: 600, y: 530 };
   measureLabels();
   projection.rotate(rotation).scale(220 * zoom);
   // The circular ocean and shading do not change when the Earth rotates.
@@ -453,7 +467,7 @@ function draw() {
     .selectAll("path")
     .attr("d", path)
     .attr("fill", (f) => (f.id === current?.id ? "#ffbd4a" : "var(--land)"));
-  const labelSize = Math.max(9, Math.min(14, 8 + zoom * 1.5));
+  const labelSize = Math.max(12, Math.min(16, 11 + zoom));
   const occupied = [];
   const viewCenter = projection.invert([300, 267]);
   const texts = countryLabels.selectAll("text");
@@ -468,7 +482,7 @@ function draw() {
   if (drawnLabelSize !== labelSize || drawnLabelScale !== mapScale) {
     texts
       .style("font-size", labelSize / mapScale + "px")
-      .style("stroke-width", 2 / mapScale + "px");
+      .style("stroke-width", 1 / mapScale + "px");
     drawnLabelSize = labelSize;
     drawnLabelScale = mapScale;
   }
@@ -477,10 +491,10 @@ function draw() {
     const p = projection(point);
     if (
       d3.geoDistance(point, viewCenter) >= Math.PI / 2 ||
-      p[0] < 0 ||
-      p[0] > 600 ||
-      p[1] < 0 ||
-      p[1] > 530
+      p[0] < topLeft.x ||
+      p[0] > bottomRight.x ||
+      p[1] < topLeft.y ||
+      p[1] > bottomRight.y
     )
       return "none";
     const width = (labelWidths.get(this) * labelSize + 8) / mapScale,
@@ -827,12 +841,12 @@ function renderContinents() {
     input.setAttribute("aria-expanded", "false");
     input.setAttribute("aria-controls", "startingCountrySuggestions");
     input.placeholder = {
-      en: "Search countries (2+ letters)…",
-      fa: "جست‌وجوی کشور (حداقل ۲ حرف)…",
-      ar: "ابحث عن بلد (حرفان على الأقل)…",
-      tr: "Ülke ara (en az 2 harf)…",
-      fr: "Rechercher un pays (2 lettres minimum)…",
-      ru: "Найти страну (от 2 букв)…",
+      en: "Search countries…",
+      fa: "جست‌وجوی کشور…",
+      ar: "ابحث عن بلد…",
+      tr: "Ülke ara…",
+      fr: "Rechercher un pays…",
+      ru: "Найти страну…",
     }[lang];
     const list = document.createElement("div");
     list.id = "startingCountrySuggestions";
@@ -1021,7 +1035,8 @@ function openExplore(continent = "All") {
   draw();
 }
 function focusAnswer() {
-  if (!$("answerForm").hidden) $("answer").focus({ preventScroll: true });
+  if (!matchMedia("(pointer: coarse)").matches && !$("answerForm").hidden)
+    $("answer").focus({ preventScroll: true });
 }
 function openGame(continent) {
   selected = continent;
