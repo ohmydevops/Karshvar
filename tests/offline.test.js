@@ -152,3 +152,32 @@ test("offline asset list excludes deployment-only dotfiles", () => {
     ),
   );
 });
+
+test("sitemap is neither precached nor intercepted, including query URLs", async () => {
+  const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
+  assert.ok(!assets.includes("sitemap.xml"));
+  const w = worker();
+  await w.lifecycle("install");
+  assert.equal(await w.request("sitemap.xml"), undefined);
+  assert.equal(await w.request("sitemap.xml?v=2", "cors"), undefined);
+  w.offline();
+  assert.equal(await w.request("sitemap.xml"), undefined);
+});
+
+test("crawler metadata, verification files and source maps bypass offline caching", async () => {
+  const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
+  const w = worker();
+  for (const path of [
+    "robots.txt",
+    "sitemap-news.xml",
+    "google123.html",
+    "BingSiteAuth.xml",
+    "vendor/app.js.map",
+  ]) {
+    assert.ok(!assets.includes(path));
+    assert.equal(await w.request(path), undefined);
+  }
+  assert.ok(assets.includes("data/countries.json"));
+  assert.ok(assets.includes("en/blog/iran/index.html"));
+  assert.ok(assets.includes("social/blog-iran-en.png"));
+});

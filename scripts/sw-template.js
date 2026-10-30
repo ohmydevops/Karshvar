@@ -40,6 +40,16 @@ self.addEventListener("fetch", (event) => {
     !url.href.startsWith(self.registration.scope)
   )
     return;
+  // Crawler metadata, verification files, and source maps are network-only.
+  const relativePath = url.pathname.slice(
+    new URL(self.registration.scope).pathname.length,
+  );
+  if (
+    /(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
+      relativePath,
+    )
+  )
+    return;
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE);

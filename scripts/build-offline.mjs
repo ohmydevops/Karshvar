@@ -16,7 +16,12 @@ async function walk(dir, prefix = "") {
 // Dotfiles are deployment metadata, not public assets (GitHub Pages returns 404).
 const assets = (await walk(root))
   .filter(
-    (p) => p !== "sw.js" && !p.split("/").some((part) => part.startsWith(".")),
+    (p) =>
+      p !== "sw.js" &&
+      !/(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
+        p,
+      ) &&
+      !p.split("/").some((part) => part.startsWith(".")),
   )
   .sort();
 const template = await readFile(
