@@ -71,7 +71,7 @@ export function bindCountrySuggestions(
     input.removeAttribute("aria-activedescendant");
     results.forEach((result, index) => {
       const option = input.ownerDocument.createElement("div");
-      option.id = "country-suggestion-" + index;
+      option.id = list.id + "-option-" + index;
       option.setAttribute("role", "option");
       option.setAttribute("aria-selected", "false");
       option.textContent = result.label;

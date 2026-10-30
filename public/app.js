@@ -815,41 +815,62 @@ function renderContinents() {
     const label = document.createElement("label");
     label.textContent = t("country");
     label.htmlFor = "startingCountry";
-    const select = document.createElement("select");
-    select.id = "startingCountry";
-    select.required = true;
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = {
-      en: "Choose a country…",
-      fa: "یک کشور انتخاب کن…",
-      ar: "اختر بلدًا…",
-      tr: "Bir ülke seç…",
-      fr: "Choisissez un pays…",
-      ru: "Выберите страну…",
+    const entry = document.createElement("div");
+    entry.className = "answer-entry country-picker";
+    const input = document.createElement("input");
+    input.id = "startingCountry";
+    input.type = "search";
+    input.autocomplete = "off";
+    input.spellcheck = false;
+    input.setAttribute("role", "combobox");
+    input.setAttribute("aria-autocomplete", "list");
+    input.setAttribute("aria-expanded", "false");
+    input.setAttribute("aria-controls", "startingCountrySuggestions");
+    input.placeholder = {
+      en: "Search countries (2+ letters)…",
+      fa: "جست‌وجوی کشور (حداقل ۲ حرف)…",
+      ar: "ابحث عن بلد (حرفان على الأقل)…",
+      tr: "Ülke ara (en az 2 harf)…",
+      fr: "Rechercher un pays (2 lettres minimum)…",
+      ru: "Найти страну (от 2 букв)…",
     }[lang];
-    placeholder.disabled = true;
-    placeholder.selected = true;
-    select.append(placeholder);
-    for (const f of [...features].sort((a, b) =>
-      name(a).localeCompare(name(b), lang),
-    )) {
-      const option = document.createElement("option");
-      option.value = f.id;
-      option.textContent = name(f);
-      select.append(option);
-    }
+    const list = document.createElement("div");
+    list.id = "startingCountrySuggestions";
+    list.className = "country-suggestions";
+    list.setAttribute("role", "listbox");
+    list.hidden = true;
     const button = document.createElement("button");
     button.className = "primary";
     button.textContent = pageCopy[lang].start;
     button.disabled = true;
-    select.addEventListener("change", () => {
-      button.disabled = !select.value;
+    let selectedCountry = null;
+    input.addEventListener("input", () => {
+      selectedCountry = null;
+      button.disabled = true;
     });
+    const candidates = features.map((f) => ({
+      id: f.id,
+      label: name(f),
+      aliases: localizedCountryAliases(
+        names.find((n) => n.ccn3 === f.id),
+        lang,
+      ),
+    }));
+    bindCountrySuggestions(
+      input,
+      list,
+      () => candidates,
+      () => lang,
+      (country) => {
+        selectedCountry = country.id;
+        button.disabled = false;
+      },
+    );
     button.onclick = () => {
-      if (select.value) navigate("play", "country:" + select.value);
+      if (selectedCountry) navigate("play", "country:" + selectedCountry);
     };
-    section.append(description, label, select, button);
+    entry.append(input, list);
+    section.append(description, label, entry, button);
     $("continentChoices").before(section);
   }
 
@@ -1084,12 +1105,13 @@ function render() {
     feedback.append(message, country);
   }
   document.querySelector(".question").hidden = done;
-  // Only completed answers become map labels; never expose an unanswered country.
-  const answeredIds = new Set(state.answers.map((answer) => answer.id));
+  // Label the chosen starting country and completed answers, without revealing quiz answers.
+  const labeledIds = new Set(state.answers.map((answer) => answer.id));
+  if (selected?.startsWith("country:")) labeledIds.add(selected.slice(8));
   countryLabels
     .selectAll("text")
     .data(
-      features.filter((feature) => answeredIds.has(feature.id)),
+      features.filter((feature) => labeledIds.has(feature.id)),
       (feature) => feature.id,
     )
     .join("text")

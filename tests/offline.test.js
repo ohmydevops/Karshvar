@@ -141,3 +141,14 @@ test("activation removes only older caches belonging to this scope", async () =>
   assert.ok(w.stores.has("unrelated-cache"));
   assert.equal(w.stores.size, 2);
 });
+
+test("offline asset list excludes deployment-only dotfiles", () => {
+  const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
+  assert.ok(assets.includes("index.html"));
+  assert.ok(assets.includes("fonts/Vazir-Regular.woff2"));
+  assert.ok(
+    assets.every(
+      (path) => !path.split("/").some((part) => part.startsWith(".")),
+    ),
+  );
+});

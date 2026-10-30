@@ -122,5 +122,5 @@ async function setupOffline() {
     console.warn("Offline setup failed", error);
   }
 }
-if (document.readyState === "complete") setupOffline();
-else window.addEventListener("load", setupOffline, { once: true });
+// This module runs after HTML parsing; analytics and images must not delay installation.
+setupOffline();

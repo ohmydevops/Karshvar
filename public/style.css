@@ -2000,33 +2000,22 @@ html:is([data-page="about"], [data-page="sources"]) main {
   margin-block: 20px 8px;
   font-weight: 600;
 }
-.nearby-mode select {
-  appearance: none;
+.country-picker {
+  margin-bottom: 16px;
+}
+.country-picker input {
   display: block;
   width: 100%;
   min-height: 54px;
+  padding: 14px 16px;
   font: inherit;
   font-size: 16px;
   color: var(--text);
-  background-color: var(--surface);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23596b88' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 16px center;
-  padding: 14px 44px 14px 16px;
-  margin: 0 0 16px;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
-  cursor: pointer;
 }
-html[dir="rtl"] .nearby-mode select {
-  background-position: left 16px center;
-  padding: 14px 16px 14px 44px;
-}
-.nearby-mode select:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-.nearby-mode select:invalid {
+.country-picker input::placeholder {
   color: var(--muted);
 }
 .nearby-mode > .primary {
