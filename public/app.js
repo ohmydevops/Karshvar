@@ -1,3 +1,4 @@
+import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
 import { modeCopy } from "./mode-copy.js";
@@ -500,7 +501,9 @@ function draw() {
   land
     .selectAll("path")
     .attr("d", path)
-    .attr("fill", (f) => (f.id === current?.id ? "#ffbd4a" : "var(--land)"));
+    .attr("fill", (f) =>
+      answerFill(f.id, current?.id, page === "play" ? state?.answers : []),
+    );
   const labelSize = Math.max(12, Math.min(16, 11 + zoom));
   const occupied = [];
   const viewCenter = projection.invert([300, 267]);
@@ -719,7 +722,7 @@ function localize() {
   $("center").title = t("center");
   for (const id of ["globe", "theme", "zoomIn", "zoomOut", "center"])
     $(id).setAttribute("aria-label", t(id));
-  if (page !== "blog")
+  if (page !== "blog" && page !== "history")
     document.title =
       page === "home"
         ? seoCopy[lang][0]
@@ -1457,4 +1460,10 @@ if (page === "home") {
 // Track article-to-game clicks without interrupting normal link navigation.
 document.querySelector(".blog-cta a")?.addEventListener("click", (event) => {
   track("blog-play-click", { article: event.currentTarget.dataset.article });
+});
+
+bindHistory({
+  language: lang,
+  getSessions: () => sessions,
+  sessionLabel: (key) => labels[lang][7 + continents.indexOf(key)] || key,
 });

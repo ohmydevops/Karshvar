@@ -150,7 +150,7 @@ if (!nav.includes('"blog",'))
   nav = nav.replace('"sources",', '"sources",\n  "blog",');
 fs.writeFileSync("public/navigation.js", nav);
 let app = fs.readFileSync("public/app.js", "utf8");
-if (!app.includes('if (page !== "blog")'))
+if (!app.includes('page !== "blog"'))
   app = app.replace(
     "  document.title =\n",
     '  if (page !== "blog") document.title =\n',

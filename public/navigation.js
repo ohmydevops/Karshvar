@@ -10,6 +10,7 @@ export const pageTypes = [
   "explore",
   "sources",
   "blog",
+  "history",
 ];
 export const pageCopy = {
   en: {
