@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-locale="en" data-page="blog">
+  <head>
+    <base href="../../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>India: Five historic places to discover — Karshvar</title>
+    <meta
+      name="description"
+      content="Taj Mahal · Agra Fort · Ajanta Caves · Hampi · Sanchi"
+    />
+    <link
+      rel="canonical"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/india/"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/india/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/en/blog/india/"
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta
+      property="og:title"
+      content="India: Five historic places to discover"
+    />
+    <meta
+      property="og:description"
+      content="Taj Mahal · Agra Fort · Ajanta Caves · Hampi · Sanchi"
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/en/blog/india/"
+    />
+    <meta property="og:locale" content="en_US" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/blog-india-en.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="India: Five historic places to discover"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="India: Five historic places to discover"
+    />
+    <meta
+      name="twitter:description"
+      content="Taj Mahal · Agra Fort · Ajanta Caves · Hampi · Sanchi"
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/blog-india-en.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="India: Five historic places to discover"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "India: Five historic places to discover",
+        "description": "Taj Mahal · Agra Fort · Ajanta Caves · Hampi · Sanchi",
+        "inLanguage": "en",
+        "url": "https://ohmydevops.github.io/Karshvar/en/blog/india/",
+        "image": "https://ohmydevops.github.io/Karshvar/social/blog-india-en.png",
+        "mainEntityOfPage": "https://ohmydevops.github.io/Karshvar/en/blog/india/",
+        "author": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://ohmydevops.github.io/Karshvar/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://ohmydevops.github.io/Karshvar/"
+        }
+      }
+    </script>
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./en/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Language">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">EN</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Language">
+            <a
+              href="./en/about/"
+              lang="en"
+              hreflang="en"
+              data-language="en"
+              aria-current="page"
+              >EN</a
+            ><a href="./fa/about/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/about/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a href="./tr/about/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a href="./fr/about/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a href="./ru/about/" lang="ru" hreflang="ru" data-language="ru"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Menu"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Menu</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Close menu">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Menu">
+          <a id="footerHome" href="./en/">Home</a>
+          <a class="explore-link" href="./en/explore/">Explore the map</a>
+          <a id="aboutOpen" class="footer-about" href="./en/about/"
+            >About Karshvar</a
+          ><a class="blog-link" href="./en/blog/">Blog</a
+          ><a class="sources-link" href="./en/sources/">Sources</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Settings</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span><span>Check for updates</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">How well do you know the world?</h1>
+          <p id="welcomeDescription">
+            Guess the country on the map. Discover a new corner of the world
+            with every turn.
+          </p>
+          <a id="startGame" class="primary" href="./en/continents/"
+            >Start game</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Where would you like to play?</h1>
+        <p>Choose a continent, then guess its highlighted countries.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Choose your adventure</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">About Karshvar</h1>
+        <div id="aboutBody">
+          <p>
+            I built Karshvar to make discovering the world easier for people who
+            love reading history. My biggest difficulty was always geography:
+            from Anatolia to the Caucasus, from the Iranian plateau to
+            Byzantium, I kept losing track of where important events happened.
+          </p>
+          <p>
+            So I started studying geography, and this game grew out of that
+            learning. It is both a way to test myself and a step toward the
+            offline companion I wanted for exploring the world. I plan to add
+            more historical features over time.
+          </p>
+          <p>
+            Karshvar takes its name from an ancient Iranian word related to
+            today’s Persian word for country. In Avestan cosmology, the world
+            was described as seven regions.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Your discoveries</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Play this continent again</button
+        ><a id="chooseAgain" class="text-button" href="./en/continents/"
+          >Choose another continent</a
+        >
+      </section>
+      <article class="blog-page info-page">
+        <header class="blog-heading">
+          <h1>India: Five historic places to discover</h1>
+          <p class="info-intro">
+            Taj Mahal · Agra Fort · Ajanta Caves · Hampi · Sanchi
+          </p>
+          <nav class="blog-languages" aria-label="Languages">
+            <a
+              href="./en/blog/india/"
+              lang="en"
+              hreflang="en"
+              aria-current="page"
+              >English</a
+            >
+          </nav>
+        </header>
+        <section class="blog-place" id="place-1">
+          <span class="blog-number">1</span>
+          <h2>Taj Mahal</h2>
+          <p>
+            The Taj Mahal is a memorial before it is a famous photograph. Shah
+            Jahan commissioned the white-marble mausoleum in Agra in memory of
+            his wife. Keeping that purpose in mind gives its monumental scale a
+            personal dimension. Pause over the relationship between the
+            building’s overall form and the craftsmanship that makes it feel so
+            carefully composed.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/252/"
+            >Read the UNESCO entry</a
+          >
+        </section>
+        <section class="blog-place" id="place-2">
+          <span class="blog-number">2</span>
+          <h2>Agra Fort</h2>
+          <p>
+            Agra Fort reveals another side of Mughal power. Behind its
+            red-sandstone walls are palaces, audience halls and mosques: the
+            spaces of an imperial city. Read the enclosure and the interiors
+            together. The strong outer boundary and the varied buildings within
+            show how defence, government and royal life occupied the same
+            complex.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/251/"
+            >Read the UNESCO entry</a
+          >
+        </section>
+        <section class="blog-place" id="place-3">
+          <span class="blog-number">3</span>
+          <h2>Ajanta Caves</h2>
+          <p>
+            Ajanta’s Buddhist caves were created in different phases, separated
+            by centuries. Paintings and sculpture turn the rock-cut spaces into
+            places of storytelling as well as worship. Take the details slowly
+            when studying images of the site. Small gestures and groups of
+            figures can hold your attention just as much as the scale of a cave.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/242/"
+            >Read the UNESCO entry</a
+          >
+        </section>
+        <section class="blog-place" id="place-4">
+          <span class="blog-number">4</span>
+          <h2>Hampi</h2>
+          <p>
+            Hampi preserves the remains of a capital of the Vijayanagara
+            kingdom. Its temples and palaces speak of the city’s wealth between
+            the fourteenth and sixteenth centuries, before its conquest in 1565.
+            Try to imagine the connections between these buildings. The
+            scattered monuments once belonged to a working capital with
+            religious and royal centres.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/241/"
+            >Read the UNESCO entry</a
+          >
+        </section>
+        <section class="blog-place" id="place-5">
+          <span class="blog-number">5</span>
+          <h2>Sanchi</h2>
+          <p>
+            Sanchi’s hilltop monuments offer a longer view of Buddhist history.
+            Pillars, temples and monastic remains mark a place that remained
+            important over many centuries. Rather than searching for one
+            defining building, consider how successive communities added to the
+            site. Its different structures make that continuity easier to
+            picture.
+          </p>
+          <a class="blog-source" href="https://whc.unesco.org/en/list/524/"
+            >Read the UNESCO entry</a
+          >
+        </section>
+        <aside class="blog-note">
+          <h2>Before you go</h2>
+          <p>
+            Check official access, opening times and conservation restrictions
+            before planning a visit. These guides introduce the history; they
+            are not current travel itineraries.
+          </p>
+        </aside>
+        <div class="blog-cta">
+          <p>Explore the stories behind the map, one country at a time.</p>
+          <a class="primary" data-article="india" href="./en/">Play Karshvar</a>
+        </div>
+      </article>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

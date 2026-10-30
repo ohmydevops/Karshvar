@@ -2818,38 +2818,184 @@ html.keyboard-open .journey-art {
   }
 }
 
-/* Compact, touch-friendly mode navigation. */
-.mode-switch {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 14px;
-  margin-block: 12px 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.9rem;
-  text-decoration: none;
+/* Keep page content and site navigation on the same compact grid. */
+:root {
+  --container-width: 1040px;
 }
-.mode-switch::before {
-  content: "←";
-  font-size: 1.15rem;
+body > header {
+  width: min(var(--container-width), calc(100% - 32px));
+  padding-inline: 0;
 }
-[dir="rtl"] .mode-switch::before {
-  content: "→";
+html main,
+html:is([data-page="about"], [data-page="sources"]) main {
+  width: min(var(--container-width), calc(100% - 32px));
 }
-.mode-switch:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.blog-page,
+.history-page {
+  width: 100%;
 }
-.mode-switch:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
+
+/* Align the menu with the same container edge in both text directions. */
+@media (min-width: 761px) {
+  dialog.app-drawer {
+    inset-inline-end: max(16px, calc((100% - var(--container-width)) / 2));
+  }
 }
-.mode-switch[hidden] {
-  display: none;
+
+/* Compact desktop quiz controls sit at the bottom-right of the map. */
+@media (min-width: 761px) {
+  html[data-page="play"] #gameSection {
+    position: relative;
+    display: block;
+    min-height: 420px;
+  }
+  html[data-page="play"] .globe-panel {
+    position: absolute;
+    inset: 0;
+  }
+  html[data-page="play"] .answer-panel {
+    position: absolute;
+    left: auto;
+    right: 16px;
+    top: auto;
+    bottom: 16px;
+    transform: none;
+    z-index: 3;
+    width: 280px;
+    grid-template-rows: auto auto auto 44px 44px 36px;
+    gap: 6px;
+    max-height: calc(100% - 40px);
+    overflow: visible;
+    padding: 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 3px 12px #07101e16;
+  }
+  html[data-page="play"] .answer-panel .question {
+    font-size: 18px;
+    margin-block: 4px 8px;
+  }
+  html[data-page="play"] .answer-panel .progress-track {
+    margin: 2px 0 4px;
+  }
+  html[data-page="play"] .answer-panel :is(#answer, #check, #next) {
+    height: 44px;
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  html[data-page="play"] .answer-panel #skip {
+    min-height: 36px;
+    padding: 4px 0;
+    font-size: 12px;
+  }
+}
+
+/* Compact mobile answer card beneath the map. */
+@media (max-width: 760px) {
+  html[data-page="play"] .answer-panel {
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+    grid-template-rows: auto auto auto 44px 44px 44px;
+    gap: 4px;
+  }
+  html[data-page="play"] .answer-panel .progress-track {
+    margin: 2px 0 4px;
+  }
+  html[data-page="play"] .answer-panel .question {
+    margin: 0;
+  }
+  html[data-page="play"] .answer-panel .question h2 {
+    font-size: 18px;
+    margin: 4px 0 8px;
+  }
+  html[data-page="play"] .answer-panel :is(#answer, #check, #next) {
+    height: 44px;
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+  html[data-page="play"] .answer-panel #answer {
+    font-size: 16px;
+  }
+  html[data-page="play"] .answer-panel #skip {
+    min-height: 44px;
+    padding: 6px 0;
+    font-size: 12px;
+  }
+  html[data-page="play"].keyboard-open .answer-panel {
+    padding: 8px;
+    gap: 2px;
+  }
+}
+
+@media (min-width: 761px) {
+  html[data-page="play"] .country-suggestions {
+    max-height: min(240px, 45dvh);
+    z-index: 20;
+  }
+}
+
+/* Stable rows keep the card and primary action still between answers. */
+html[data-page="play"] .answer-panel,
+html[data-page="play"] .answer-panel.has-feedback {
+  grid-template-rows: auto auto 64px 44px 44px 36px;
+  align-content: start;
+}
+html[data-page="play"] .answer-panel .question {
+  align-self: center;
+  margin: 0;
+}
+html[data-page="play"] .answer-panel .question h2 {
+  font-size: 18px;
+  margin: 0;
+}
+html[data-page="play"] .answer-panel.has-feedback .question[hidden] {
+  display: none !important;
+}
+html[data-page="play"] .answer-panel.has-feedback #feedback {
+  grid-row: 3 / 5;
+  contain: size;
+  padding: 10px 12px;
+  border-inline-start-width: 2px;
+  max-height: none;
+  overflow: auto;
+}
+html[data-page="play"] .answer-panel.has-feedback #next {
+  grid-row: 5;
+}
+html[data-page="play"] .answer-panel.has-feedback .feedback-message {
+  font-size: 13px;
+}
+html[data-page="play"] .answer-panel.has-feedback .feedback-country {
+  font-size: 22px;
+  margin-top: 3px;
+}
+@media (max-width: 760px) {
+  html[data-page="play"] .answer-panel,
+  html[data-page="play"] .answer-panel.has-feedback {
+    grid-template-rows: auto auto 44px 44px 44px 44px;
+  }
+}
+
+/* Keep the primary action at the bottom; feedback replaces the input area. */
+html[data-page="play"] .answer-panel,
+html[data-page="play"] .answer-panel.has-feedback {
+  grid-template-rows: auto auto 36px 44px 36px 44px;
+}
+html[data-page="play"] .answer-panel #skip {
+  grid-row: 5;
+  min-height: 36px;
+}
+html[data-page="play"] .answer-panel :is(#check, #next),
+html[data-page="play"] .answer-panel.has-feedback #next {
+  grid-row: 6;
+}
+html[data-page="play"] .answer-panel.has-feedback #feedback {
+  grid-row: 3 / 6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

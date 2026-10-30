@@ -827,11 +827,7 @@ function renderContinents() {
     const choices = document.createElement("div");
     choices.id = "modeChoices";
     choices.className = "mode-choices";
-    const back = document.createElement("a");
-    back.className = "mode-switch";
-    back.textContent = copy[5];
     choices.hidden = selectionPage !== "modes";
-    back.hidden = selectionPage === "modes";
     $("continentChoices").hidden = selectionPage !== "continents";
     $("chooseTitle").textContent =
       selectionPage === "continents"
@@ -853,8 +849,7 @@ function renderContinents() {
       );
       choices.append(button);
     }
-    back.href = pagePath(lang, "modes");
-    $("continentChoices").before(back, choices);
+    $("continentChoices").before(choices);
     if (page === "continents")
       document.title = $("chooseTitle").textContent + " — Karshvar";
   }

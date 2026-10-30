@@ -2,8 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 const articles = JSON.parse(fs.readFileSync("scripts/blog-images.json"));
-test("all 13 blog articles have five places, valid local links, SEO and unique sharing images", () => {
-  assert.equal(articles.length, 13);
+test("all 18 blog articles have five places, valid local links, SEO and unique sharing images", () => {
+  assert.equal(articles.length, 18);
   const images = new Set();
   for (const a of articles) {
     const relative = `${a.l}/blog/${a.slug}/`;
@@ -43,5 +43,5 @@ test("all 13 blog articles have five places, valid local links, SEO and unique s
       if (u.hash) assert.equal(u.pathname, new URL(schema.url).pathname);
     }
   }
-  assert.equal(images.size, 13);
+  assert.equal(images.size, articles.length);
 });

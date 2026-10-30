@@ -102,5 +102,45 @@
     "country": "United States",
     "subtitle": "Five historic places to discover",
     "image": "social/blog-united-states-en.png"
+  },
+  {
+    "l": "en",
+    "slug": "egypt",
+    "title": "Egypt: Five historic places to discover",
+    "country": "Egypt",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-egypt-en.png"
+  },
+  {
+    "l": "ar",
+    "slug": "egypt",
+    "title": "مصر: خمسة أماكن تاريخية تستحق الاكتشاف",
+    "country": "مصر",
+    "subtitle": "خمسة أماكن تاريخية تستحق الاكتشاف",
+    "image": "social/blog-egypt-ar.png"
+  },
+  {
+    "l": "en",
+    "slug": "italy",
+    "title": "Italy: Five historic places to discover",
+    "country": "Italy",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-italy-en.png"
+  },
+  {
+    "l": "en",
+    "slug": "greece",
+    "title": "Greece: Five historic places to discover",
+    "country": "Greece",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-greece-en.png"
+  },
+  {
+    "l": "en",
+    "slug": "india",
+    "title": "India: Five historic places to discover",
+    "country": "India",
+    "subtitle": "Five historic places to discover",
+    "image": "social/blog-india-en.png"
   }
 ]
