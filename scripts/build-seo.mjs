@@ -21,21 +21,11 @@ for (const file of walk("public").filter(
   );
   fs.writeFileSync(file, html);
   if (/name="robots"\s+content="[^"]*noindex/.test(html)) continue;
-  const alternates = [
-    ...html.matchAll(
-      /<link\s+rel="alternate"\s+hreflang="([^"]+)"\s+href="([^"]+)"/g,
-    ),
-  ].map(
-    (m) =>
-      `    <xhtml:link rel="alternate" hreflang="${m[1]}" href="${m[2]}" />`,
-  );
-  entries.push(
-    `  <url>\n    <loc>${canonical}</loc>\n${alternates.join("\n")}\n  </url>`,
-  );
+  entries.push(`  <url>\n    <loc>${canonical}</loc>\n  </url>`);
 }
 fs.writeFileSync(
   "public/sitemap.xml",
-  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
+  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
     entries.join("\n") +
     "\n</urlset>\n",
 );
