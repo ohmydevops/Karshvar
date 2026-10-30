@@ -6,9 +6,11 @@ export const pageTypes = [
   "results",
   "about",
   "explore",
+  "sources",
 ];
 export const pageCopy = {
   en: {
+    sources: "Sources",
     homeTitle: "How well do you know the world?",
     homeDescription:
       "Guess the country on the map. Discover a new corner of the world with every turn.",
@@ -23,6 +25,7 @@ export const pageCopy = {
       "Choose a continent and discover its countries. Drag to move; zoom in to see smaller countries.",
   },
   fa: {
+    sources: "منابع",
     homeTitle: "دنیا رو چقدر می‌شناسی؟",
     homeDescription:
       "کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن.",
@@ -37,6 +40,7 @@ export const pageCopy = {
       "یک قاره انتخاب کن و کشورهاش رو بشناس. نقشه رو بچرخون و برای دیدن کشورهای کوچک‌تر بزرگ‌نمایی کن.",
   },
   ar: {
+    sources: "المصادر",
     homeTitle: "كم تعرف عن العالم؟",
     homeDescription:
       "خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة.",
@@ -51,6 +55,7 @@ export const pageCopy = {
       "اختر قارة وتعرّف على بلدانها. اسحب لتحريك الخريطة وكبّر لرؤية البلدان الصغيرة.",
   },
   tr: {
+    sources: "Kaynaklar",
     homeTitle: "Dünyayı ne kadar tanıyorsun?",
     homeDescription:
       "Haritadaki ülkeyi tahmin et. Her turda dünyanın yeni bir köşesini keşfet.",
@@ -65,6 +70,7 @@ export const pageCopy = {
       "Bir kıta seç ve ülkelerini tanı. Haritayı sürükle, küçük ülkeler için yakınlaştır.",
   },
   fr: {
+    sources: "Sources",
     homeTitle: "Connaissez-vous bien le monde ?",
     homeDescription:
       "Devinez le pays sur la carte. À chaque tour, découvrez un nouveau coin du monde.",
@@ -79,6 +85,7 @@ export const pageCopy = {
       "Choisissez un continent et découvrez ses pays. Faites glisser la carte et zoomez pour voir les petits pays.",
   },
   ru: {
+    sources: "Источники",
     homeTitle: "Как хорошо ты знаешь мир?",
     homeDescription: "Угадай страну на карте. Каждый ход — новый уголок мира.",
     start: "Начать игру",

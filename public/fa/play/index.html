@@ -15,6 +15,18 @@
     <title>حدس کشور — Karshvar</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="preload"
+      href="./data/countries.json"
+      as="fetch"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="./data/names.json"
+      as="fetch"
+      crossorigin="anonymous"
+    />
     <script src="./vendor/d3.min.js" defer></script>
     <script src="./vendor/topojson-client.min.js" defer></script>
     <script type="module" src="./app.js"></script>
@@ -104,23 +116,49 @@
   <body class="light">
     <header>
       <a class="brand" href="./fa/">کَرشوَر</a>
-      <div class="settings">
-        <button id="resetOpen" disabled>
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            aria-hidden="true"
-          >
-            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
-          </svg>
+      <button
+        id="menuOpen"
+        class="menu-toggle"
+        aria-label="منو"
+        aria-controls="appMenu"
+        aria-expanded="false"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">منو</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="بستن منو">
+          ×
         </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="منو">
+          <a id="footerHome" href="./fa/">خانه</a>
+          <a class="explore-link" href="./fa/explore/">کاوش در نقشه</a>
+          <a id="aboutOpen" class="footer-about" href="./fa/about/"
+            >دربارهٔ کَرشوَر</a
+          ><a class="sources-link" href="./fa/sources/">منابع</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">تنظیمات</h2>
+
         <details class="language-picker" id="languagePicker">
           <summary id="language" aria-label="زبان">
-            <span id="languageLabel">FA</span
+            <span id="languageMenuLabel"></span
+            ><span id="languageLabel">FA</span
             ><svg
               width="10"
               height="10"
@@ -154,10 +192,36 @@
             >
           </nav>
         </details>
-        <button id="theme" aria-label="Theme">◐</button>
-      </div>
-    </header>
-    <main>
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main aria-busy="true">
+      <section
+        id="mapLoading"
+        class="map-loading"
+        aria-label="در حال بارگذاری نقشه…"
+      >
+        <div class="map-skeleton" aria-hidden="true"></div>
+        <p id="mapLoadingMessage" role="status" hidden></p>
+        <a hidden id="mapRetry" href="./fa/play/">تلاش دوباره</a>
+      </section>
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome" hidden>
         <div class="welcome-copy">
@@ -317,18 +381,7 @@
         >
       </section>
     </main>
-    <footer>
-      <a id="footerHome" href="./fa/">خانه</a>
-      <a class="explore-link" href="./fa/explore/">کاوش در نقشه</a>
-      <a id="aboutOpen" class="footer-about" href="./fa/about/"
-        >دربارهٔ کَرشوَر</a
-      ><a
-        href="https://www.naturalearthdata.com/about/terms-of-use/"
-        target="_blank"
-        rel="noreferrer"
-        data-text="credits"
-      ></a>
-    </footer>
+    <footer class="simple-footer">Karshvar</footer>
 
     <dialog
       id="resetDialog"

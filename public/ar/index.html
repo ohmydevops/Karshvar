@@ -117,23 +117,49 @@
   <body class="light">
     <header>
       <a class="brand" href="./ar/">Karshvar</a>
-      <div class="settings">
-        <button id="resetOpen" disabled>
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            aria-hidden="true"
-          >
-            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
-          </svg>
+      <button
+        id="menuOpen"
+        class="menu-toggle"
+        aria-label="القائمة"
+        aria-controls="appMenu"
+        aria-expanded="false"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          aria-hidden="true"
+        >
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">القائمة</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="إغلاق القائمة">
+          ×
         </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="القائمة">
+          <a id="footerHome" href="./ar/">الرئيسية</a>
+          <a class="explore-link" href="./ar/explore/">استكشف الخريطة</a>
+          <a id="aboutOpen" class="footer-about" href="./ar/about/"
+            >عن Karshvar</a
+          ><a class="sources-link" href="./ar/sources/">المصادر</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">الإعدادات</h2>
+
         <details class="language-picker" id="languagePicker">
           <summary id="language" aria-label="اللغة">
-            <span id="languageLabel">AR</span
+            <span id="languageMenuLabel"></span
+            ><span id="languageLabel">AR</span
             ><svg
               width="10"
               height="10"
@@ -161,9 +187,26 @@
             ><a href="./ru/" lang="ru" hreflang="ru" data-language="ru">RU</a>
           </nav>
         </details>
-        <button id="theme" aria-label="Theme">◐</button>
-      </div>
-    </header>
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
     <main>
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
@@ -323,17 +366,7 @@
         >
       </section>
     </main>
-    <footer>
-      <a id="footerHome" href="./ar/">الرئيسية</a>
-      <a class="explore-link" href="./ar/explore/">استكشف الخريطة</a>
-      <a id="aboutOpen" class="footer-about" href="./ar/about/">عن Karshvar</a
-      ><a
-        href="https://www.naturalearthdata.com/about/terms-of-use/"
-        target="_blank"
-        rel="noreferrer"
-        data-text="credits"
-      ></a>
-    </footer>
+    <footer class="simple-footer">Karshvar</footer>
 
     <dialog
       id="resetDialog"

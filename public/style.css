@@ -1231,17 +1231,102 @@ html[data-page="home"] .welcome-copy {
 }
 
 html[data-page="explore"] main {
+  position: relative;
   width: 100%;
   max-width: none;
-  margin: 12px 0 0;
+  margin: 0;
 }
 html[data-page="explore"] .explore-heading {
-  width: min(1128px, calc(100% - 48px));
-  margin-inline: auto;
-  flex: 0 0 auto;
+  position: absolute;
+  inset-block-start: 12px;
+  inset-inline-start: 12px;
+  z-index: 3;
+  max-width: min(160px, calc(100% - 24px));
+  max-height: calc(100% - 72px);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 4px 18px #0002;
+}
+html[data-page="explore"] .explore-heading > h1,
+html[data-page="explore"] .explore-heading > p {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+#explorePanel summary {
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+#explorePanel #exploreContinents {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 0 8px;
+  margin: 0;
+  gap: 0;
+}
+#explorePanel #exploreContinents a {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.population-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  margin-top: 6px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  cursor: pointer;
+  min-height: 44px;
+}
+.population-switch input {
+  appearance: none;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--muted);
+  border-radius: 20px;
+  background: var(--bg);
+  cursor: pointer;
+}
+.population-switch input::before {
+  content: "";
+  display: block;
+  width: 12px;
+  height: 12px;
+  margin: 2px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.population-switch input:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.population-switch input:checked::before {
+  background: var(--accent-ink);
+  transform: translateX(12px);
+}
+[dir="rtl"] .population-switch input:checked::before {
+  transform: translateX(-12px);
 }
 html[data-page="explore"] #gameSection {
-  margin-top: 8px;
+  margin-top: 0;
   gap: 0;
 }
 html[data-page="explore"] .globe-panel {
@@ -1255,10 +1340,238 @@ html[data-page="explore"] .map-controls {
 }
 @media (max-width: 760px) {
   html[data-page="explore"] main {
-    margin-top: 8px;
+    margin-top: 0;
   }
   html[data-page="explore"] .explore-heading {
-    width: calc(100% - 32px);
+    inset-block-start: 8px;
+    inset-inline-start: 8px;
+  }
+  #explorePanel #exploreContinents a {
+    min-height: 40px;
+  }
+}
+
+.menu-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.menu-toggle:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.menu-toggle {
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+.menu-toggle:active {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+.menu-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-toggle {
+    transition: none;
+  }
+}
+dialog.app-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  margin: 0;
+  width: min(320px, calc(100% - 40px));
+  height: 100dvh;
+  max-height: 100dvh;
+  max-width: none;
+  padding: max(16px, env(safe-area-inset-top)) 16px
+    max(16px, env(safe-area-inset-bottom));
+  border: 0;
+  border-inline-start: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+dialog.app-drawer[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.app-drawer::backdrop {
+  background: #07101e80;
+  backdrop-filter: none;
+}
+.drawer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+.drawer-heading strong {
+  font-size: 18px;
+}
+.drawer-heading .menu-toggle {
+  font-size: 28px;
+  font-weight: 300;
+}
+.app-drawer .site-menu nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.app-drawer .site-menu a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+}
+.app-drawer .site-menu a:hover,
+.app-drawer .site-menu a[aria-current="page"] {
+  background: var(--surface);
+  color: var(--accent);
+}
+.app-drawer .drawer-settings {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.drawer-settings h2 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 12px 4px;
+}
+.app-drawer .drawer-settings button,
+.app-drawer .language-picker summary {
+  width: 100%;
+  height: auto;
+  min-height: 48px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  justify-content: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  text-align: start;
+}
+.app-drawer .drawer-settings button:hover,
+.app-drawer .language-picker summary:hover {
+  background: var(--surface);
+}
+.app-drawer .language-picker {
+  order: 1;
+}
+.app-drawer #theme {
+  order: 2;
+}
+.app-drawer #resetOpen {
+  order: 3;
+}
+.app-drawer #languageMenuLabel {
+  flex: 1;
+}
+.app-drawer #languageLabel {
+  color: var(--muted);
+  font-size: 12px;
+}
+.app-drawer .language-options {
+  position: static;
+  width: 100%;
+  margin-top: 4px;
+  padding: 4px;
+  box-shadow: none;
+  background: var(--surface);
+  border: 0;
+}
+.app-drawer .language-options a {
+  min-height: 44px;
+}
+.drawer-footer {
+  margin-top: auto;
+  padding: 16px 12px 0;
+  color: var(--muted);
+  font-size: 11px;
+  border-top: 1px solid var(--line);
+}
+footer.simple-footer {
+  justify-content: center;
+  padding: 4px 12px calc(4px + env(safe-area-inset-bottom));
+  min-height: 24px;
+  font-size: 10px;
+}
+html[data-page="sources"] main {
+  overflow-y: auto;
+}
+.sources-page section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.sources-page h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+@media (max-width: 760px) and (orientation: portrait) {
+  html[data-page="home"] main {
+    width: calc(100% - 40px);
+    margin: 0 auto;
+    overflow-y: auto;
+  }
+  html[data-page="home"] .welcome {
+    flex: 0 0 auto;
+    width: 100%;
+    margin-block: auto;
+    padding-block: 20px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    gap: 16px;
+    align-content: center;
+  }
+  html[data-page="home"] .welcome-art {
+    width: min(100%, 320px, 38dvh);
+    height: auto;
+    max-height: none;
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+  html[data-page="home"] .welcome-copy {
+    width: 100%;
+    padding: 0;
+  }
+  html[data-page="home"] .welcome-copy h1 {
+    font-size: clamp(26px, 7.4vw, 36px);
+    line-height: 1.35;
+    margin: 0 0 12px;
+  }
+  html[data-page="home"] .welcome-copy p {
+    line-height: 1.8;
+    margin: 0 auto 22px;
+  }
+  html[data-page="home"] .welcome-copy .primary {
+    width: 100%;
+    max-width: 340px;
+    margin-inline: auto;
   }
 }
 
@@ -1393,4 +1706,67 @@ html[data-page="about"] main {
 .about-page .source-link {
   display: block;
   width: fit-content;
+}
+
+/* Present in the HTML so slow module downloads never leave a blank map. */
+main:has(.map-loading) {
+  position: relative;
+}
+.map-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+  background: var(--bg);
+  color: var(--accent);
+}
+.map-skeleton {
+  width: min(76%, 62dvh, 620px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(
+    100deg,
+    var(--surface) 25%,
+    var(--line) 50%,
+    var(--surface) 75%
+  );
+  background-size: 220% 100%;
+  animation: map-skeleton-shimmer 2s ease-in-out infinite;
+}
+@keyframes map-skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+.map-loading p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text);
+  max-width: 30ch;
+}
+.map-loading a {
+  color: var(--muted);
+  font-size: 12px;
+  padding: 10px 16px;
+  min-height: 44px;
+}
+.map-loading a:hover {
+  color: var(--accent);
+}
+.map-loading.load-failed .map-skeleton {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-skeleton {
+    animation: none;
+  }
 }
