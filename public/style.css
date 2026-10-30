@@ -317,6 +317,24 @@ html[dir="rtl"] h2 {
   min-height: 56px;
   box-shadow: 0 12px 25px #285ce125;
 }
+@media (min-width: 761px) {
+  html[data-page="home"] .welcome {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+  html[data-page="home"] .welcome-copy {
+    max-width: none;
+    min-width: 0;
+  }
+  html[data-page="home"] .welcome-copy h1 {
+    font-size: clamp(23px, 2.6vw, 38px);
+    line-height: 1.35;
+    letter-spacing: -0.8px;
+    white-space: nowrap;
+  }
+  html[dir="rtl"][data-page="home"] .welcome-copy h1 {
+    letter-spacing: 0;
+  }
+}
 .welcome-art {
   position: relative;
   min-height: 0;
