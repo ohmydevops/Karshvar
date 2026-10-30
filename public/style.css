@@ -95,6 +95,8 @@ button:disabled {
   display: none !important;
 }
 header {
+  position: relative;
+  z-index: 10;
   border-bottom: 1px solid var(--line);
   width: min(1200px, 100%);
   padding: 12px 28px;
@@ -139,6 +141,33 @@ header {
 }
 .language-picker {
   position: relative;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.header-actions .language-picker summary {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+}
+.header-actions .language-picker summary:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.header-actions .language-options {
+  width: 156px;
+}
+.header-actions .language-options a {
+  min-height: 44px;
+  color: var(--text);
+}
+[dir="rtl"] .header-actions .language-options {
+  left: 0;
+  right: auto;
 }
 .language-picker summary {
   list-style: none;

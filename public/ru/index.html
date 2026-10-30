@@ -117,48 +117,10 @@
   <body class="light">
     <header>
       <a class="brand" href="./ru/">Karshvar</a>
-      <button
-        id="menuOpen"
-        class="menu-toggle"
-        aria-label="Меню"
-        aria-controls="appMenu"
-        aria-expanded="false"
-      >
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          aria-hidden="true"
-        >
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-    </header>
-    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
-      <div class="drawer-heading">
-        <strong id="menuTitle">Меню</strong
-        ><button id="menuClose" class="menu-toggle" aria-label="Закрыть меню">
-          ×
-        </button>
-      </div>
-      <div class="site-menu">
-        <nav aria-label="Меню">
-          <a id="footerHome" href="./ru/">Главная</a>
-          <a class="explore-link" href="./ru/explore/">Изучить карту</a>
-          <a id="aboutOpen" class="footer-about" href="./ru/about/"
-            >О Karshvar</a
-          ><a class="sources-link" href="./ru/sources/">Источники</a>
-        </nav>
-      </div>
-      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
-        <h2 id="settingsTitle">Настройки</h2>
-
+      <div class="header-actions">
         <details class="language-picker" id="languagePicker">
           <summary id="language" aria-label="Язык">
-            <span id="languageMenuLabel"></span
+            <span id="languageMenuLabel" hidden></span
             ><span id="languageLabel">RU</span
             ><svg
               width="10"
@@ -188,6 +150,46 @@
             >
           </nav>
         </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Меню"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Меню</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Закрыть меню">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Меню">
+          <a id="footerHome" href="./ru/">Главная</a>
+          <a class="explore-link" href="./ru/explore/">Изучить карту</a>
+          <a id="aboutOpen" class="footer-about" href="./ru/about/"
+            >О Karshvar</a
+          ><a class="sources-link" href="./ru/sources/">Источники</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Настройки</h2>
+
         <button id="theme" aria-label="Theme">
           <span aria-hidden="true">◐</span><span data-text="theme"></span>
         </button>

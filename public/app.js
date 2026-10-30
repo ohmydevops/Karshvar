@@ -1075,6 +1075,7 @@ function closeMenu() {
   menuCloseTimer = setTimeout(() => appMenu.close(), 300);
 }
 $("menuOpen").onclick = () => {
+  $("languagePicker").open = false;
   appMenu.showModal();
   $("menuOpen").setAttribute("aria-expanded", "true");
 };
