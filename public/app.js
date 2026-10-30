@@ -1,3 +1,4 @@
+import { modeCopy } from "./mode-copy.js";
 import "./offline.js";
 import { nearbyOrder, restoreNearbySession } from "./nearby.js";
 import { bindCountrySuggestions } from "./suggestions.js";
@@ -617,6 +618,9 @@ svg
   });
 function updateThemeLabel() {
   const light = document.body.classList.contains("light");
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", light ? "#f7f9ff" : "#0d1528");
   const labels = {
     en: ["Dark mode", "Light mode"],
     fa: ["حالت شب", "حالت روز"],
@@ -688,7 +692,7 @@ function localize() {
   });
   $("resultsTitle").textContent = pageCopy[lang].results;
   $("restartContinent").textContent = labels[lang][5];
-  $("chooseAgain").textContent = pageCopy[lang].again;
+  $("chooseAgain").textContent = modeCopy[lang][5];
   $("chooseAgain").href = pagePath(lang, "modes");
   document
     .querySelectorAll("[data-language]")
@@ -718,7 +722,8 @@ function localize() {
   if (!storage)
     document.querySelector(".session-note").textContent = t("storage");
   document.querySelector(".session-note").hidden = storage;
-  document.querySelector(".intro h1").textContent = labels[lang][1];
+  const introTitle = document.querySelector(".intro h1");
+  if (introTitle) introTitle.textContent = labels[lang][1];
   const introDescription = document.querySelector(".intro p");
   if (introDescription) introDescription.textContent = labels[lang][2];
   $("chooseTitle").textContent = pageCopy[lang].continents;
@@ -765,56 +770,7 @@ function prepareContinentImages(root) {
 function renderContinents() {
   if (page !== "continents") return;
   if (!$("modeChoices")) {
-    const copy = {
-      en: [
-        "Choose your mode",
-        "Continent random mode",
-        "By my country",
-        "Choose a continent and guess its countries in random order.",
-        "Start from your country and explore nearest to farthest.",
-        "Change mode",
-      ],
-      fa: [
-        "حالت بازی را انتخاب کن",
-        "حالت تصادفی قاره",
-        "از کشور من",
-        "یک قاره انتخاب کن و کشورها را به ترتیب تصادفی حدس بزن.",
-        "از کشور خودت شروع کن؛ از نزدیک‌ترین تا دورترین.",
-        "تغییر حالت",
-      ],
-      ar: [
-        "اختر نمط اللعب",
-        "قارة بترتيب عشوائي",
-        "من بلدي",
-        "اختر قارة وخمن بلدانها بترتيب عشوائي.",
-        "ابدأ من بلدك، من الأقرب إلى الأبعد.",
-        "تغيير النمط",
-      ],
-      tr: [
-        "Oyun modunu seç",
-        "Rastgele kıta modu",
-        "Ülkemden başla",
-        "Bir kıta seç ve ülkeleri rastgele sırayla tahmin et.",
-        "Ülkenden başlayarak yakından uzağa keşfet.",
-        "Modu değiştir",
-      ],
-      fr: [
-        "Choisissez votre mode",
-        "Continent aléatoire",
-        "Depuis mon pays",
-        "Choisissez un continent et devinez ses pays dans un ordre aléatoire.",
-        "Partez de votre pays, du plus proche au plus lointain.",
-        "Changer de mode",
-      ],
-      ru: [
-        "Выберите режим",
-        "Случайные страны континента",
-        "От моей страны",
-        "Выберите континент и угадывайте страны в случайном порядке.",
-        "Начните со своей страны — от ближайших к дальним.",
-        "Сменить режим",
-      ],
-    }[lang];
+    const copy = modeCopy[lang];
     const choices = document.createElement("div");
     choices.id = "modeChoices";
     choices.className = "mode-choices";
@@ -854,14 +810,8 @@ function renderContinents() {
     const section = document.createElement("section");
     section.id = "nearbyMode";
     section.className = "nearby-mode";
-    const title = document.createElement("h2");
-    title.textContent =
-      lang === "fa" ? "از کشور خودت شروع کن" : "Start from your country";
     const description = document.createElement("p");
-    description.textContent =
-      lang === "fa"
-        ? "اول کشورهای هم‌مرز، بعد بقیهٔ کشورها از نزدیک‌ترین تا دورترین نسبت به کشور شروع."
-        : "Start with bordering countries, then explore outward from your country, nearest to farthest.";
+    description.textContent = modeCopy[lang][4];
     const label = document.createElement("label");
     label.textContent = t("country");
     label.htmlFor = "startingCountry";
@@ -899,7 +849,7 @@ function renderContinents() {
     button.onclick = () => {
       if (select.value) navigate("play", "country:" + select.value);
     };
-    section.append(title, description, label, select, button);
+    section.append(description, label, select, button);
     $("continentChoices").before(section);
   }
 
@@ -1099,7 +1049,7 @@ function render() {
   $("answer").disabled = false;
   $("check").disabled = false;
   $("next").hidden = !done && !record;
-  $("next").textContent = done ? labels[lang][5] : t("next");
+  $("next").textContent = done ? modeCopy[lang][8] : t("next");
   $("changeContinent").textContent = selected?.startsWith("country:")
     ? {
         en: "Change country",
@@ -1120,11 +1070,14 @@ function render() {
     .querySelector(".answer-panel")
     .classList.toggle("has-feedback", !!record && !done);
   if (done) {
-    feedback.textContent = `${labels[lang][4]} ${number(state.answers.filter((a) => a.correct).length)} / ${number(state.order.length)}`;
+    feedback.textContent = `${modeCopy[lang][7]} ${number(state.answers.filter((a) => a.correct).length)} / ${number(state.order.length)}`;
   } else if (record) {
     const message = document.createElement("span");
     message.className = "feedback-message";
-    message.textContent = t(record.correct ? "correct" : "incorrect");
+    message.textContent =
+      record.choice === ""
+        ? modeCopy[lang][6]
+        : t(record.correct ? "correct" : "incorrect");
     const country = document.createElement("strong");
     country.className = "feedback-country";
     country.textContent = name(current);

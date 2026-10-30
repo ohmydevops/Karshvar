@@ -16,9 +16,9 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Choose a continent, then guess its highlighted countries."
+      content="Start with bordering countries, then the rest from nearest to farthest, measured from your starting country."
     />
-    <title>Choose your adventure — Karshvar</title>
+    <title>Start from your country — Karshvar</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./style.css" />
     <script src="./vendor/d3.min.js" defer></script>
@@ -27,10 +27,10 @@
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Karshvar" />
-    <meta property="og:title" content="Choose your adventure — Karshvar" />
+    <meta property="og:title" content="Start from your country — Karshvar" />
     <meta
       property="og:description"
-      content="Choose a continent, then guess its highlighted countries."
+      content="Start with bordering countries, then the rest from nearest to farthest, measured from your starting country."
     />
     <meta property="og:locale" content="en_US" />
     <meta
@@ -41,10 +41,10 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Karshvar" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Choose your adventure — Karshvar" />
+    <meta name="twitter:title" content="Start from your country — Karshvar" />
     <meta
       name="twitter:description"
-      content="Choose a continent, then guess its highlighted countries."
+      content="Start with bordering countries, then the rest from nearest to farthest, measured from your starting country."
     />
     <meta
       name="twitter:image"
@@ -54,8 +54,8 @@
       {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": "Choose your adventure — Karshvar",
-        "description": "Choose a continent, then guess its highlighted countries.",
+        "name": "Start from your country — Karshvar",
+        "description": "Start with bordering countries, then the rest from nearest to farthest, measured from your starting country.",
         "url": "https://ohmydevops.github.io/Karshvar/en/countries/",
         "inLanguage": "en"
       }
@@ -248,11 +248,8 @@
           />
         </div>
       </section>
-      <section class="intro">
-        <h1>Where would you like to play?</h1>
-      </section>
       <section id="continentSelection" aria-labelledby="chooseTitle">
-        <h2 id="chooseTitle" tabindex="-1">Choose your adventure</h2>
+        <h1 id="chooseTitle" tabindex="-1">Start from your country</h1>
         <div
           id="continentChoices"
           class="continent-choices"

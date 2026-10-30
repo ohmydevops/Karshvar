@@ -9,7 +9,7 @@
   --land: #718caf;
   --ocean: #132c4b;
   --radius: 14px;
-  color-scheme: dark;
+  color-scheme: light;
   font-family: "Segoe UI", Tahoma, Arial, sans-serif;
 }
 @font-face {
@@ -29,6 +29,13 @@ html[lang="fa"] {
 }
 * {
   box-sizing: border-box;
+}
+html {
+  background: #f7f9ff;
+}
+html:has(body:not(.light)) {
+  background: #0d1528;
+  color-scheme: dark;
 }
 html,
 body {
@@ -1988,12 +1995,42 @@ html:is([data-page="about"], [data-page="sources"]) main {
   border: 1px solid var(--muted);
   border-radius: 20px;
 }
+.nearby-mode label {
+  display: block;
+  margin-block: 20px 8px;
+  font-weight: 600;
+}
 .nearby-mode select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 54px;
   font: inherit;
-  padding: 12px;
-  margin: 12px;
-  max-width: 100%;
+  font-size: 16px;
+  color: var(--text);
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23596b88' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding: 14px 44px 14px 16px;
+  margin: 0 0 16px;
+  border: 1px solid var(--line);
   border-radius: 12px;
+  cursor: pointer;
+}
+html[dir="rtl"] .nearby-mode select {
+  background-position: left 16px center;
+  padding: 14px 16px 14px 44px;
+}
+.nearby-mode select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.nearby-mode select:invalid {
+  color: var(--muted);
+}
+.nearby-mode > .primary {
+  width: 100%;
 }
 
 .mode-choices {
@@ -2078,5 +2115,53 @@ html:is([data-page="about"], [data-page="sources"]) main {
   }
   .has-feedback #feedback {
     padding: 10px 14px;
+  }
+}
+
+/* Reading pages use document scrolling, rather than a narrow nested scroll area. */
+html:is([data-page="about"], [data-page="sources"]) {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+html:is([data-page="about"], [data-page="sources"]) body {
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+html:is([data-page="about"], [data-page="sources"]) main {
+  flex: 1 0 auto;
+  overflow: visible;
+  min-height: auto;
+}
+body > header,
+body > footer {
+  flex-shrink: 0;
+}
+body {
+  min-height: 100svh;
+}
+
+/* Native page transitions: no click interception or navigation delay. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-group(root) {
+    animation-duration: 140ms;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 140ms;
+    animation-timing-function: ease-out;
+  }
+  ::view-transition {
+    pointer-events: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
   }
 }
