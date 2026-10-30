@@ -212,6 +212,14 @@ try {
 } catch {
   storage = false;
 }
+if ($("showPopulation")) {
+  try {
+    $("showPopulation").checked =
+      localStorage.getItem("atlas-show-population") === "true";
+  } catch {
+    // Keep the default off when browser storage is unavailable.
+  }
+}
 const analytics = createAnalytics({
   enabled: isProduction(location),
 });
@@ -790,6 +798,14 @@ function openExplore(continent = "All") {
       ? populationLabel(name(f), f.id, lang)
       : name(f);
   $("showPopulation").onchange = () => {
+    try {
+      localStorage.setItem(
+        "atlas-show-population",
+        String($("showPopulation").checked),
+      );
+    } catch {
+      // The switch still works for this visit if storage is blocked.
+    }
     countryLabels.selectAll("text").text(exploreName);
     land.selectAll("path").attr("aria-label", exploreName);
     labelsNeedMeasurement = true;
