@@ -1385,6 +1385,7 @@ html[data-page="explore"] .map-controls {
   }
 }
 dialog.app-drawer {
+  --drawer-offset: 100%;
   position: fixed;
   inset-block: 0;
   inset-inline-start: auto;
@@ -1408,10 +1409,59 @@ dialog.app-drawer[open] {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  animation: drawer-enter 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+[dir="rtl"] dialog.app-drawer {
+  --drawer-offset: -100%;
+}
+dialog.app-drawer.is-closing {
+  animation: drawer-exit 180ms ease-in both;
 }
 .app-drawer::backdrop {
   background: #07101e80;
   backdrop-filter: none;
+  animation: drawer-backdrop-enter 220ms ease-out both;
+}
+.app-drawer.is-closing::backdrop {
+  animation: drawer-backdrop-exit 180ms ease-in both;
+}
+@keyframes drawer-enter {
+  from {
+    transform: translateX(var(--drawer-offset));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes drawer-exit {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--drawer-offset));
+  }
+}
+@keyframes drawer-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes drawer-backdrop-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog.app-drawer[open],
+  .app-drawer::backdrop {
+    animation: none;
+  }
 }
 .drawer-heading {
   display: flex;

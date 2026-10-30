@@ -1047,12 +1047,33 @@ $("theme").onclick = () => {
   draw();
 };
 const appMenu = $("appMenu");
+let menuCloseTimer;
+function closeMenu() {
+  if (!appMenu.open || appMenu.classList.contains("is-closing")) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    appMenu.close();
+    return;
+  }
+  appMenu.classList.add("is-closing");
+  // Fallback if animation events are interrupted or unavailable.
+  menuCloseTimer = setTimeout(() => appMenu.close(), 300);
+}
 $("menuOpen").onclick = () => {
   appMenu.showModal();
   $("menuOpen").setAttribute("aria-expanded", "true");
 };
-$("menuClose").onclick = () => appMenu.close();
+$("menuClose").onclick = closeMenu;
+appMenu.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeMenu();
+});
+appMenu.addEventListener("animationend", (event) => {
+  if (event.target === appMenu && event.animationName === "drawer-exit")
+    appMenu.close();
+});
 appMenu.addEventListener("close", () => {
+  clearTimeout(menuCloseTimer);
+  appMenu.classList.remove("is-closing");
   $("menuOpen").setAttribute("aria-expanded", "false");
 });
 appMenu.addEventListener("click", (event) => {
@@ -1064,7 +1085,7 @@ appMenu.addEventListener("click", (event) => {
     event.clientY < bounds.top ||
     event.clientY > bounds.bottom
   )
-    appMenu.close();
+    closeMenu();
 });
 localize();
 $("resetOpen").disabled = false;
