@@ -118,6 +118,30 @@ async function setupOffline() {
     registration.addEventListener("updatefound", watch);
     watch();
     offerUpdate();
+    let checking = false;
+    let lastCheck = 0;
+    const checkForUpdate = async () => {
+      if (document.visibilityState === "hidden" || navigator.onLine === false)
+        return;
+      offerUpdate();
+      if (checking || Date.now() - lastCheck < 60_000) return;
+      checking = true;
+      lastCheck = Date.now();
+      try {
+        await registration.update();
+        offerUpdate();
+      } catch {
+        // A failed connection must not interrupt offline play or delay a retry.
+        lastCheck = 0;
+      } finally {
+        checking = false;
+      }
+    };
+    document.addEventListener("visibilitychange", checkForUpdate);
+    window.addEventListener("online", checkForUpdate);
+    window.addEventListener("pageshow", checkForUpdate);
+    window.setInterval(checkForUpdate, 60_000);
+    checkForUpdate();
   } catch (error) {
     console.warn("Offline setup failed", error);
   }

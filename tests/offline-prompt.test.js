@@ -10,13 +10,21 @@ async function setup(controller = true) {
   const nodes = [],
     events = {},
     sent = [];
-  let reloads = 0;
+  let reloads = 0,
+    checks = 0,
+    now = 100_000;
   const waiting = {
     postMessage(message) {
       sent.push(message);
     },
   };
-  const registration = { waiting, addEventListener() {} };
+  const registration = {
+    waiting,
+    addEventListener() {},
+    async update() {
+      checks++;
+    },
+  };
   const serviceWorker = {
     controller: controller ? {} : null,
     async register() {
@@ -28,6 +36,10 @@ async function setup(controller = true) {
   };
   const document = {
     readyState: "complete",
+    visibilityState: "visible",
+    addEventListener(name, handler) {
+      events[name] = handler;
+    },
     documentElement: { lang: "en" },
     body: { append() {} },
     createElement(tag) {
@@ -65,7 +77,16 @@ async function setup(controller = true) {
     {
       document,
       navigator: { serviceWorker },
-      window: { isSecureContext: true },
+      window: {
+        isSecureContext: true,
+        addEventListener(name, handler) {
+          events[name] = handler;
+        },
+        setInterval(handler) {
+          events.interval = handler;
+        },
+      },
+      Date: { now: () => now },
       URL,
       location: {
         reload() {
@@ -78,6 +99,13 @@ async function setup(controller = true) {
   await new Promise((resolve) => setImmediate(resolve));
   return {
     nodes,
+    document,
+    advance() {
+      now += 60_000;
+    },
+    get checks() {
+      return checks;
+    },
     events,
     sent,
     get reloads() {
@@ -104,4 +132,23 @@ test("Update now activates waiting worker and reloads once on controller change"
   app.events.controllerchange();
   app.events.controllerchange();
   assert.equal(app.reloads, 1);
+});
+
+test("update checks run on return and reconnect, with throttling and hidden-tab suppression", async () => {
+  const app = await setup();
+  assert.equal(app.checks, 1);
+  await app.events.pageshow();
+  assert.equal(app.checks, 1);
+  app.advance();
+  app.document.visibilityState = "hidden";
+  await app.events.interval();
+  assert.equal(app.checks, 1);
+  app.document.visibilityState = "visible";
+  await app.events.visibilitychange();
+  assert.equal(app.checks, 2);
+  app.advance();
+  await app.events.online();
+  assert.equal(app.checks, 3);
+  assert.equal(app.reloads, 0);
+  assert.equal(app.nodes.filter((n) => n.tag === "dialog").length, 1);
 });
