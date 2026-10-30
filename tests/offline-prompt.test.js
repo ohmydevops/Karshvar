@@ -34,7 +34,12 @@ async function setup(controller = true) {
       events[name] = handler;
     },
   };
+  const menuButton = {},
+    menuStatus = {};
   const document = {
+    getElementById(id) {
+      return id === "checkUpdates" ? menuButton : menuStatus;
+    },
     readyState: "complete",
     visibilityState: "visible",
     addEventListener(name, handler) {
@@ -99,6 +104,9 @@ async function setup(controller = true) {
   await new Promise((resolve) => setImmediate(resolve));
   return {
     nodes,
+    registration,
+    menuButton,
+    menuStatus,
     document,
     advance() {
       now += 60_000;
@@ -151,4 +159,31 @@ test("update checks run on return and reconnect, with throttling and hidden-tab 
   assert.equal(app.checks, 3);
   assert.equal(app.reloads, 0);
   assert.equal(app.nodes.filter((n) => n.tag === "dialog").length, 1);
+});
+
+test("manual menu check bypasses throttle and reports no update", async () => {
+  const app = await setup();
+  app.registration.waiting = null;
+  await app.menuButton.onclick();
+  assert.equal(app.checks, 2);
+  assert.equal(app.menuStatus.textContent, "You’re up to date.");
+  assert.equal(app.menuButton.disabled, false);
+  assert.equal(app.reloads, 0);
+});
+test("manual check can offer a previously dismissed update", async () => {
+  const app = await setup();
+  app.nodes.find((n) => n.textContent === "Later").onclick();
+  await app.menuButton.onclick();
+  assert.equal(app.nodes.filter((n) => n.tag === "dialog" && n.open).length, 1);
+  assert.equal(app.sent.length, 0);
+});
+test("failed manual checks show feedback and restore the button", async () => {
+  const app = await setup();
+  app.registration.waiting = null;
+  app.registration.update = async () => {
+    throw Error("network");
+  };
+  await app.menuButton.onclick();
+  assert.equal(app.menuStatus.textContent, "Couldn’t check. Try again.");
+  assert.equal(app.menuButton.disabled, false);
 });

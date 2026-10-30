@@ -1,3 +1,53 @@
+const checkCopy = {
+  en: [
+    "Checking…",
+    "You’re up to date.",
+    "Downloading update…",
+    "Connect to the internet to check for updates.",
+    "Couldn’t check. Try again.",
+    "Update ready.",
+  ],
+  fa: [
+    "در حال بررسی…",
+    "آخرین نسخه را دارید.",
+    "در حال دریافت به‌روزرسانی…",
+    "برای بررسی به اینترنت وصل شوید.",
+    "بررسی انجام نشد. دوباره تلاش کنید.",
+    "به‌روزرسانی آماده است.",
+  ],
+  ar: [
+    "جارٍ التحقق…",
+    "لديك أحدث إصدار.",
+    "جارٍ تنزيل التحديث…",
+    "اتصل بالإنترنت للتحقق من التحديثات.",
+    "تعذّر التحقق. حاول مجددًا.",
+    "التحديث جاهز.",
+  ],
+  tr: [
+    "Kontrol ediliyor…",
+    "En güncel sürümdesin.",
+    "Güncelleme indiriliyor…",
+    "Kontrol etmek için internete bağlan.",
+    "Kontrol edilemedi. Tekrar dene.",
+    "Güncelleme hazır.",
+  ],
+  fr: [
+    "Vérification…",
+    "Vous êtes à jour.",
+    "Téléchargement…",
+    "Connectez-vous à Internet pour vérifier.",
+    "Échec de la vérification. Réessayez.",
+    "Mise à jour prête.",
+  ],
+  ru: [
+    "Проверка…",
+    "У вас последняя версия.",
+    "Загрузка обновления…",
+    "Подключитесь к интернету для проверки.",
+    "Не удалось проверить. Попробуйте снова.",
+    "Обновление готово.",
+  ],
+};
 const updateCopy = {
   en: [
     "Update available",
@@ -49,6 +99,15 @@ async function setupOffline() {
       new URL("./sw.js", import.meta.url),
       { updateViaCache: "none" },
     );
+    const checkButton = document.getElementById?.("checkUpdates");
+    const checkStatus = document.getElementById?.("updateCheckStatus");
+    const messages = checkCopy[document.documentElement.lang] || checkCopy.en;
+    let manualCheck = false;
+    const showCheckStatus = (index) => {
+      if (!checkStatus) return;
+      checkStatus.hidden = false;
+      checkStatus.textContent = messages[index];
+    };
     let approved = false;
     let reloaded = false;
     let offeredWorker;
@@ -112,12 +171,43 @@ async function setupOffline() {
     const watch = () => {
       const worker = registration.installing;
       worker?.addEventListener("statechange", () => {
-        if (worker.state === "installed") offerUpdate();
+        if (worker.state === "installed") {
+          if (manualCheck) showCheckStatus(5);
+          offerUpdate();
+        } else if (worker.state === "redundant" && manualCheck)
+          showCheckStatus(4);
       });
     };
     registration.addEventListener("updatefound", watch);
     watch();
     offerUpdate();
+    if (checkButton) {
+      checkButton.hidden = false;
+      checkButton.onclick = async () => {
+        manualCheck = true;
+        if (registration.waiting) {
+          offeredWorker = undefined;
+          showCheckStatus(5);
+          offerUpdate();
+          return;
+        }
+        if (navigator.onLine === false) return showCheckStatus(3);
+        checkButton.disabled = true;
+        showCheckStatus(0);
+        try {
+          await registration.update();
+          if (registration.waiting) {
+            offeredWorker = undefined;
+            showCheckStatus(5);
+            offerUpdate();
+          } else showCheckStatus(registration.installing ? 2 : 1);
+        } catch {
+          showCheckStatus(4);
+        } finally {
+          checkButton.disabled = false;
+        }
+      };
+    }
     let checking = false;
     let lastCheck = 0;
     const checkForUpdate = async () => {
