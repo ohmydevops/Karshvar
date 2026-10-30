@@ -1,2 +1,5 @@
 node_modules/
 output/
+
+# Generated from scripts/sw-template.js before development, tests, and deployment
+public/sw.js

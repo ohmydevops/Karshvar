@@ -2,6 +2,8 @@ export const routeLanguages = ["en", "fa", "ar", "tr", "fr", "ru"];
 export const pageTypes = [
   "home",
   "continents",
+  "modes",
+  "countries",
   "play",
   "results",
   "about",

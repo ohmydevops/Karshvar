@@ -1981,3 +1981,102 @@ html:is([data-page="about"], [data-page="sources"]) main {
     padding: 20px;
   }
 }
+
+.nearby-mode {
+  padding: 24px;
+  margin-block: 24px;
+  border: 1px solid var(--muted);
+  border-radius: 20px;
+}
+.nearby-mode select {
+  font: inherit;
+  padding: 12px;
+  margin: 12px;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.mode-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-block: 32px;
+}
+.mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: start;
+  padding: 32px;
+  border: 1px solid var(--muted);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+}
+.mode-card strong {
+  font-size: 1.4rem;
+}
+.mode-card span {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.mode-card:hover {
+  border-color: var(--text);
+}
+.mode-card:focus-visible {
+  outline: 3px solid #5286ff;
+  outline-offset: 4px;
+}
+#modeChoices[hidden],
+#continentChoices[hidden],
+#nearbyMode[hidden] {
+  display: none;
+}
+
+.mode-card {
+  text-decoration: none;
+}
+
+.update-dialog {
+  max-width: min(440px, calc(100vw - 40px));
+}
+.update-dialog p {
+  line-height: 1.6;
+}
+
+.answer-panel.has-feedback {
+  grid-template-rows: auto auto auto minmax(96px, auto) 54px 44px;
+}
+.has-feedback #feedback {
+  max-height: none;
+  overflow: visible;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+.feedback-message {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.feedback-country {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+@media (max-height: 600px) {
+  .answer-panel.has-feedback {
+    grid-template-rows: auto auto auto minmax(80px, auto) 44px 32px;
+  }
+  .has-feedback #feedback {
+    padding: 10px 14px;
+  }
+}

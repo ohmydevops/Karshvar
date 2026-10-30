@@ -1,0 +1,384 @@
+<!doctype html>
+<html
+  lang="ru"
+  dir="ltr"
+  data-locale="ru"
+  data-page="continents"
+  data-selection-page="modes"
+>
+  <head>
+    <base href="../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f9ff" />
+    <meta
+      name="description"
+      content="Выберите континент и угадывайте выделенные страны в нём."
+    />
+    <title>Выберите приключение — Karshvar</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta property="og:title" content="Выберите приключение — Karshvar" />
+    <meta
+      property="og:description"
+      content="Выберите континент и угадывайте выделенные страны в нём."
+    />
+    <meta property="og:locale" content="ru_RU" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Karshvar" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Выберите приключение — Karshvar" />
+    <meta
+      name="twitter:description"
+      content="Выберите континент и угадывайте выделенные страны в нём."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Выберите приключение — Karshvar",
+        "description": "Выберите континент и угадывайте выделенные страны в нём.",
+        "url": "https://ohmydevops.github.io/Karshvar/ru/modes/",
+        "inLanguage": "ru"
+      }
+    </script>
+    <link
+      rel="canonical"
+      href="https://ohmydevops.github.io/Karshvar/ru/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://ohmydevops.github.io/Karshvar/fa/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://ohmydevops.github.io/Karshvar/ar/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://ohmydevops.github.io/Karshvar/tr/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://ohmydevops.github.io/Karshvar/fr/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://ohmydevops.github.io/Karshvar/ru/modes/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/en/modes/"
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/ru/"
+    />
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./ru/">Karshvar</a>
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Язык">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">RU</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Язык">
+            <a href="./en/modes/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a href="./fa/modes/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/modes/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a href="./tr/modes/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a href="./fr/modes/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a
+              href="./ru/modes/"
+              lang="ru"
+              hreflang="ru"
+              data-language="ru"
+              aria-current="page"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Меню"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Меню</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Закрыть меню">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Меню">
+          <a id="footerHome" href="./ru/">Главная</a>
+          <a class="explore-link" href="./ru/explore/">Изучить карту</a>
+          <a id="aboutOpen" class="footer-about" href="./ru/about/"
+            >О Karshvar</a
+          ><a class="sources-link" href="./ru/sources/">Источники</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Настройки</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">Как хорошо ты знаешь мир?</h1>
+          <p id="welcomeDescription">
+            Угадай страну на карте. Каждый ход — новый уголок мира.
+          </p>
+          <a id="startGame" class="primary" href="./ru/modes/">Начать игру</a>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro">
+        <h1>Где хотите сыграть?</h1>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle">
+        <h2 id="chooseTitle" tabindex="-1">Выберите приключение</h2>
+        <div
+          id="continentChoices"
+          class="continent-choices"
+          aria-busy="true"
+        ></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">О Karshvar</h1>
+        <div id="aboutBody">
+          <p>
+            Я создал Karshvar, чтобы любителям истории было проще открывать для
+            себя мир. Главной трудностью для меня всегда была география: от
+            Анатолии до Кавказа, от Иранского нагорья до Византии я терял
+            представление о том, где происходили важные события.
+          </p>
+          <p>
+            Поэтому я начал изучать географию, и эта игра стала результатом
+            моего обучения. Это и способ проверить себя, и шаг к тому помощнику
+            для изучения мира без интернета, о котором я мечтал. Со временем я
+            планирую добавлять новые исторические возможности.
+          </p>
+          <p>
+            Название Karshvar восходит к древнему иранскому слову, связанному с
+            современным персидским словом «страна». В авестийской космологии мир
+            описывался как семь областей.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Ваши открытия</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Сыграть на этом континенте снова</button
+        ><a id="chooseAgain" class="text-button" href="./ru/modes/"
+          >Выбрать другой континент</a
+        >
+      </section>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,400 @@
+<!doctype html>
+<html
+  lang="fa"
+  dir="rtl"
+  data-locale="fa"
+  data-page="continents"
+  data-selection-page="countries"
+>
+  <head>
+    <base href="../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f9ff" />
+    <meta
+      name="description"
+      content="یک قاره انتخاب کن، بعد اسم کشورهایی که روشن می‌شن رو حدس بزن."
+    />
+    <title>ماجراجویی‌ات رو انتخاب کن — Karshvar</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./vendor/d3.min.js" defer></script>
+    <script src="./vendor/topojson-client.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta property="og:title" content="ماجراجویی‌ات رو انتخاب کن — Karshvar" />
+    <meta
+      property="og:description"
+      content="یک قاره انتخاب کن، بعد اسم کشورهایی که روشن می‌شن رو حدس بزن."
+    />
+    <meta property="og:locale" content="fa_IR" />
+    <meta
+      property="og:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Karshvar" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ماجراجویی‌ات رو انتخاب کن — Karshvar" />
+    <meta
+      name="twitter:description"
+      content="یک قاره انتخاب کن، بعد اسم کشورهایی که روشن می‌شن رو حدس بزن."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ohmydevops.github.io/Karshvar/social/karshvar.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "ماجراجویی‌ات رو انتخاب کن — Karshvar",
+        "description": "یک قاره انتخاب کن، بعد اسم کشورهایی که روشن می‌شن رو حدس بزن.",
+        "url": "https://ohmydevops.github.io/Karshvar/fa/countries/",
+        "inLanguage": "fa"
+      }
+    </script>
+    <link
+      rel="canonical"
+      href="https://ohmydevops.github.io/Karshvar/fa/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://ohmydevops.github.io/Karshvar/en/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://ohmydevops.github.io/Karshvar/fa/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://ohmydevops.github.io/Karshvar/ar/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://ohmydevops.github.io/Karshvar/tr/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://ohmydevops.github.io/Karshvar/fr/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://ohmydevops.github.io/Karshvar/ru/countries/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://ohmydevops.github.io/Karshvar/en/countries/"
+    />
+    <meta
+      property="og:url"
+      content="https://ohmydevops.github.io/Karshvar/fa/"
+    />
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./fa/">کَرشوَر</a>
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="زبان">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">FA</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="زبان">
+            <a href="./en/countries/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a
+              href="./fa/countries/"
+              lang="fa"
+              hreflang="fa"
+              data-language="fa"
+              aria-current="page"
+              >FA</a
+            ><a
+              href="./ar/countries/"
+              lang="ar"
+              hreflang="ar"
+              data-language="ar"
+              >AR</a
+            ><a
+              href="./tr/countries/"
+              lang="tr"
+              hreflang="tr"
+              data-language="tr"
+              >TR</a
+            ><a
+              href="./fr/countries/"
+              lang="fr"
+              hreflang="fr"
+              data-language="fr"
+              >FR</a
+            ><a
+              href="./ru/countries/"
+              lang="ru"
+              hreflang="ru"
+              data-language="ru"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="منو"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">منو</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="بستن منو">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="منو">
+          <a id="footerHome" href="./fa/">خانه</a>
+          <a class="explore-link" href="./fa/explore/">کاوش در نقشه</a>
+          <a id="aboutOpen" class="footer-about" href="./fa/about/"
+            >دربارهٔ کَرشوَر</a
+          ><a class="sources-link" href="./fa/sources/">منابع</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">تنظیمات</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">دنیا رو چقدر می‌شناسی؟</h1>
+          <p id="welcomeDescription">
+            کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن.
+          </p>
+          <a id="startGame" class="primary" href="./fa/countries/">شروع بازی</a>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro">
+        <h1>دوست داری کجا بازی کنی؟</h1>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle">
+        <h2 id="chooseTitle" tabindex="-1">ماجراجویی‌ات رو انتخاب کن</h2>
+        <div
+          id="continentChoices"
+          class="continent-choices"
+          aria-busy="true"
+        ></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button
+          ><button
+            class="text-button"
+            id="skip"
+            data-text="skip"
+            disabled
+          ></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">دربارهٔ کَرشوَر</h1>
+        <div id="aboutBody">
+          <p>
+            کَرشوَر رو ساختم تا کشف کردن دنیا برای کسایی که به خوندن تاریخ علاقه
+            دارن راحت‌تر باشه. همیشه مهم‌ترین مشکل من این بود که وقتی تاریخ
+            می‌خوندم، از آناتولی تا قفقاز، از فلات ایران تا بیزانس، جای همهٔ
+            اتفاقات مهم رو توی جغرافیا گم می‌کردم.
+          </p>
+          <p>
+            مجبور شدم جغرافیا بخونم و این بازی نتیجهٔ همهٔ جغرافیا خوندن‌های
+            منه؛ هم بهونه‌ای برای سنجیدن خودم، هم قدمی به سمت یه ابزار آفلاین
+            کنار دستم که بتونم باهاش توی دنیا بچرخم. به‌مرور کلی ویژگی جالب
+            تاریخی هم بهش اضافه می‌کنم.
+          </p>
+          <p>
+            اسم کَرشوَر از واژه‌ای کهن در زبان‌های ایرانی الهام گرفته که با
+            «کشور» امروزی پیوند داره. در جهان‌شناسی اوستایی، جهان به هفت ناحیه
+            تقسیم می‌شده.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://fa.wikipedia.org/wiki/%DA%A9%D8%A7%D8%B1%D8%B4%D9%88%D8%B1"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">کشف‌های تو</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          این قاره رو دوباره بازی کن</button
+        ><a id="chooseAgain" class="text-button" href="./fa/countries/"
+          >یک قارهٔ دیگه انتخاب کن</a
+        >
+      </section>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

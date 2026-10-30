@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5174",
     "test": "node --test",
-    "format": "prettier --write \"public/**/*.html\" public/*.css public/*.js tests/*.js package.json README.md .github/workflows/*.yml vite.config.js",
-    "format:check": "prettier --check \"public/**/*.html\" public/*.css public/*.js tests/*.js package.json README.md .github/workflows/*.yml vite.config.js"
+    "format": "prettier --write \"public/**/*.html\" public/*.css public/*.js tests/*.js scripts/*.mjs scripts/*.js package.json README.md .github/workflows/*.yml vite.config.js",
+    "format:check": "prettier --check \"public/**/*.html\" public/*.css public/*.js tests/*.js scripts/*.mjs scripts/*.js package.json README.md .github/workflows/*.yml vite.config.js",
+    "build:offline": "node scripts/build-offline.mjs",
+    "predev": "npm run build:offline",
+    "pretest": "npm run build:offline"
   },
   "devDependencies": {
     "vite": "^7.1.0",

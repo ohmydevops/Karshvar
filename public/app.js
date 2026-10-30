@@ -1,3 +1,5 @@
+import "./offline.js";
+import { nearbyOrder, restoreNearbySession } from "./nearby.js";
 import { bindCountrySuggestions } from "./suggestions.js";
 import { countryAliases, localizedCountryAliases } from "./country-aliases.js";
 import { pageCopy, pagePath } from "./navigation.js";
@@ -183,6 +185,8 @@ const copy = {
 };
 const $ = (id) => document.getElementById(id);
 const page = document.documentElement.dataset.page || "home";
+const selectionPage =
+  document.documentElement.dataset.selectionPage || "continents";
 const routeContinent = new URLSearchParams(location.search).get("continent");
 let lang = "en",
   state,
@@ -671,7 +675,7 @@ function localize() {
   document.querySelector(".brand").textContent =
     lang === "fa" ? "کَرشوَر" : "Karshvar";
   $("startGame").textContent = pageCopy[lang].start;
-  $("startGame").href = pagePath(lang, "continents");
+  $("startGame").href = pagePath(lang, "modes");
   $("welcomeTitle").textContent = pageCopy[lang].homeTitle;
   $("welcomeDescription").textContent = pageCopy[lang].homeDescription;
   $("aboutOpen").href = pagePath(lang, "about");
@@ -685,12 +689,16 @@ function localize() {
   $("resultsTitle").textContent = pageCopy[lang].results;
   $("restartContinent").textContent = labels[lang][5];
   $("chooseAgain").textContent = pageCopy[lang].again;
-  $("chooseAgain").href = pagePath(lang, "continents");
+  $("chooseAgain").href = pagePath(lang, "modes");
   document
     .querySelectorAll("[data-language]")
     .forEach(
       (link) =>
-        (link.href = pagePath(link.dataset.language, page, routeContinent)),
+        (link.href = pagePath(
+          link.dataset.language,
+          page === "continents" ? selectionPage : page,
+          routeContinent,
+        )),
     );
   const about = aboutCopy[lang];
   ["aboutOpen", "aboutTitle"].forEach((id) => ($(id).textContent = about[0]));
@@ -711,7 +719,8 @@ function localize() {
     document.querySelector(".session-note").textContent = t("storage");
   document.querySelector(".session-note").hidden = storage;
   document.querySelector(".intro h1").textContent = labels[lang][1];
-  document.querySelector(".intro p").textContent = labels[lang][2];
+  const introDescription = document.querySelector(".intro p");
+  if (introDescription) introDescription.textContent = labels[lang][2];
   $("chooseTitle").textContent = pageCopy[lang].continents;
   $("changeContinent").textContent = labels[lang][3];
   renderContinents();
@@ -719,6 +728,19 @@ function localize() {
   updateThemeLabel();
 }
 function idsFor(continent) {
+  if (continent?.startsWith("country:"))
+    return nearbyOrder(
+      features.map((f) => {
+        const country = names.find((n) => n.ccn3 === f.id);
+        return {
+          id: f.id,
+          point: d3.geoCentroid(f),
+          code: country.cca3,
+          borders: country.borders,
+        };
+      }),
+      continent.slice(8),
+    );
   return features
     .filter(
       (f) => continentFor(names.find((n) => n.ccn3 === f.id)) === continent,
@@ -741,6 +763,147 @@ function prepareContinentImages(root) {
   });
 }
 function renderContinents() {
+  if (page !== "continents") return;
+  if (!$("modeChoices")) {
+    const copy = {
+      en: [
+        "Choose your mode",
+        "Continent random mode",
+        "By my country",
+        "Choose a continent and guess its countries in random order.",
+        "Start from your country and explore nearest to farthest.",
+        "Change mode",
+      ],
+      fa: [
+        "حالت بازی را انتخاب کن",
+        "حالت تصادفی قاره",
+        "از کشور من",
+        "یک قاره انتخاب کن و کشورها را به ترتیب تصادفی حدس بزن.",
+        "از کشور خودت شروع کن؛ از نزدیک‌ترین تا دورترین.",
+        "تغییر حالت",
+      ],
+      ar: [
+        "اختر نمط اللعب",
+        "قارة بترتيب عشوائي",
+        "من بلدي",
+        "اختر قارة وخمن بلدانها بترتيب عشوائي.",
+        "ابدأ من بلدك، من الأقرب إلى الأبعد.",
+        "تغيير النمط",
+      ],
+      tr: [
+        "Oyun modunu seç",
+        "Rastgele kıta modu",
+        "Ülkemden başla",
+        "Bir kıta seç ve ülkeleri rastgele sırayla tahmin et.",
+        "Ülkenden başlayarak yakından uzağa keşfet.",
+        "Modu değiştir",
+      ],
+      fr: [
+        "Choisissez votre mode",
+        "Continent aléatoire",
+        "Depuis mon pays",
+        "Choisissez un continent et devinez ses pays dans un ordre aléatoire.",
+        "Partez de votre pays, du plus proche au plus lointain.",
+        "Changer de mode",
+      ],
+      ru: [
+        "Выберите режим",
+        "Случайные страны континента",
+        "От моей страны",
+        "Выберите континент и угадывайте страны в случайном порядке.",
+        "Начните со своей страны — от ближайших к дальним.",
+        "Сменить режим",
+      ],
+    }[lang];
+    const choices = document.createElement("div");
+    choices.id = "modeChoices";
+    choices.className = "mode-choices";
+    const back = document.createElement("a");
+    back.className = "text-button";
+    back.textContent = copy[5];
+    choices.hidden = selectionPage !== "modes";
+    back.hidden = selectionPage === "modes";
+    $("continentChoices").hidden = selectionPage !== "continents";
+    $("chooseTitle").textContent =
+      selectionPage === "continents"
+        ? labels[lang][0]
+        : selectionPage === "countries"
+          ? copy[2]
+          : copy[0];
+    for (const [i, mode] of ["continent", "country"].entries()) {
+      const button = document.createElement("a");
+      button.className = "mode-card";
+      const title = document.createElement("strong");
+      title.textContent = copy[i + 1];
+      const description = document.createElement("span");
+      description.textContent = copy[i + 3];
+      button.append(title, description);
+      button.href = pagePath(
+        lang,
+        mode === "continent" ? "continents" : "countries",
+      );
+      choices.append(button);
+    }
+    back.href = pagePath(lang, "modes");
+    $("continentChoices").before(back, choices);
+    if (page === "continents")
+      document.title = $("chooseTitle").textContent + " — Karshvar";
+  }
+
+  if (selectionPage === "countries" && !$("nearbyMode") && features.length) {
+    const section = document.createElement("section");
+    section.id = "nearbyMode";
+    section.className = "nearby-mode";
+    const title = document.createElement("h2");
+    title.textContent =
+      lang === "fa" ? "از کشور خودت شروع کن" : "Start from your country";
+    const description = document.createElement("p");
+    description.textContent =
+      lang === "fa"
+        ? "اول کشورهای هم‌مرز، بعد بقیهٔ کشورها از نزدیک‌ترین تا دورترین نسبت به کشور شروع."
+        : "Start with bordering countries, then explore outward from your country, nearest to farthest.";
+    const label = document.createElement("label");
+    label.textContent = t("country");
+    label.htmlFor = "startingCountry";
+    const select = document.createElement("select");
+    select.id = "startingCountry";
+    select.required = true;
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = {
+      en: "Choose a country…",
+      fa: "یک کشور انتخاب کن…",
+      ar: "اختر بلدًا…",
+      tr: "Bir ülke seç…",
+      fr: "Choisissez un pays…",
+      ru: "Выберите страну…",
+    }[lang];
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.append(placeholder);
+    for (const f of [...features].sort((a, b) =>
+      name(a).localeCompare(name(b), lang),
+    )) {
+      const option = document.createElement("option");
+      option.value = f.id;
+      option.textContent = name(f);
+      select.append(option);
+    }
+    const button = document.createElement("button");
+    button.className = "primary";
+    button.textContent = pageCopy[lang].start;
+    button.disabled = true;
+    select.addEventListener("change", () => {
+      button.disabled = !select.value;
+    });
+    button.onclick = () => {
+      if (select.value) navigate("play", "country:" + select.value);
+    };
+    section.append(title, description, label, select, button);
+    $("continentChoices").before(section);
+  }
+
+  if (selectionPage !== "continents") return;
   if (!features.length) {
     prepareContinentImages($("continentChoices"));
     return;
@@ -900,7 +1063,10 @@ function openGame(continent) {
   land
     .selectAll("path")
     .data(
-      features.filter((f) => idsFor(selected).includes(f.id)),
+      features.filter(
+        (f) =>
+          selected?.startsWith("country:") || idsFor(selected).includes(f.id),
+      ),
       (f) => f.id,
     )
     .join("path")
@@ -914,7 +1080,7 @@ function openGame(continent) {
 $("changeContinent").onclick = () => {
   track("continent-change");
   save();
-  navigate("continents");
+  navigate(selected?.startsWith("country:") ? "countries" : "continents");
 };
 function render() {
   countrySuggestions.close();
@@ -934,15 +1100,51 @@ function render() {
   $("check").disabled = false;
   $("next").hidden = !done && !record;
   $("next").textContent = done ? labels[lang][5] : t("next");
-  $("activeContinent").textContent =
-    labels[lang][7 + continents.indexOf(selected)];
+  $("changeContinent").textContent = selected?.startsWith("country:")
+    ? {
+        en: "Change country",
+        fa: "تغییر کشور",
+        ar: "تغيير البلد",
+        tr: "Ülkeyi değiştir",
+        fr: "Changer de pays",
+        ru: "Сменить страну",
+      }[lang]
+    : labels[lang][3];
+  $("activeContinent").textContent = selected?.startsWith("country:")
+    ? name(features.find((f) => f.id === selected.slice(8)))
+    : labels[lang][7 + continents.indexOf(selected)];
   $("feedback").hidden = !record && !done;
-  $("feedback").textContent = done
-    ? `${labels[lang][4]} ${number(state.answers.filter((a) => a.correct).length)} / ${number(state.order.length)}`
-    : record
-      ? `${t(record.correct ? "correct" : "incorrect")} ${name(current)}.`
-      : "";
+  const feedback = $("feedback");
+  feedback.replaceChildren();
+  document
+    .querySelector(".answer-panel")
+    .classList.toggle("has-feedback", !!record && !done);
+  if (done) {
+    feedback.textContent = `${labels[lang][4]} ${number(state.answers.filter((a) => a.correct).length)} / ${number(state.order.length)}`;
+  } else if (record) {
+    const message = document.createElement("span");
+    message.className = "feedback-message";
+    message.textContent = t(record.correct ? "correct" : "incorrect");
+    const country = document.createElement("strong");
+    country.className = "feedback-country";
+    country.textContent = name(current);
+    feedback.append(message, country);
+  }
   document.querySelector(".question").hidden = done;
+  // Only completed answers become map labels; never expose an unanswered country.
+  const answeredIds = new Set(state.answers.map((answer) => answer.id));
+  countryLabels
+    .selectAll("text")
+    .data(
+      features.filter((feature) => answeredIds.has(feature.id)),
+      (feature) => feature.id,
+    )
+    .join("text")
+    .text(name)
+    .attr("text-anchor", "middle")
+    .attr("dy", ".35em");
+  labelsNeedMeasurement = true;
+  labelOrderCurrent = undefined;
   draw();
 }
 function answer(skip = false) {
@@ -990,7 +1192,9 @@ $("next").onclick = () => {
 };
 $("restartContinent").onclick = () => {
   track("continent-restart");
-  state = createSession(idsFor(selected));
+  state = selected?.startsWith("country:")
+    ? { order: idsFor(selected), index: 0, answers: [] }
+    : createSession(idsFor(selected));
   save(true);
   navigate("play", selected);
 };
@@ -1138,12 +1342,25 @@ if (["continents", "play", "results", "explore"].includes(page)) {
         sessions[continent] ? undefined : legacy,
       );
     }
+    if (
+      routeContinent?.startsWith("country:") &&
+      features.some((f) => f.id === routeContinent.slice(8))
+    ) {
+      const order = idsFor(routeContinent);
+      sessions[routeContinent] = restoreNearbySession(
+        order,
+        sessions[routeContinent],
+      );
+    }
     $("resetOpen").disabled = false;
     $("selectionStatus").textContent = "";
     if (page === "explore")
       openExplore(continents.includes(routeContinent) ? routeContinent : "All");
     else if (page === "continents") renderContinents();
-    else if (!continents.includes(routeContinent))
+    else if (
+      !continents.includes(routeContinent) &&
+      !(routeContinent?.startsWith("country:") && sessions[routeContinent])
+    )
       location.replace(new URL(pagePath(lang, "continents"), document.baseURI));
     else {
       selected = routeContinent;
@@ -1157,13 +1374,18 @@ if (["continents", "play", "results", "explore"].includes(page)) {
           );
         else {
           state.index = state.order.length;
-          $("resultsContinent").textContent =
-            labels[lang][7 + continents.indexOf(selected)];
+          $("resultsContinent").textContent = selected?.startsWith("country:")
+            ? name(features.find((f) => f.id === selected.slice(8)))
+            : labels[lang][7 + continents.indexOf(selected)];
           $("resultsScore").textContent =
             number(state.answers.filter((a) => a.correct).length) +
             " / " +
             number(state.order.length);
-          $("resultsMessage").textContent = labels[lang][4];
+          $("resultsMessage").textContent = selected.startsWith("country:")
+            ? t("complete")
+            : labels[lang][4];
+          if (selected.startsWith("country:"))
+            $("restartContinent").textContent = t("again");
         }
       } else if (state.index >= state.order.length)
         location.replace(
