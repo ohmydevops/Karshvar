@@ -2072,12 +2072,18 @@ html:is([data-page="about"], [data-page="sources"]) main {
   line-height: 1.6;
 }
 
-.answer-panel.has-feedback {
-  grid-template-rows: auto auto auto minmax(96px, auto) 54px 44px;
+.answer-panel.has-feedback .question[hidden] {
+  /* Reserve the question's space while showing feedback in the same area. */
+  display: block !important;
+  visibility: hidden;
 }
 .has-feedback #feedback {
+  grid-row: 3 / 5;
+  align-self: stretch;
+  min-height: 0;
   max-height: none;
-  overflow: visible;
+  contain: size;
+  overflow: auto;
   padding: 14px 18px;
   border: 1px solid var(--line);
   border-inline-start: 4px solid var(--accent);
@@ -2099,9 +2105,6 @@ html:is([data-page="about"], [data-page="sources"]) main {
   overflow-wrap: anywhere;
 }
 @media (max-height: 600px) {
-  .answer-panel.has-feedback {
-    grid-template-rows: auto auto auto minmax(80px, auto) 44px 32px;
-  }
   .has-feedback #feedback {
     padding: 10px 14px;
   }
@@ -2201,4 +2204,10 @@ html.keyboard-open .country-suggestions {
 html.keyboard-open .country-picker .country-suggestions {
   top: calc(100% + 4px);
   bottom: auto;
+}
+
+@media (max-height: 620px) and (max-width: 599px) {
+  .answer-panel.has-feedback .question[hidden] {
+    display: none !important;
+  }
 }

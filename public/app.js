@@ -246,12 +246,46 @@ const number = (value) => formatNumber(value, lang);
 const ratio = (answered, total) => formatRatio(answered, total, lang);
 const navigate = (target, continent) =>
   location.assign(new URL(pagePath(lang, target, continent), document.baseURI));
-// Refresh stale game pages when another tab answers or resets progress.
+// Synchronize progress without reloading or writing it back to other tabs.
+function syncSavedProgress() {
+  if (!features.length) return;
+  let latest;
+  try {
+    latest = JSON.parse(localStorage.getItem("atlas-continents")) || {};
+  } catch {
+    return;
+  }
+  if (typeof latest !== "object" || Array.isArray(latest)) return;
+  const selectedChanged =
+    selected &&
+    JSON.stringify(latest[selected]) !== JSON.stringify(sessions[selected]);
+  sessions = latest;
+  for (const continent of continents) {
+    sessions[continent] = restoreSession(
+      idsFor(continent),
+      sessions[continent],
+    );
+  }
+  if (selected?.startsWith("country:")) {
+    sessions[selected] = restoreNearbySession(
+      idsFor(selected),
+      sessions[selected],
+    );
+  }
+  if (page === "play" && selectedChanged && sessions[selected]) {
+    state = sessions[selected];
+    render();
+    draw();
+  } else if (page === "continents") {
+    renderContinents();
+  }
+}
 window.addEventListener("storage", (event) => {
-  if (event.key === "atlas-continents" || event.key === null) location.reload();
+  if (event.key === "atlas-continents" || event.key === null)
+    syncSavedProgress();
 });
 window.addEventListener("pageshow", (event) => {
-  if (event.persisted) location.reload();
+  if (event.persisted) syncSavedProgress();
 });
 function save(replaceProgress = false) {
   try {
@@ -1119,7 +1153,7 @@ function render() {
     country.textContent = name(current);
     feedback.append(message, country);
   }
-  document.querySelector(".question").hidden = done;
+  document.querySelector(".question").hidden = done || !!record;
   // Label the chosen starting country and completed answers, without revealing quiz answers.
   const labeledIds = new Set(state.answers.map((answer) => answer.id));
   if (selected?.startsWith("country:")) labeledIds.add(selected.slice(8));
