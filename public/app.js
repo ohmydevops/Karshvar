@@ -724,7 +724,7 @@ function localize() {
       ? seoCopy[lang][0]
       : `${page === "about" ? aboutCopy[lang][0] : pageCopy[lang][page]} — Karshvar`;
   document.querySelector(".brand").href = pagePath(lang);
-  document.querySelector(".brand").textContent =
+  document.querySelector(".brand-name").textContent =
     lang === "fa" ? "کَرشوَر" : "Karshvar";
   $("startGame").textContent = pageCopy[lang].start;
   $("startGame").href = pagePath(lang, "modes");

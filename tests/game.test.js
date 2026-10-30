@@ -199,7 +199,7 @@ test("all localized pages and assets resolve beneath the GitHub Pages project pa
         html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/)[1],
         `${root}${locale}/${suffix}`,
       );
-      assert(html.includes(`content="${root}social/karshvar.png"`));
+      assert(html.includes(`content="${root}social/karshvar-${locale}.png"`));
       assert(
         !html.includes("https://cloud.umami.is/script.js"),
         "Analytics must be gated by the production loader",

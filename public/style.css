@@ -115,11 +115,15 @@ header {
   gap: 12px;
 }
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
   font-size: 28px;
   letter-spacing: -1.2px;
   font-weight: 800;
   text-decoration: none;
-  direction: ltr;
+  direction: inherit;
   color: var(--text);
 }
 .settings {
@@ -2210,4 +2214,10 @@ html.keyboard-open .country-picker .country-suggestions {
   .answer-panel.has-feedback .question[hidden] {
     display: none !important;
   }
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
 }
