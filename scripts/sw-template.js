@@ -40,6 +40,19 @@ self.addEventListener("fetch", (event) => {
     !url.href.startsWith(self.registration.scope)
   )
     return;
+  // Keep the root entry point pointed at the English page, including offline.
+  const scope = new URL(self.registration.scope);
+  if (
+    event.request.mode === "navigate" &&
+    (url.pathname === scope.pathname ||
+      url.pathname === new URL("index.html", scope).pathname)
+  ) {
+    const destination = new URL("en/", scope);
+    destination.search = url.search;
+    destination.hash = url.hash;
+    event.respondWith(Response.redirect(destination.href, 302));
+    return;
+  }
   // Blog pages/images and crawler metadata always use the browser network path.
   const relativePath = url.pathname.slice(
     new URL(self.registration.scope).pathname.length,

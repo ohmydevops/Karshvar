@@ -130,6 +130,31 @@ test("failed install discards incomplete cache", async () => {
   await assert.rejects(w.lifecycle("install"));
   assert.equal(w.stores.size, 0);
 });
+
+test("root navigation redirects to English online and offline while localized pages stay available", async () => {
+  const w = worker();
+  await w.lifecycle("install");
+  await w.lifecycle("activate");
+  for (const offline of [false, true]) {
+    if (offline) w.offline();
+    for (const path of [
+      "",
+      "index.html",
+      "?from=google#map",
+      "index.html?from=google#map",
+    ]) {
+      const response = await w.request(path);
+      assert.equal(response.status, 302);
+      const suffix = path.includes("?") ? "?from=google#map" : "";
+      assert.equal(
+        response.headers.get("Location"),
+        "https://example.test/game/en/" + suffix,
+      );
+    }
+    assert.equal((await w.request("en/?from=google")).status, 200);
+    assert.equal((await w.request("fa/")).status, 200);
+  }
+});
 test("activation removes only older caches belonging to this scope", async () => {
   const w = worker();
   await w.caches.open("unrelated-cache");

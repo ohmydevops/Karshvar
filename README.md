@@ -11,6 +11,8 @@ npm run dev
 
 Open http://127.0.0.1:5174/ in your browser.
 
+The root URL redirects to `/en/`, including offline. Other language URLs remain directly accessible.
+
 ## Offline assets
 
 The offline worker is generated, not maintained by hand. Edit `scripts/sw-template.js` for caching behavior and `public/offline.js` for the update prompt. `npm run build:offline` regenerates `public/sw.js` with a content-based version. Development startup, tests, and deployment generate it automatically; regenerate after source edits when testing an offline update.
