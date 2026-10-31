@@ -19,6 +19,8 @@ Local live reload is disabled to avoid interrupting a game. Accept the update pr
 
 The offline build also synchronizes the early theme script and page loading skeletons into the HTML. Edit `public/loading.js` and `scripts/build-loading.mjs` rather than the generated skeleton blocks.
 
+Blog pages and their article images are network-only and excluded from offline downloads. Activating an updated worker removes the previous version's cache.
+
 Explore has separate saved switches for population and country highlighting; highlighting defaults off. Flag emojis use a bundled font so they display consistently offline; its license is in `public/fonts/NotoEmoji-LICENSE.txt`.
 
 Country mode starts with land neighbors, followed by remaining countries ordered by center-to-center distance from the starting country. Existing answers are preserved.

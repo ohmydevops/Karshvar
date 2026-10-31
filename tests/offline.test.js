@@ -178,6 +178,47 @@ test("crawler metadata, verification files and source maps bypass offline cachin
     assert.equal(await w.request(path), undefined);
   }
   assert.ok(assets.includes("data/countries.json"));
-  assert.ok(assets.includes("en/blog/iran/index.html"));
-  assert.ok(assets.includes("social/blog-iran-en.png"));
+  assert.ok(assets.includes("en/play/index.html"));
+});
+
+test("blog pages and blog-only images are never precached or served by the worker", async () => {
+  const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
+  assert.ok(
+    assets.every(
+      (path) => !/(?:^|\/)blog(?:\/|$)|^social\/blog-[^/]+$/i.test(path),
+    ),
+  );
+  const w = worker();
+  await w.lifecycle("install");
+  await w.lifecycle("activate");
+  const paths = [
+    "blog/",
+    "social/blog-iran-en.png",
+    "social/blog-iran-en.png?v=2",
+  ];
+  for (const locale of ["en", "fa", "ar", "tr", "fr", "ru"])
+    paths.push(
+      `${locale}/blog`,
+      `${locale}/blog/`,
+      `${locale}/blog/iran/`,
+      `${locale}/blog/iran/index.html?version=2`,
+    );
+  // Even if an old blog entry exists, the fetch handler must not serve it.
+  for (const cache of w.stores.values())
+    for (const path of paths)
+      cache.set(
+        "https://example.test/game/" + path,
+        new Response("stale blog"),
+      );
+  for (const path of paths)
+    assert.equal(
+      await w.request(path, path.startsWith("social/") ? "cors" : "navigate"),
+      undefined,
+      path,
+    );
+  w.offline();
+  for (const path of paths)
+    assert.equal(await w.request(path), undefined, path);
+  assert.equal((await w.request("en/play/?continent=Asia")).status, 200);
+  assert.equal((await w.request("data/countries.json", "cors")).status, 200);
 });

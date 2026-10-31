@@ -40,10 +40,11 @@ self.addEventListener("fetch", (event) => {
     !url.href.startsWith(self.registration.scope)
   )
     return;
-  // Crawler metadata, verification files, and source maps are network-only.
+  // Blog pages/images and crawler metadata always use the browser network path.
   const relativePath = url.pathname.slice(
     new URL(self.registration.scope).pathname.length,
   );
+  if (/(?:^|\/)blog(?:\/|$)|^social\/blog-[^/]+$/i.test(relativePath)) return;
   if (
     /(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
       relativePath,

@@ -22,6 +22,7 @@ const assets = (await walk(root))
   .filter(
     (p) =>
       p !== "sw.js" &&
+      !/(?:^|\/)blog(?:\/|$)|^social\/blog-[^/]+$/i.test(p) &&
       !/(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
         p,
       ) &&
