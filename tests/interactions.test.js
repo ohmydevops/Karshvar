@@ -36,24 +36,55 @@ function fixture() {
     rotations = [],
     zooms = [],
     ends = [];
+  const taps = [];
   let starts = 0;
   const detach = bindGlobeGestures(surface, {
     onStart: () => starts++,
     onRotate: (...v) => rotations.push(v),
     onZoom: (v) => zooms.push(v),
     onEnd: (v) => ends.push(v),
+    onTap: (v) => taps.push(v),
   });
   return {
     surface,
     rotations,
     zooms,
     ends,
+    taps,
     detach,
     get starts() {
       return starts;
     },
   };
 }
+
+test("a touchscreen tap survives pointer capture and small finger movement", () => {
+  const f = fixture();
+  f.surface.send("pointerdown", { x: 20, y: 30 });
+  f.surface.send("pointermove", { x: 22, y: 31 });
+  f.surface.send("pointerup");
+  assert.equal(f.taps.length, 1);
+  assert.equal(f.taps[0].target, f.surface);
+  assert.equal(f.taps[0].pointerType, "touch");
+});
+
+test("dragging, pinching, and cancelled touches never select a country", () => {
+  const drag = fixture();
+  drag.surface.send("pointerdown");
+  drag.surface.send("pointermove", { x: 20 });
+  drag.surface.send("pointerup");
+  assert.equal(drag.taps.length, 0);
+  const pinch = fixture();
+  pinch.surface.send("pointerdown");
+  pinch.surface.send("pointerdown", { id: 2, x: 100 });
+  pinch.surface.send("pointerup", { id: 2 });
+  pinch.surface.send("pointerup");
+  assert.equal(pinch.taps.length, 0);
+  const cancelled = fixture();
+  cancelled.surface.send("pointerdown");
+  cancelled.surface.send("pointercancel");
+  assert.equal(cancelled.taps.length, 0);
+});
 test("touch drag captures the pointer, rotates, and ends once", () => {
   const f = fixture();
   assert(f.surface.send("pointerdown", { x: 20, y: 30 }).defaultPrevented);

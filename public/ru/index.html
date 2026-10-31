@@ -18,6 +18,73 @@
     />
     <title>Karshvar — Угадайте страну</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <script>
+      // Apply the saved theme before styles or page content can paint.
+      (() => {
+        let theme = "light";
+        try {
+          if (localStorage.getItem("atlas-theme") === "dark") theme = "dark";
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", theme === "dark" ? "#0d1528" : "#f7f9ff");
+      })();
+    </script>
+    <script data-page-loading>
+      // Inlined in each page's head so loading starts before the first paint.
+      (() => {
+        const root = document.documentElement;
+        root.dataset.loading = "true";
+        const copy = {
+          en: ["Loading…", "This page could not finish loading.", "Try again"],
+          fa: ["در حال بارگذاری…", "بارگذاری صفحه کامل نشد.", "تلاش دوباره"],
+          ar: ["جارٍ التحميل…", "تعذّر إكمال تحميل الصفحة.", "حاول مجددًا"],
+          tr: ["Yükleniyor…", "Sayfa yüklenemedi.", "Tekrar dene"],
+          fr: [
+            "Chargement…",
+            "Le chargement de la page a échoué.",
+            "Réessayer",
+          ],
+          ru: ["Загрузка…", "Не удалось загрузить страницу.", "Повторить"],
+        }[root.lang] || [
+          "Loading…",
+          "This page could not finish loading.",
+          "Try again",
+        ];
+        const initialize = () => {
+          if (root.dataset.loading !== "true") return;
+          document.querySelector("main")?.setAttribute("aria-busy", "true");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[0];
+        };
+        document.addEventListener("DOMContentLoaded", initialize, {
+          once: true,
+        });
+        const timeout = setTimeout(() => {
+          if (root.dataset.loading !== "true") return;
+          root.dataset.loading = "failed";
+          document.querySelector("main")?.setAttribute("aria-busy", "false");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[1];
+          const retry = document.getElementById("pageLoadingRetry");
+          if (retry) {
+            retry.textContent = copy[2];
+            retry.href = location.href;
+            retry.hidden = false;
+          }
+        }, 15000);
+        document.addEventListener(
+          "page-ready",
+          () => {
+            clearTimeout(timeout);
+            delete root.dataset.loading;
+            document.querySelector("main")?.setAttribute("aria-busy", "false");
+          },
+          { once: true },
+        );
+      })();
+    </script>
     <link rel="stylesheet" href="./style.css" />
     <link
       rel="preload"
@@ -196,7 +263,6 @@
           <a class="explore-link" href="./ru/explore/">Изучить карту</a>
           <a id="aboutOpen" class="footer-about" href="./ru/about/"
             >О Karshvar</a
-          ><a class="blog-link" href="./ru/blog/">Блог</a
           ><a class="sources-link" href="./ru/sources/">Источники</a>
         </nav>
       </div>
@@ -233,6 +299,25 @@
       <div class="drawer-footer">Karshvar</div>
     </dialog>
     <main>
+      <!-- page-skeleton:start -->
+      <div id="pageSkeleton" class="page-skeleton" data-layout="home">
+        <div aria-hidden="true" class="page-skeleton-shapes">
+          <div class="page-skeleton-hero">
+            <div>
+              <div
+                class="page-skeleton-block page-skeleton-line page-skeleton-heading short"
+              ></div>
+              <div class="page-skeleton-block page-skeleton-line"></div>
+              <div class="page-skeleton-block page-skeleton-line medium"></div>
+              <div class="page-skeleton-block page-skeleton-button"></div>
+            </div>
+            <div class="page-skeleton-block page-skeleton-globe"></div>
+          </div>
+        </div>
+        <p id="pageLoadingStatus" role="status"></p>
+        <a id="pageLoadingRetry" hidden></a>
+      </div>
+      <!-- page-skeleton:end -->
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
         <div class="welcome-copy">
@@ -297,6 +382,12 @@
           <div class="progress-track"><div id="bar"></div></div>
           <div class="question">
             <h2 data-text="question"></h2>
+            <button
+              class="skip-outline"
+              id="skip"
+              data-text="skip"
+              disabled
+            ></button>
           </div>
           <form id="answerForm">
             <div class="answer-entry">
@@ -333,13 +424,7 @@
             ></button>
           </form>
           <div id="feedback" role="status" aria-live="polite"></div>
-          <button class="primary" id="next" hidden data-text="next"></button
-          ><button
-            class="text-button"
-            id="skip"
-            data-text="skip"
-            disabled
-          ></button>
+          <button class="primary" id="next" hidden data-text="next"></button>
           <div class="session-note" hidden role="status"></div>
         </div>
       </section>

@@ -1,11 +1,12 @@
 // Pointer Events work for mouse, pen, real touchscreens, and device emulation.
 export function bindGlobeGestures(
   element,
-  { onStart, onRotate, onZoom, onEnd },
+  { onStart, onRotate, onZoom, onEnd, onTap },
 ) {
   const pointers = new Map();
   let changed = false;
   let input = "mouse";
+  let tap;
   function measure() {
     const points = [...pointers.values()];
     return {
@@ -22,14 +23,22 @@ export function bindGlobeGestures(
     if (!pointers.size) {
       changed = false;
       input = event.pointerType;
+      tap = {
+        id: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        target: event.target,
+      };
       onStart();
-    }
+    } else tap = null;
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     element.setPointerCapture(event.pointerId);
     if (event.cancelable) event.preventDefault();
   }
   function move(event) {
     if (!pointers.has(event.pointerId)) return;
+    if (tap && Math.hypot(event.clientX - tap.x, event.clientY - tap.y) > 6)
+      tap = null;
     const before = measure();
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     const after = measure();
@@ -51,9 +60,17 @@ export function bindGlobeGestures(
   }
   function end(event) {
     if (!pointers.delete(event.pointerId)) return;
+    const tapped =
+      event.type === "pointerup" &&
+      !pointers.size &&
+      tap?.id === event.pointerId
+        ? tap
+        : null;
+    tap = null;
     if (element.hasPointerCapture(event.pointerId))
       element.releasePointerCapture(event.pointerId);
     if (!pointers.size && changed) onEnd(input);
+    if (tapped) onTap?.({ target: tapped.target, pointerType: input });
   }
   const handlers = {
     pointerdown: down,

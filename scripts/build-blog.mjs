@@ -128,23 +128,6 @@ for (const l of langs) {
     `social/karshvar-${l}.png`,
   );
 }
-function walk(d) {
-  return fs
-    .readdirSync(d, { withFileTypes: true })
-    .flatMap((e) =>
-      e.isDirectory() ? walk(d + "/" + e.name) : [d + "/" + e.name],
-    );
-}
-for (const p of walk("public").filter((p) => p.endsWith(".html"))) {
-  let s = fs.readFileSync(p, "utf8");
-  const l = s.match(/<html[\s\S]*?lang="([^"]+)"/)?.[1] || "en";
-  if (!s.includes('class="blog-link"'))
-    s = s.replace(
-      /(<a class="sources-link"[^>]*>[\s\S]*?<\/a>)/,
-      `<a class="blog-link" href="./${l}/blog/">${labels[l][0]}</a>$1`,
-    );
-  fs.writeFileSync(p, s);
-}
 let nav = fs.readFileSync("public/navigation.js", "utf8");
 if (!nav.includes('"blog",'))
   nav = nav.replace('"sources",', '"sources",\n  "blog",');

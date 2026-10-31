@@ -17,4 +17,8 @@ The offline worker is generated, not maintained by hand. Edit `scripts/sw-templa
 
 Local live reload is disabled to avoid interrupting a game. Accept the update prompt to load a new cached version.
 
+The offline build also synchronizes the early theme script and page loading skeletons into the HTML. Edit `public/loading.js` and `scripts/build-loading.mjs` rather than the generated skeleton blocks.
+
+Explore has separate saved switches for population and country highlighting; highlighting defaults off. Flag emojis use a bundled font so they display consistently offline; its license is in `public/fonts/NotoEmoji-LICENSE.txt`.
+
 Country mode starts with land neighbors, followed by remaining countries ordered by center-to-center distance from the starting country. Existing answers are preserved.

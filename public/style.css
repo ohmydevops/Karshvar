@@ -13,6 +13,11 @@
   font-family: "Segoe UI", Tahoma, Arial, sans-serif;
 }
 @font-face {
+  font-family: "Karshvar Flags";
+  src: url("./fonts/NotoColorEmoji-flagsonly.ttf") format("truetype");
+  font-display: block;
+}
+@font-face {
   font-family: Vazir;
   src: url("./fonts/Vazir-Regular.woff2") format("woff2");
   font-weight: 400;
@@ -33,7 +38,7 @@ html[lang="fa"] {
 html {
   background: #f7f9ff;
 }
-html:has(body:not(.light)) {
+html[data-theme="dark"] {
   background: #0d1528;
   color-scheme: dark;
 }
@@ -56,7 +61,7 @@ body {
     transparent 55%
   );
 }
-body.light {
+html:not([data-theme="dark"]) {
   --bg: #f7f9ff;
   --surface: #edf2fd;
   --text: #182b4b;
@@ -424,6 +429,71 @@ html[dir="rtl"] h2 {
 }
 .continent-card:nth-child(2n) .continent-art {
   transform: rotate(-6deg);
+}
+html[data-page="continents"] .continent-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: clamp(44px, 9dvh, 80px) auto auto 4px;
+  justify-content: stretch;
+  align-content: start;
+  gap: 8px;
+  min-height: 0;
+  min-width: 0;
+  padding: 12px;
+  container-type: inline-size;
+}
+html[data-page="continents"] .continent-card strong {
+  font-size: clamp(12px, 10cqi, 20px);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+html[data-page="continents"] .continent-card .continent-art,
+html[data-page="continents"] .continent-card .continent-art-placeholder {
+  position: relative;
+  inset: auto;
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: center;
+  width: 86%;
+  height: 100%;
+  max-width: 144px;
+  object-fit: contain;
+  transform: none;
+}
+html[data-page="continents"] .continent-card .continent-number {
+  top: 10px;
+  inset-inline-start: 12px;
+  font-size: 10px;
+}
+html[data-page="continents"] .continent-card:not(.image-ready) .continent-art {
+  opacity: 0;
+}
+.continent-card .continent-count {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+  align-items: center;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.continent-count bdi {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.continent-card .continent-count span {
+  font-size: 10px;
+}
+.continent-progress {
+  height: 4px;
+  border-radius: 99px;
+  background: var(--line);
+  overflow: hidden;
+}
+.continent-progress > div {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
 }
 .game-navigation {
   display: flex;
@@ -1087,12 +1157,41 @@ html[data-page="explore"] .globe-panel {
 .country-labels text {
   font-size: 7px;
   font-family: inherit;
-  font-weight: 400;
+  font-weight: 600;
   fill: #071a32;
   paint-order: stroke;
   stroke: #f7f9ffe6;
   stroke-width: 1px;
   stroke-linejoin: round;
+}
+html[data-theme="dark"] .country-labels text {
+  fill: #f5f8ff;
+  stroke: #132c4b;
+}
+.label-leaders line {
+  stroke: var(--text);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.8;
+}
+.label-leaders circle {
+  fill: var(--text);
+  stroke: var(--ocean);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+.country-labels .country-flag {
+  font-family:
+    "Karshvar Flags", "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji",
+    sans-serif;
+  font-size: 0.8em;
+  stroke: none;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.country-labels .country-population {
+  font-weight: 400;
+  font-size: 0.9em;
 }
 
 .home-earth {
@@ -2075,6 +2174,15 @@ html:is([data-page="about"], [data-page="sources"]) main {
 .update-dialog p {
   line-height: 1.6;
 }
+.update-dialog .dialog-actions {
+  flex-wrap: wrap;
+}
+.update-dialog .dialog-actions button {
+  flex: 1 0 max-content;
+  white-space: nowrap;
+  font-size: 13px;
+  padding-inline: 12px;
+}
 
 .answer-panel.has-feedback .question[hidden] {
   /* Reserve the question's space while showing feedback in the same area. */
@@ -2620,14 +2728,20 @@ html[data-page="blog"] #selectionStatus:empty {
   inset-inline-start: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 6px;
   max-width: calc(100% - 20px);
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 4px 7px;
+  border-radius: 6px;
   background: var(--bg);
   color: var(--text);
-  font-size: 11px;
+  font-size: 9px;
+  line-height: 1.4;
   pointer-events: none;
+}
+.answer-legend span::before {
+  width: 6px;
+  height: 6px;
+  margin-inline-end: 4px;
 }
 .history-globe {
   display: block;
@@ -2771,10 +2885,18 @@ html:is([data-selection-page="modes"], [data-selection-page="countries"])
   padding: 24px;
   gap: 12px;
   background: var(--surface);
+  container-type: inline-size;
+  min-width: 0;
 }
 .mode-card strong {
-  font-size: 1.2rem;
+  font-size: clamp(12px, 5cqi, 1.2rem);
   line-height: 1.5;
+  white-space: nowrap;
+}
+.mode-card .mode-recommendation {
+  font-size: 0.75em;
+  font-weight: 400;
+  color: inherit;
 }
 .mode-card span {
   font-size: 0.95rem;
@@ -2804,9 +2926,6 @@ html.keyboard-open .journey-art {
   .mode-card {
     padding: 18px 20px;
     gap: 6px;
-  }
-  .mode-card strong {
-    font-size: 1.1rem;
   }
   .nearby-mode {
     padding: 20px;
@@ -2839,6 +2958,34 @@ html:is([data-page="about"], [data-page="sources"]) main {
 @media (min-width: 761px) {
   dialog.app-drawer {
     inset-inline-end: max(16px, calc((100% - var(--container-width)) / 2));
+    inset-block-start: var(--menu-top, 80px);
+    inset-block-end: auto;
+    height: auto;
+    max-height: calc(100dvh - var(--menu-top, 80px) - 16px);
+    padding-block: 16px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px #07101e40;
+  }
+  @keyframes drawer-enter {
+    from {
+      transform: translateY(-16px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes drawer-exit {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-16px);
+      opacity: 0;
+    }
   }
 }
 
@@ -2983,19 +3130,297 @@ html[data-page="play"] .answer-panel.has-feedback .feedback-country {
 /* Keep the primary action at the bottom; feedback replaces the input area. */
 html[data-page="play"] .answer-panel,
 html[data-page="play"] .answer-panel.has-feedback {
-  grid-template-rows: auto auto 36px 44px 36px 44px;
+  grid-template-rows: auto auto 72px 44px 44px;
 }
-html[data-page="play"] .answer-panel #skip {
-  grid-row: 5;
-  min-height: 36px;
+html[data-page="play"] .answer-panel .question {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  min-width: 0;
+  height: 100%;
+}
+html[data-page="play"] .answer-panel .question h2 {
+  flex: 1 0 auto;
+  white-space: nowrap;
+  font-size: 16px;
+}
+html[data-page="play"] .answer-panel .question #skip {
+  flex: 0 1 auto;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 4px 7px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+html[data-page="play"] .answer-panel .question #skip:hover {
+  border-color: var(--accent);
+  color: var(--text);
 }
 html[data-page="play"] .answer-panel :is(#check, #next),
 html[data-page="play"] .answer-panel.has-feedback #next {
-  grid-row: 6;
+  grid-row: 5;
 }
 html[data-page="play"] .answer-panel.has-feedback #feedback {
-  grid-row: 3 / 6;
+  grid-row: 3 / 5;
+  margin-block: 0 4px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+/* Use the same blue palette with softer fills on dark surfaces. */
+html[data-theme="dark"] .info-hero img[src$="sources-globe.svg"] {
+  content: url("./art/sources-globe-dark.svg");
+}
+html[data-theme="dark"] .info-hero img[src$="about-atlas.svg"] {
+  content: url("./art/about-atlas-dark.svg");
+}
+html[data-theme="dark"] .continent-card.image-ready .continent-art {
+  opacity: 0.6;
+  filter: brightness(1.35) saturate(0.8);
+}
+
+/* Page shells exist in the HTML, before any app modules or data arrive. */
+main {
+  position: relative;
+}
+.page-skeleton {
+  display: none;
+}
+html[data-loading] main > :not(#pageSkeleton) {
+  visibility: hidden;
+}
+html[data-loading] main {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+}
+html[data-loading] {
+  height: 100%;
+  overflow: hidden;
+}
+html[data-loading] body {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+html[data-loading] .page-skeleton {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  padding: 24px 28px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--muted);
+}
+.page-skeleton-shapes {
+  display: grid;
+  gap: 20px;
+  max-width: 1144px;
+  margin-inline: auto;
+}
+.page-skeleton-block {
+  border-radius: var(--radius);
+  background: linear-gradient(
+    100deg,
+    var(--surface) 20%,
+    var(--line) 45%,
+    var(--surface) 70%
+  );
+  background-size: 240% 100%;
+  animation: continent-shimmer 1.5s ease-in-out infinite;
+}
+.page-skeleton-line {
+  height: 14px;
+  width: 100%;
+  margin-block: 10px;
+}
+.page-skeleton-line.short {
+  width: 45%;
+}
+.page-skeleton-line.medium {
+  width: 75%;
+}
+.page-skeleton-heading {
+  height: 28px;
+}
+.page-skeleton-card {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+.page-skeleton-card .page-skeleton-line {
+  margin: 0;
+}
+.page-skeleton[data-layout="modes"] .page-skeleton-shapes,
+.page-skeleton[data-layout="countries"] .page-skeleton-shapes {
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(60px, 1fr) auto;
+  gap: 12px;
+}
+.page-skeleton[data-layout="modes"] .page-skeleton-shapes {
+  grid-template-rows: minmax(60px, 1fr) auto auto;
+}
+.page-skeleton[data-layout="play"] .page-skeleton-shapes,
+.page-skeleton[data-layout="explore"] .page-skeleton-shapes {
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+}
+.page-skeleton[data-layout="explore"] .page-skeleton-shapes {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+.page-skeleton-game {
+  min-height: 0;
+}
+.page-skeleton[data-layout="play"] .page-skeleton-map,
+.page-skeleton[data-layout="explore"] .page-skeleton-map {
+  min-height: 0;
+  height: 100%;
+}
+.page-skeleton[data-layout="play"] .page-skeleton-card {
+  align-content: center;
+}
+.page-skeleton:is([data-layout="modes"], [data-layout="countries"])
+  .page-skeleton-globe {
+  height: min(100%, 30dvh, 300px);
+  width: auto;
+  min-height: 0;
+  margin: 0 auto;
+  align-self: center;
+}
+.page-skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.page-skeleton-cards:is(.continents, .blog) {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.page-skeleton-globe {
+  width: min(100%, 34dvh, 340px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  margin: 16px auto;
+}
+.page-skeleton[data-layout="results"] .page-skeleton-globe {
+  width: min(100%, 24dvh, 240px);
+}
+.page-skeleton-map {
+  width: 100%;
+  min-height: min(52dvh, 500px);
+}
+.page-skeleton-input {
+  height: 44px;
+  margin-block: 20px;
+}
+.page-skeleton-button {
+  height: 44px;
+  width: min(100%, 240px);
+  margin-block: 20px 0;
+}
+.page-skeleton-cover {
+  aspect-ratio: 1200 / 630;
+}
+.page-skeleton-continent-art {
+  height: clamp(44px, 9dvh, 80px);
+  width: 64%;
+  justify-self: center;
+}
+.page-skeleton-cards.continents .page-skeleton-card {
+  padding: 12px;
+  gap: 8px;
+}
+.page-skeleton-hero,
+.page-skeleton-game {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 28px;
+  align-items: center;
+}
+.page-skeleton-hero .page-skeleton-globe {
+  width: min(100%, 52dvh, 500px);
+}
+.page-skeleton-game {
+  align-items: stretch;
+}
+.page-skeleton-info {
+  padding-block: 24px;
+}
+#pageLoadingStatus {
+  font-size: 14px;
+  text-align: center;
+}
+html[data-loading="true"] #pageLoadingStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+html[data-loading="failed"] .page-skeleton-shapes {
+  display: none;
+}
+html[data-loading="failed"] .page-skeleton {
+  text-align: center;
+  padding-block: 64px;
+}
+#pageLoadingRetry {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+@media (max-width: 760px) {
+  html[data-loading] .page-skeleton {
+    padding: 16px 12px;
+  }
+  .page-skeleton-cards,
+  .page-skeleton-cards:is(.continents, .blog),
+  .page-skeleton-hero,
+  .page-skeleton-game {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .page-skeleton-cards.continents {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .page-skeleton-cards.blog > :not(:first-child) {
+    display: none;
+  }
+  .page-skeleton-hero {
+    gap: 16px;
+  }
+  .page-skeleton-card {
+    padding: 16px;
+  }
+  .page-skeleton-game {
+    grid-template-rows: minmax(80px, 1fr) auto;
+    gap: 12px;
+  }
+  .page-skeleton-game .page-skeleton-card {
+    gap: 8px;
+  }
+  .page-skeleton-game :is(.page-skeleton-input, .page-skeleton-button) {
+    margin-block: 4px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-skeleton-block {
+    animation: none;
+  }
 }

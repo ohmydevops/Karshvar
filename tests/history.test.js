@@ -1,6 +1,50 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { answerFill, answerStatus } from "../public/history.js";
+import {
+  answerFill,
+  answerStatus,
+  bindHistory,
+  historyCopy,
+} from "../public/history.js";
+
+test("play page mounts its localized answer legend without interrupting startup", () => {
+  const original = globalThis.document;
+  try {
+    for (const [language, copy] of Object.entries(historyCopy)) {
+      const makeNode = () => ({
+        children: [],
+        append(...nodes) {
+          this.children.push(...nodes);
+        },
+      });
+      const menu = makeNode();
+      const globe = makeNode();
+      globalThis.document = {
+        baseURI: "https://example.test/Karshvar/",
+        documentElement: { dataset: { page: "play" } },
+        createElement: makeNode,
+        querySelector: (selector) =>
+          selector === ".site-menu nav" ? menu : globe,
+      };
+      bindHistory({
+        language,
+        getSessions: () => ({}),
+        sessionLabel: (key) => key,
+      });
+      assert.equal(menu.children.length, 1);
+      assert.deepEqual(
+        globe.children[0].children.map((node) => node.textContent),
+        copy.slice(2, 5),
+      );
+      assert.deepEqual(
+        globe.children[0].children.map((node) => node.className),
+        ["correct", "wrong", "revealed"],
+      );
+    }
+  } finally {
+    globalThis.document = original;
+  }
+});
 test("saved answer colors survive JSON restoration and distinguish revealed answers", () => {
   const answers = JSON.parse(
     JSON.stringify([

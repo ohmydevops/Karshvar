@@ -1,0 +1,4 @@
+Noto Color Emoji Flags, version 2.048
+Upstream: https://github.com/googlefonts/noto-emoji
+Source: https://fuchsia.googlesource.com/third_party/github.com/googlefonts/noto-emoji/+/refs/tags/v2.048/fonts/NotoColorEmoji-flagsonly.ttf
+License: SIL Open Font License 1.1, included in NotoEmoji-LICENSE.txt.

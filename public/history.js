@@ -81,6 +81,7 @@ export function answerFill(id, currentId, answers = []) {
 }
 export function bindHistory({ language, getSessions, sessionLabel }) {
   const copy = historyCopy[language] || historyCopy.en;
+  const statusIndex = { correct: 2, wrong: 3, revealed: 4 };
   const emptyCopy = {
     en: [
       "No game started yet",
@@ -218,5 +219,5 @@ export function bindHistory({ language, getSessions, sessionLabel }) {
     }
   };
 
-  load();
+  return load();
 }

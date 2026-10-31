@@ -1,3 +1,11 @@
+export const modeRecommendation = {
+  en: "Recommended",
+  fa: "پیشنهادی",
+  ar: "مقترح",
+  tr: "Önerilen",
+  fr: "Recommandé",
+  ru: "Рекомендуется",
+};
 export const modeCopy = {
   en: [
     "Choose your mode",

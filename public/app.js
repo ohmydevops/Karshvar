@@ -1,8 +1,11 @@
 import { mountJourneyArt } from "./journey-art.js";
+import { revealPage } from "./page-ready.js";
+import { placeMapLabel, countryFlag } from "./map-labels.js";
+import { bindHighlightSwitch } from "./explore-settings.js";
 import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
-import { modeCopy } from "./mode-copy.js";
+import { modeCopy, modeRecommendation } from "./mode-copy.js";
 import "./offline.js";
 import { nearbyOrder, restoreNearbySession } from "./nearby.js";
 import { bindCountrySuggestions } from "./suggestions.js";
@@ -201,11 +204,16 @@ let lang = "en",
   features = [],
   names = [],
   current,
+  hoveredCountry,
   zoom = 1,
   rotation = [0, -20, 0],
   animation,
   pendingDraw,
   storage = true;
+document.body.classList.toggle(
+  "light",
+  document.documentElement.dataset.theme !== "dark",
+);
 try {
   lang =
     document.documentElement.dataset.locale ||
@@ -214,10 +222,6 @@ try {
   if (!copy[lang]) lang = "en";
   legacy = JSON.parse(localStorage.getItem("atlas-progress"));
   sessions = JSON.parse(localStorage.getItem("atlas-continents")) || {};
-  document.body.classList.toggle(
-    "light",
-    localStorage.getItem("atlas-theme") !== "dark",
-  );
 } catch {
   storage = false;
 }
@@ -406,6 +410,10 @@ const shadow = svg
   .datum({ type: "Sphere" })
   .attr("fill", "url(#shade)")
   .attr("pointer-events", "none");
+const labelLeaders = svg
+  .append("g")
+  .attr("class", "label-leaders")
+  .attr("pointer-events", "none");
 const countryLabels = svg
   .append("g")
   .attr("class", "country-labels")
@@ -475,6 +483,12 @@ let drawnZoom;
 let drawnLabelSize;
 let drawnLabelScale;
 function draw() {
+  const activeCountry =
+    page === "explore"
+      ? $("highlightCountries")?.checked
+        ? hoveredCountry || current
+        : null
+      : current;
   // Read layout before changing paths or label attributes.
   const globe = $("globe");
   const matrix = globe.getScreenCTM();
@@ -503,24 +517,32 @@ function draw() {
     .selectAll("path")
     .attr("d", path)
     .attr("fill", (f) =>
-      answerFill(f.id, current?.id, page === "play" ? state?.answers : []),
+      answerFill(
+        f.id,
+        activeCountry?.id,
+        page === "play" ? state?.answers : [],
+      ),
+    )
+    .attr("aria-pressed", (f) =>
+      page === "explore" ? String(f.id === current?.id) : null,
     );
-  const labelSize = Math.max(12, Math.min(16, 11 + zoom));
+  const labelSize = Math.max(14, Math.min(18, 13 + zoom));
   const occupied = [];
+  const leaders = [];
   const viewCenter = projection.invert([300, 267]);
   const texts = countryLabels.selectAll("text");
-  if (labelOrderCurrent !== current) {
+  if (labelOrderCurrent !== activeCountry) {
     texts.sort(
       (a, b) =>
-        (b.id === current?.id) - (a.id === current?.id) ||
+        (b.id === activeCountry?.id) - (a.id === activeCountry?.id) ||
         countryGeometry(b).area - countryGeometry(a).area,
     );
-    labelOrderCurrent = current;
+    labelOrderCurrent = activeCountry;
   }
   if (drawnLabelSize !== labelSize || drawnLabelScale !== mapScale) {
     texts
       .style("font-size", labelSize / mapScale + "px")
-      .style("stroke-width", 1 / mapScale + "px");
+      .style("stroke-width", 2.5 / mapScale + "px");
     drawnLabelSize = labelSize;
     drawnLabelScale = mapScale;
   }
@@ -537,31 +559,45 @@ function draw() {
       return "none";
     const width = (labelWidths.get(this) * labelSize + 8) / mapScale,
       height = (labelSize + 6) / mapScale;
-    const box = [
-      p[0] - width / 2,
-      p[1] - height / 2,
-      p[0] + width / 2,
-      p[1] + height / 2,
-    ];
-    if (
-      occupied.some(
-        (b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1],
-      )
-    )
-      return "none";
-    occupied.push(box);
-    this.setAttribute("transform", "translate(" + p + ")");
+    const placement = placeMapLabel(
+      p,
+      width,
+      height,
+      [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
+      occupied,
+      page === "explore",
+    );
+    if (!placement) return "none";
+    occupied.push(placement.box);
+    if (placement.shifted)
+      leaders.push({ id: f.id, anchor: p, point: placement.connector });
+    this.setAttribute("transform", "translate(" + placement.point + ")");
     return null;
   });
-  if (current) {
-    const point = focusPoint(current),
+  labelLeaders
+    .selectAll("line")
+    .data(leaders, (d) => d.id)
+    .join("line")
+    .attr("x1", (d) => d.anchor[0])
+    .attr("y1", (d) => d.anchor[1])
+    .attr("x2", (d) => d.point[0])
+    .attr("y2", (d) => d.point[1]);
+  labelLeaders
+    .selectAll("circle")
+    .data(leaders, (d) => d.id)
+    .join("circle")
+    .attr("cx", (d) => d.anchor[0])
+    .attr("cy", (d) => d.anchor[1])
+    .attr("r", 2 / mapScale);
+  if (activeCountry) {
+    const point = focusPoint(activeCountry),
       p = projection(point);
     marker
       .attr("cx", p[0])
       .attr("cy", p[1])
       .attr(
         "display",
-        countryGeometry(current).area < 0.00015 &&
+        countryGeometry(activeCountry).area < 0.00015 &&
           d3.geoDistance(point, viewCenter) < Math.PI / 2
           ? null
           : "none",
@@ -617,7 +653,16 @@ function center() {
   animation = requestAnimationFrame(step);
 }
 bindGlobeGestures($("globe"), {
-  onStart: () => cancelAnimationFrame(animation),
+  onStart: () => {
+    cancelAnimationFrame(animation);
+    hoveredCountry = null;
+  },
+  onTap: ({ target }) => {
+    if (page !== "explore" || !$("highlightCountries")?.checked) return;
+    const id = target.closest?.("[data-country-id]")?.dataset.countryId;
+    current = features.find((country) => country.id === id) || null;
+    draw();
+  },
   onRotate: (dx, dy) => {
     const bounds = $("globe").getBoundingClientRect();
     const viewScale = Math.min(bounds.width / 600, bounds.height / 530) || 1;
@@ -670,6 +715,7 @@ svg
   });
 function updateThemeLabel() {
   const light = document.body.classList.contains("light");
+  document.documentElement.dataset.theme = light ? "light" : "dark";
   document
     .querySelector('meta[name="theme-color"]')
     ?.setAttribute("content", light ? "#f7f9ff" : "#0d1528");
@@ -835,11 +881,18 @@ function renderContinents() {
         : selectionPage === "countries"
           ? copy[2]
           : copy[0];
-    for (const [i, mode] of ["continent", "country"].entries()) {
+    for (const mode of ["country", "continent"]) {
+      const i = mode === "continent" ? 0 : 1;
       const button = document.createElement("a");
       button.className = "mode-card";
       const title = document.createElement("strong");
       title.textContent = copy[i + 1];
+      if (mode === "country") {
+        const recommendation = document.createElement("span");
+        recommendation.className = "mode-recommendation";
+        recommendation.textContent = ` (${modeRecommendation[lang]})`;
+        title.append(recommendation);
+      }
       const description = document.createElement("span");
       description.textContent = copy[i + 3];
       button.append(title, description);
@@ -875,12 +928,12 @@ function renderContinents() {
     input.setAttribute("aria-expanded", "false");
     input.setAttribute("aria-controls", "startingCountrySuggestions");
     input.placeholder = {
-      en: "Search countries…",
-      fa: "جست‌وجوی کشور…",
-      ar: "ابحث عن بلد…",
-      tr: "Ülke ara…",
-      fr: "Rechercher un pays…",
-      ru: "Найти страну…",
+      en: "Type a country name in English…",
+      fa: "اسم کشور رو به فارسی بنویس…",
+      ar: "اكتب اسم البلد بالعربية…",
+      tr: "Ülke adını Türkçe yaz…",
+      fr: "Écrivez le nom du pays en français…",
+      ru: "Введите название страны по-русски…",
     }[lang];
     const list = document.createElement("div");
     list.id = "startingCountrySuggestions";
@@ -927,6 +980,7 @@ function renderContinents() {
       features,
       $(selectionPage === "modes" ? "modeChoices" : "nearbyMode"),
     );
+    if (selectionPage === "modes") $("modeChoices").before($("chooseTitle"));
   }
   if (selectionPage !== "continents") return;
   if (!features.length) {
@@ -943,10 +997,25 @@ function renderContinents() {
     const title = document.createElement("strong");
     title.textContent = labels[lang][7 + index];
     const count = document.createElement("span");
-    count.textContent =
-      ratio(session.answers.length, session.order.length) +
-      " · " +
-      labels[lang][6];
+    count.className = "continent-count";
+    const countValue = document.createElement("bdi");
+    countValue.textContent = ratio(
+      session.answers.length,
+      session.order.length,
+    );
+    const countLabel = document.createElement("span");
+    countLabel.textContent = labels[lang][6];
+    count.append(countValue, countLabel);
+    const progress = document.createElement("div");
+    progress.className = "continent-progress";
+    progress.setAttribute("aria-hidden", "true");
+    const progressFill = document.createElement("div");
+    progressFill.style.width =
+      Math.min(
+        100,
+        (session.answers.length / Math.max(1, session.order.length)) * 100,
+      ) + "%";
+    progress.append(progressFill);
     const art = document.createElement("img");
     art.src = new URL(
       "./art/" + continent.toLowerCase().replaceAll(" ", "-") + ".svg",
@@ -964,7 +1033,7 @@ function renderContinents() {
     const imagePlaceholder = document.createElement("span");
     imagePlaceholder.className = "continent-art-placeholder";
     imagePlaceholder.setAttribute("aria-hidden", "true");
-    button.append(imagePlaceholder, art, badge, title, count);
+    button.append(imagePlaceholder, art, badge, title, count, progress);
     button.href = pagePath(lang, "play", continent);
     button.addEventListener("click", () => {
       track("continent-select", {
@@ -981,10 +1050,37 @@ function renderContinents() {
 function openExplore(continent = "All") {
   selected = continent;
   current = null;
+  hoveredCountry = null;
+  bindHighlightSwitch($("highlightCountries"), (enabled) => {
+    current = null;
+    hoveredCountry = null;
+    land
+      .selectAll("path")
+      .attr("tabindex", enabled ? 0 : -1)
+      .attr("aria-disabled", String(!enabled))
+      .style("cursor", enabled ? "pointer" : null);
+    draw();
+  });
   const exploreName = (f) =>
     $("showPopulation").checked
       ? populationLabel(name(f), f.id, lang)
       : name(f);
+  const renderExploreLabels = () =>
+    countryLabels.selectAll("text").each(function (f) {
+      const text = d3.select(this).text(null);
+      const flag = countryFlag(
+        names.find((country) => country.ccn3 === f.id)?.cca2,
+      );
+      if (flag) text.append("tspan").attr("class", "country-flag").text(flag);
+      const countryName = name(f);
+      text.append("tspan").text((flag ? "\u2009" : "") + countryName);
+      const population = exploreName(f).slice(countryName.length);
+      if (population)
+        text
+          .append("tspan")
+          .attr("class", "country-population")
+          .text(population);
+    });
   $("showPopulation").onchange = () => {
     try {
       localStorage.setItem(
@@ -994,7 +1090,7 @@ function openExplore(continent = "All") {
     } catch {
       // The switch still works for this visit if storage is blocked.
     }
-    countryLabels.selectAll("text").text(exploreName);
+    renderExploreLabels();
     land.selectAll("path").attr("aria-label", exploreName);
     labelsNeedMeasurement = true;
     queueDraw();
@@ -1029,14 +1125,34 @@ function openExplore(continent = "All") {
     .attr("stroke-width", 0.7);
   land
     .selectAll("path")
-    .attr("tabindex", 0)
+    .attr("tabindex", $("highlightCountries").checked ? 0 : -1)
     .attr("role", "button")
     .attr("aria-label", exploreName)
+    .attr("data-country-id", (f) => f.id)
+    .attr("aria-disabled", String(!$("highlightCountries").checked))
+    .style("cursor", $("highlightCountries").checked ? "pointer" : null)
+    .on("pointerenter", (event, f) => {
+      if (
+        !$("highlightCountries").checked ||
+        event.pointerType === "touch" ||
+        event.buttons
+      )
+        return;
+      hoveredCountry = f;
+      queueDraw();
+    })
+    .on("pointerleave", (_, f) => {
+      if (hoveredCountry !== f) return;
+      hoveredCountry = null;
+      queueDraw();
+    })
     .on("click", (_, f) => {
+      if (!$("highlightCountries").checked) return;
       current = f;
       draw();
     })
     .on("keydown", (event, f) => {
+      if (!$("highlightCountries").checked) return;
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         current = f;
@@ -1047,9 +1163,9 @@ function openExplore(continent = "All") {
     .selectAll("text")
     .data(countries, (f) => f.id)
     .join("text")
-    .text(exploreName)
     .attr("text-anchor", "middle")
     .attr("dy", ".35em");
+  renderExploreLabels();
   labelsNeedMeasurement = true;
   labelOrderCurrent = undefined;
   drawnLabelSize = undefined;
@@ -1310,6 +1426,12 @@ function closeMenu() {
 }
 $("menuOpen").onclick = () => {
   $("languagePicker").open = false;
+  appMenu.style.setProperty(
+    "--menu-top",
+    document.querySelector("body > header").getBoundingClientRect().bottom +
+      8 +
+      "px",
+  );
   appMenu.showModal();
   $("menuOpen").setAttribute("aria-expanded", "true");
 };
@@ -1445,8 +1567,9 @@ if (["continents", "play", "results", "explore"].includes(page)) {
   }
 }
 
+let homeReady;
 if (page === "home") {
-  import("./home-globe.js")
+  homeReady = import("./home-globe.js")
     .then(({ mountHomeGlobe }) =>
       mountHomeGlobe(document.querySelector(".welcome-art")),
     )
@@ -1464,8 +1587,19 @@ document.querySelector(".blog-cta a")?.addEventListener("click", (event) => {
   track("blog-play-click", { article: event.currentTarget.dataset.article });
 });
 
-bindHistory({
+await bindHistory({
   language: lang,
   getSessions: () => sessions,
   sessionLabel: (key) => labels[lang][7 + continents.indexOf(key)] || key,
 });
+await homeReady;
+if (page === "explore" && document.fonts) {
+  try {
+    await document.fonts.load('12px "Karshvar Flags"', "🇮🇷");
+    labelsNeedMeasurement = true;
+    draw();
+  } catch (error) {
+    console.warn("Flag font unavailable; using the system emoji font.", error);
+  }
+}
+await revealPage();

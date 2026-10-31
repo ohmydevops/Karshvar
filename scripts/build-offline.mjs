@@ -1,3 +1,7 @@
+import { buildTheme } from "./build-theme.mjs";
+import { buildLoading } from "./build-loading.mjs";
+buildTheme();
+await buildLoading();
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 const root = new URL("../public/", import.meta.url);
