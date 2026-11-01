@@ -14,6 +14,7 @@ import { pageCopy, pagePath } from "./navigation.js";
 import { bindGlobeGestures } from "./gestures.js";
 import {
   createAnalytics,
+  quizContext,
   isProduction,
   loadProductionAnalytics,
 } from "./analytics.js";
@@ -243,7 +244,7 @@ loadProductionAnalytics(document, location)?.addEventListener(
 function track(event, data = {}) {
   analytics.track(event, {
     language: lang,
-    ...(selected ? { continent: selected } : {}),
+    ...(["play", "results"].includes(page) ? quizContext(selected) : {}),
     ...data,
   });
 }
@@ -674,7 +675,7 @@ bindGlobeGestures($("globe"), {
     queueDraw();
   },
   onZoom: scale,
-  onEnd: (input) => track("map-interaction", { input }),
+  onEnd: () => {},
 });
 function scale(amount) {
   cancelAnimationFrame(animation);
@@ -900,6 +901,7 @@ function renderContinents() {
         lang,
         mode === "continent" ? "continents" : "countries",
       );
+      button.addEventListener("click", () => track("mode-select", { mode }));
       choices.append(button);
     }
     $("continentChoices").before(choices);
@@ -968,7 +970,9 @@ function renderContinents() {
       },
     );
     button.onclick = () => {
-      if (selectedCountry) navigate("play", "country:" + selectedCountry);
+      if (!selectedCountry) return;
+      track("country-select", { mode: "country", country: selectedCountry });
+      navigate("play", "country:" + selectedCountry);
     };
     entry.append(input, list);
     section.append(description, label, entry, button);
@@ -1037,6 +1041,7 @@ function renderContinents() {
     button.href = pagePath(lang, "play", continent);
     button.addEventListener("click", () => {
       track("continent-select", {
+        mode: "continent",
         continent,
         answered: session.answers.length,
         total: session.order.length,
@@ -1218,9 +1223,13 @@ function openGame(continent) {
   render();
   center();
   focusAnswer();
+  track("game-start", {
+    answered: state.answers.length,
+    total: state.order.length,
+  });
 }
 $("changeContinent").onclick = () => {
-  track("continent-change");
+  track("game-change");
   save();
   navigate(selected?.startsWith("country:") ? "countries" : "continents");
 };
@@ -1310,7 +1319,7 @@ function answer(skip = false) {
     total: state.order.length,
   });
   if (state.answers.length === state.order.length)
-    track("continent-complete", {
+    track("game-complete", {
       score: state.answers.filter((a) => a.correct).length,
       total: state.order.length,
     });
@@ -1337,7 +1346,7 @@ $("next").onclick = () => {
   focusAnswer();
 };
 $("restartContinent").onclick = () => {
-  track("continent-restart");
+  track("game-restart");
   state = selected?.startsWith("country:")
     ? { order: idsFor(selected), index: 0, answers: [] }
     : createSession(idsFor(selected));
@@ -1345,15 +1354,12 @@ $("restartContinent").onclick = () => {
   navigate("play", selected);
 };
 $("center").onclick = () => {
-  track("map-control", { action: "recenter" });
   center();
 };
 $("zoomIn").onclick = () => {
-  track("map-control", { action: "zoom-in" });
   scale(1.25);
 };
 $("zoomOut").onclick = () => {
-  track("map-control", { action: "zoom-out" });
   scale(0.8);
 };
 document.querySelectorAll("[data-language]").forEach((link) => {
@@ -1399,7 +1405,7 @@ $("resetDialog").addEventListener("close", () => {
   save(true);
   navigate("home");
 });
-$("startGame").onclick = () => track("game-start");
+$("startGame").onclick = () => track("play-click");
 $("aboutOpen").onclick = () => {
   track("about-open");
 };

@@ -19,19 +19,27 @@ export function loadProductionAnalytics(document, location) {
   }
 }
 
+export function quizContext(selection) {
+  if (!selection) return {};
+  return selection.startsWith("country:")
+    ? { mode: "country", country: selection.slice(8) }
+    : { mode: "continent", continent: selection };
+}
+
 const events = new Set([
+  "play-click",
+  "mode-select",
+  "country-select",
   "game-start",
   "blog-play-click",
   "continent-select",
   "answer-submit",
-  "continent-complete",
-  "continent-restart",
-  "continent-change",
+  "game-complete",
+  "game-restart",
+  "game-change",
   "progress-reset",
   "reset-open",
   "reset-cancel",
-  "map-interaction",
-  "map-control",
   "language-change",
   "theme-change",
   "about-open",
@@ -40,12 +48,12 @@ const fields = new Set([
   "language",
   "article",
   "continent",
+  "mode",
+  "country",
   "result",
   "answered",
   "total",
   "score",
-  "action",
-  "input",
   "theme",
   "to",
 ]);

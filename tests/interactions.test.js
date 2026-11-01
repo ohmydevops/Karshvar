@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { bindGlobeGestures } from "../public/gestures.js";
 import {
   createAnalytics,
+  quizContext,
   isProduction,
   loadProductionAnalytics,
 } from "../public/analytics.js";
@@ -159,17 +160,13 @@ test("blocked or failing analytics never interrupts gameplay", async () => {
       throw Error("should not run");
     },
   });
-  assert.doesNotThrow(() =>
-    disabled.track("map-control", { action: "recenter" }),
-  );
+  assert.doesNotThrow(() => disabled.track("game-restart"));
   const blocked = createAnalytics({
     enabled: true,
     getTracker: () => undefined,
   });
   for (let i = 0; i < 50; i++)
-    assert.doesNotThrow(() =>
-      blocked.track("map-control", { action: "zoom-in" }),
-    );
+    assert.doesNotThrow(() => blocked.track("game-restart"));
   const throws = createAnalytics({
     enabled: true,
     getTracker: () => ({
@@ -305,3 +302,41 @@ for (const method of ["pointer", "keyboard"])
     input.send("keydown", { key: "Enter" });
     assert.equal(submitted, 1);
   });
+
+test("quiz events distinguish country mode from continent mode and omit raw input", () => {
+  assert.deepEqual(quizContext(null), {});
+  assert.deepEqual(quizContext("Asia"), {
+    mode: "continent",
+    continent: "Asia",
+  });
+  assert.deepEqual(quizContext("country:364"), {
+    mode: "country",
+    country: "364",
+  });
+  const sent = [];
+  const analytics = createAnalytics({
+    enabled: true,
+    getTracker: () => ({ track: (...args) => sent.push(args) }),
+  });
+  for (const event of [
+    "play-click",
+    "mode-select",
+    "country-select",
+    "game-start",
+    "game-complete",
+    "game-restart",
+    "game-change",
+  ]) {
+    analytics.track(event, {
+      ...quizContext("country:364"),
+      answer: "typed answer",
+      score: 2,
+    });
+  }
+  assert.equal(sent.length, 7);
+  for (const [, data] of sent)
+    assert.deepEqual(data, { mode: "country", country: "364", score: 2 });
+  analytics.track("map-interaction", { input: "touch" });
+  analytics.track("map-control", { action: "zoom-in" });
+  assert.equal(sent.length, 7);
+});
