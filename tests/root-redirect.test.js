@@ -4,11 +4,11 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const html = fs.readFileSync("public/index.html", "utf8");
-test("root redirects to English under the project path and preserves query and fragment", () => {
+test("root redirects to English on the custom domain and preserves query and fragment", () => {
   const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
   for (const address of [
-    "https://ohmydevops.github.io/Karshvar/",
-    "https://ohmydevops.github.io/Karshvar/index.html?from=google#map",
+    "https://karshvar.ir/",
+    "https://karshvar.ir/index.html?from=google#map",
     "http://127.0.0.1:5174/?from=google#map",
   ]) {
     const url = new URL(address);
@@ -25,10 +25,7 @@ test("root redirects to English under the project path and preserves query and f
       },
     });
     assert.equal(target.origin, url.origin);
-    assert.equal(
-      target.pathname,
-      url.hostname === "127.0.0.1" ? "/en/" : "/Karshvar/en/",
-    );
+    assert.equal(target.pathname, "/en/");
     assert.equal(target.search, url.search);
     assert.equal(target.hash, url.hash);
   }
@@ -38,7 +35,7 @@ test("root has a no-script fallback and canonical English URL without a duplicat
     html,
     /<noscript>[\s\S]*http-equiv="refresh"[\s\S]*url=\.\/en\//,
   );
-  assert.ok(html.includes('href="https://ohmydevops.github.io/Karshvar/en/"'));
+  assert.ok(html.includes('href="https://karshvar.ir/en/"'));
   assert.ok(html.includes('href="./en/"'));
   assert.ok(!html.includes("app.js"));
   assert.ok(!html.includes("pageSkeleton"));

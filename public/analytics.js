@@ -1,10 +1,5 @@
 export function isProduction(location) {
-  return (
-    location?.protocol === "https:" &&
-    location.hostname === "ohmydevops.github.io" &&
-    (location.pathname === "/Karshvar" ||
-      location.pathname.startsWith("/Karshvar/"))
-  );
+  return location?.protocol === "https:" && location.hostname === "karshvar.ir";
 }
 export function loadProductionAnalytics(document, location) {
   if (!isProduction(location)) return null;
@@ -16,7 +11,7 @@ export function loadProductionAnalytics(document, location) {
     script.defer = true;
     script.src = "https://cloud.umami.is/script.js";
     script.dataset.websiteId = "c99dd2e3-8541-4d92-84c9-df74a8919c18";
-    script.dataset.domains = "ohmydevops.github.io";
+    script.dataset.domains = "karshvar.ir";
     document.head.append(script);
     return script;
   } catch {

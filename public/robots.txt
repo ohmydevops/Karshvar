@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ohmydevops.github.io/Karshvar/sitemap.xml
+Sitemap: https://karshvar.ir/sitemap.xml

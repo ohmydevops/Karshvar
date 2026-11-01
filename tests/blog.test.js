@@ -14,10 +14,7 @@ test("all 18 blog articles have five places, valid local links, SEO and unique s
         /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
       )[1],
     );
-    assert.equal(
-      schema.url,
-      `https://ohmydevops.github.io/Karshvar/${relative}`,
-    );
+    assert.equal(schema.url, `https://karshvar.ir/${relative}`);
     assert.equal(schema["@type"], "BlogPosting");
     assert.equal(schema.inLanguage, a.l);
     assert.match(
@@ -35,9 +32,9 @@ test("all 18 blog articles have five places, valid local links, SEO and unique s
     )) {
       const u = new URL(match[1], base);
       if (u.origin !== base.origin) continue;
-      assert(u.pathname.startsWith("/Karshvar/"));
+      assert(u.pathname.startsWith("/"));
       assert(
-        fs.existsSync("public/" + decodeURIComponent(u.pathname.slice(10))),
+        fs.existsSync("public/" + decodeURIComponent(u.pathname.slice(1))),
         u.href,
       );
       if (u.hash) assert.equal(u.pathname, new URL(schema.url).pathname);

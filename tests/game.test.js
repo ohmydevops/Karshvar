@@ -158,8 +158,8 @@ test("completed progress stays complete during recovery and duplicate input cann
   assert.equal(deduplicated.answers.length, 2);
 });
 
-test("all localized pages and assets resolve beneath the GitHub Pages project path", () => {
-  const root = "https://ohmydevops.github.io/Karshvar/";
+test("all localized pages and assets resolve on the custom domain", () => {
+  const root = "https://karshvar.ir/";
   for (const locale of ["en", "fa", "ar", "tr", "fr", "ru"]) {
     for (const suffix of [
       "",
@@ -183,13 +183,8 @@ test("all localized pages and assets resolve beneath the GitHub Pages project pa
       )) {
         const url = new URL(match[1], base);
         if (url.origin !== new URL(root).origin) continue;
-        assert(
-          url.pathname.startsWith("/Karshvar/"),
-          `Asset escapes project path: ${url}`,
-        );
-        const relative = decodeURIComponent(
-          url.pathname.slice("/Karshvar/".length),
-        );
+        assert(url.pathname.startsWith("/"), `Asset escapes site root: ${url}`);
+        const relative = decodeURIComponent(url.pathname.slice("/".length));
         assert(
           fs.existsSync(`public/${relative}`),
           `Missing asset or page: ${relative}`,

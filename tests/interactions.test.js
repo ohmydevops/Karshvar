@@ -198,8 +198,8 @@ test("analytics never loads or sends events on localhost and preview URLs", () =
     "http://[::1]:5174/",
     "http://192.168.1.10:5174/",
     "https://preview.example.com/Karshvar/",
-    "https://ohmydevops.github.io/other/",
-    "http://ohmydevops.github.io/Karshvar/",
+    "https://other.example.com/",
+    "http://karshvar.ir/",
   ]) {
     const location = new URL(address);
     assert.equal(isProduction(location), false, address);
@@ -220,7 +220,7 @@ test("analytics never loads or sends events on localhost and preview URLs", () =
   }
 });
 test("production loads the configured Umami tracker once and allows events", () => {
-  const location = new URL("https://ohmydevops.github.io/Karshvar/fa/");
+  const location = new URL("https://karshvar.ir/fa/");
   assert(isProduction(location));
   const scripts = [];
   const document = {
@@ -230,6 +230,7 @@ test("production loads the configured Umami tracker once and allows events", () 
   };
   const script = loadProductionAnalytics(document, location);
   assert.equal(script.src, "https://cloud.umami.is/script.js");
+  assert.equal(script.dataset.domains, "karshvar.ir");
   assert.equal(
     script.dataset.websiteId,
     "c99dd2e3-8541-4d92-84c9-df74a8919c18",

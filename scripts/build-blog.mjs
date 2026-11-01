@@ -60,7 +60,7 @@ const labels = {
     "Страница ЮНЕСКО",
   ],
 };
-const origin = "https://ohmydevops.github.io/Karshvar/";
+const origin = "https://karshvar.ir/";
 const esc = (s) =>
   String(s)
     .replaceAll("&", "&amp;")

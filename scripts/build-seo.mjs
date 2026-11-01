@@ -1,5 +1,5 @@
 import fs from "node:fs";
-const origin = "https://ohmydevops.github.io/Karshvar/";
+const origin = "https://karshvar.ir/";
 const walk = (d) =>
   fs
     .readdirSync(d, { withFileTypes: true })
