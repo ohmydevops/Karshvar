@@ -1,3 +1,4 @@
+import { mountGpuCountries } from "./gpu-countries.js";
 export function mountJourneyArt(features, target) {
   if (document.getElementById("journeyArt") || !features.length || !target)
     return;
@@ -37,15 +38,24 @@ export function mountJourneyArt(features, target) {
     .attr("d", path)
     .attr("fill", "var(--ocean)")
     .attr("stroke", "var(--line)");
-  svg
-    .append("g")
-    .selectAll("path")
-    .data(features)
-    .join("path")
-    .attr("d", path)
-    .attr("fill", "var(--land)")
-    .attr("stroke", "var(--ocean)")
-    .attr("stroke-width", 0.6);
+  const gpu = mountGpuCountries(svg, projection);
+  if (gpu)
+    gpu.draw(
+      features,
+      () => "var(--land)",
+      () => 1,
+      [0, 0, 520, 340],
+    );
+  else
+    svg
+      .append("g")
+      .selectAll("path")
+      .data(features)
+      .join("path")
+      .attr("d", path)
+      .attr("fill", "var(--land)")
+      .attr("stroke", "var(--ocean)")
+      .attr("stroke-width", 0.6);
   const rings = svg
     .append("g")
     .attr("fill", "none")

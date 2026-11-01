@@ -1,0 +1,5 @@
+NASA GIBS / MODIS Blue Marble Shaded Relief and Bathymetry.
+Base image and online details use the same WMS imagery layer.
+Downloaded 2026-11-01, EPSG:4326, bbox -180,-90,180,90, 4096x2048.
+https://www.earthdata.nasa.gov/data/tools/gibs
+https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi

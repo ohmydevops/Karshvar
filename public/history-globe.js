@@ -1,3 +1,4 @@
+import { mountGpuCountries } from "./gpu-countries.js";
 import { bindGlobeGestures } from "./gestures.js";
 export function latestAnswers(sessions) {
   const records = new Map();
@@ -72,6 +73,7 @@ export function mountHistoryGlobe(
     .append("path")
     .datum({ type: "Sphere" })
     .attr("fill", "var(--ocean)");
+  const gpu = mountGpuCountries(svg, projection);
   const land = svg
     .append("g")
     .selectAll("path")
@@ -102,7 +104,15 @@ export function mountHistoryGlobe(
   const draw = () => {
     projection.rotate(rotation).scale(scale);
     ocean.attr("d", geo);
-    land.attr("d", geo);
+    if (gpu) {
+      land.attr("opacity", 0);
+      gpu.draw(
+        features,
+        (f) => fill(f.id, null, answers),
+        () => 1,
+        [0, 0, 600, 480],
+      );
+    } else land.attr("d", geo);
   };
   bindGlobeGestures(svg.node(), {
     onStart: () => {

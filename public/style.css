@@ -3467,3 +3467,134 @@ html[data-loading="failed"] .page-skeleton {
     animation: none;
   }
 }
+
+.map-controls button.satellite-toggle {
+  width: auto;
+  padding-inline: 10px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.map-controls button.satellite-toggle[aria-pressed="true"] {
+  background: #245c43;
+  color: white;
+  border-color: #a4dbb6;
+}
+
+/* Compact Explore controls, with comfortable touch targets. */
+#explorePanel #exploreContinents a {
+  min-height: 26px;
+  padding: 3px 7px;
+}
+#explorePanel .population-switch {
+  min-height: 32px;
+  padding: 5px 8px;
+  margin-top: 0;
+  gap: 7px;
+}
+@media (pointer: coarse) {
+  #explorePanel #exploreContinents a,
+  #explorePanel .population-switch {
+    min-height: 36px;
+  }
+}
+
+@media (min-width: 761px) {
+  .explore-settings-bar {
+    position: absolute;
+    z-index: 4;
+    inset-block-start: 12px;
+    inset-inline-start: 190px;
+    inset-inline-end: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+    pointer-events: none;
+  }
+  .explore-settings-bar .population-switch {
+    pointer-events: auto;
+    margin: 0;
+    min-height: 34px;
+    padding: 5px 9px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: 0 2px 8px #0002;
+    white-space: nowrap;
+  }
+}
+
+.marine-labels text {
+  font-family: inherit;
+  font-style: italic;
+  fill: #d2edff;
+  stroke: #18354d;
+  paint-order: stroke;
+  stroke-linejoin: round;
+  opacity: 0.6;
+}
+
+.satellite-credit {
+  position: absolute;
+  inset-inline-end: 8px;
+  bottom: 8px;
+  z-index: 2;
+  padding: 2px 5px;
+  background: #10243fcc;
+  color: #d2edff;
+  border-radius: 4px;
+  font-size: 9px;
+}
+.satellite-credit[hidden] {
+  display: none;
+}
+
+/* Translucent menus keep the map visible with a restrained blur. */
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  html[data-page="explore"] .explore-heading,
+  .explore-settings-bar .population-switch,
+  .language-picker[open] > div,
+  dialog.app-drawer {
+    background: color-mix(in srgb, var(--surface) 38%, transparent);
+    -webkit-backdrop-filter: blur(4px) saturate(110%);
+    backdrop-filter: blur(4px) saturate(110%);
+  }
+}
+
+.satellite-download {
+  position: absolute;
+  inset-inline-start: 8px;
+  bottom: 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: #10243fb3;
+  color: #edf6ff;
+  font-size: 10px;
+  pointer-events: none;
+}
+.satellite-download[hidden] {
+  display: none;
+}
+.satellite-download::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid #edf6ff55;
+  border-top-color: #edf6ff;
+  border-radius: 50%;
+  animation: satellite-spin 0.8s linear infinite;
+}
+@keyframes satellite-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .satellite-download::before {
+    animation: none;
+  }
+}

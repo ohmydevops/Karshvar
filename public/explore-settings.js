@@ -1,10 +1,10 @@
 export const highlightCopy = {
-  en: "Highlight countries",
-  fa: "رنگی‌کردن کشورها",
-  ar: "تمييز البلدان",
-  tr: "Ülkeleri vurgula",
-  fr: "Mettre les pays en surbrillance",
-  ru: "Подсвечивать страны",
+  en: "Highlight",
+  fa: "هایلایت",
+  ar: "تمييز",
+  tr: "Vurgu",
+  fr: "Surbrillance",
+  ru: "Подсветка",
 };
 
 export function bindHighlightSwitch(

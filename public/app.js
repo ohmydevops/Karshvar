@@ -1,3 +1,7 @@
+import { mountMarineLabels } from "./marine-labels.js";
+import { mountGpuCountries } from "./gpu-countries.js";
+import { capitalTime } from "./clocks.js";
+import { mountSatellite } from "./satellite.js";
 import { mountJourneyArt } from "./journey-art.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
@@ -398,6 +402,7 @@ const sphere = svg
   .attr("fill", "url(#ocean)")
   .attr("stroke", "#7b9bce")
   .attr("stroke-opacity", 0.35);
+const satellite = mountSatellite(svg, projection, lang, queueDraw);
 const grid = svg
   .append("path")
   .datum(d3.geoGraticule10())
@@ -405,6 +410,9 @@ const grid = svg
   .attr("stroke", "#a2c5ff")
   .attr("stroke-opacity", 0.08)
   .attr("stroke-width", 0.6);
+const gpuCountries = ["play", "explore"].includes(page)
+  ? mountGpuCountries(svg, projection)
+  : null;
 const land = svg.append("g");
 const shadow = svg
   .append("path")
@@ -419,6 +427,8 @@ const countryLabels = svg
   .append("g")
   .attr("class", "country-labels")
   .attr("pointer-events", "none");
+const drawMarineLabels =
+  page === "explore" ? mountMarineLabels(svg, lang) : null;
 const marker = svg
   .append("circle")
   .attr("r", 14)
@@ -480,6 +490,12 @@ function queueDraw() {
     });
 }
 window.addEventListener("resize", queueDraw);
+let gestureActive = false;
+let gestureTimer;
+function finishGesture() {
+  gestureActive = false;
+  queueDraw();
+}
 let drawnZoom;
 let drawnLabelSize;
 let drawnLabelScale;
@@ -513,20 +529,53 @@ function draw() {
     shadow.attr("d", outline);
     drawnZoom = zoom;
   }
-  grid.attr("d", path);
+  satellite.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+  grid.attr("display", gestureActive ? "none" : null);
   land
-    .selectAll("path")
-    .attr("d", path)
-    .attr("fill", (f) =>
+    .attr("opacity", gpuCountries ? 0 : 1)
+    .attr("display", gestureActive && gpuCountries ? "none" : null);
+  gpuCountries?.draw(
+    land.selectAll("path").data(),
+    (f) =>
       answerFill(
         f.id,
         activeCountry?.id,
         page === "play" ? state?.answers : [],
       ),
-    )
-    .attr("aria-pressed", (f) =>
-      page === "explore" ? String(f.id === current?.id) : null,
-    );
+    (f) =>
+      satellite.active
+        ? f.id === activeCountry?.id ||
+          (page === "play" && state?.answers?.some((a) => a.id === f.id))
+          ? 0.72
+          : 0.04
+        : 1,
+    [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
+  );
+  if (!gestureActive) grid.attr("d", path);
+  if (!gestureActive)
+    land
+      .selectAll("path")
+      .attr("d", path)
+      .attr("fill", (f) =>
+        answerFill(
+          f.id,
+          activeCountry?.id,
+          page === "play" ? state?.answers : [],
+        ),
+      )
+      .attr("fill-opacity", (f) =>
+        satellite.active
+          ? f.id === activeCountry?.id ||
+            (page === "play" && state?.answers.some((a) => a.id === f.id))
+            ? 0.72
+            : 0.04
+          : 1,
+      )
+      .attr("aria-pressed", (f) =>
+        page === "explore" ? String(f.id === current?.id) : null,
+      );
+  countryLabels.attr("display", null);
+  labelLeaders.attr("display", null);
   const labelSize = Math.max(14, Math.min(18, 13 + zoom));
   const occupied = [];
   const leaders = [];
@@ -590,6 +639,13 @@ function draw() {
     .attr("cx", (d) => d.anchor[0])
     .attr("cy", (d) => d.anchor[1])
     .attr("r", 2 / mapScale);
+  drawMarineLabels?.(
+    projection,
+    mapScale,
+    [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
+    occupied,
+    placeMapLabel,
+  );
   if (activeCountry) {
     const point = focusPoint(activeCountry),
       p = projection(point);
@@ -657,6 +713,9 @@ bindGlobeGestures($("globe"), {
   onStart: () => {
     cancelAnimationFrame(animation);
     hoveredCountry = null;
+    gestureActive = true;
+    clearTimeout(gestureTimer);
+    gestureTimer = setTimeout(finishGesture, 180);
   },
   onTap: ({ target }) => {
     if (page !== "explore" || !$("highlightCountries")?.checked) return;
@@ -665,6 +724,9 @@ bindGlobeGestures($("globe"), {
     draw();
   },
   onRotate: (dx, dy) => {
+    gestureActive = true;
+    clearTimeout(gestureTimer);
+    gestureTimer = setTimeout(finishGesture, 180);
     const bounds = $("globe").getBoundingClientRect();
     const viewScale = Math.min(bounds.width / 600, bounds.height / 530) || 1;
     rotation[0] += (dx * 0.3) / (zoom * viewScale);
@@ -675,9 +737,12 @@ bindGlobeGestures($("globe"), {
     queueDraw();
   },
   onZoom: scale,
-  onEnd: () => {},
+  onEnd: finishGesture,
 });
 function scale(amount) {
+  gestureActive = true;
+  clearTimeout(gestureTimer);
+  gestureTimer = setTimeout(finishGesture, 180);
   cancelAnimationFrame(animation);
   zoom = Math.max(0.8, Math.min(12, zoom * amount));
   queueDraw();
@@ -1052,7 +1117,10 @@ function renderContinents() {
     prepareContinentImages(button);
   }
 }
+let cleanupExploreSettings = () => {};
 function openExplore(continent = "All") {
+  cleanupExploreSettings();
+  const settingsEvents = new AbortController();
   selected = continent;
   current = null;
   hoveredCountry = null;
@@ -1066,16 +1134,102 @@ function openExplore(continent = "All") {
       .style("cursor", enabled ? "pointer" : null);
     draw();
   });
-  const exploreName = (f) =>
-    $("showPopulation").checked
+  const clockLabel = document.createElement("label");
+  clockLabel.className = "population-switch";
+  clockLabel.title = {
+    en: "Capital city time",
+    fa: "ساعت پایتخت",
+    ar: "وقت العاصمة",
+    tr: "Başkent saati",
+    fr: "Heure de la capitale",
+    ru: "Время столицы",
+  }[lang];
+  const clock = document.createElement("input");
+  clock.type = "checkbox";
+  clock.id = "showClock";
+  clock.setAttribute("role", "switch");
+  try {
+    clock.checked = localStorage.getItem("atlas-show-clock") === "true";
+  } catch {}
+  const clockText = document.createElement("span");
+  clockText.textContent = {
+    en: "Time",
+    fa: "ساعت",
+    ar: "الوقت",
+    tr: "Saat",
+    fr: "Heure",
+    ru: "Время",
+  }[lang];
+  clockLabel.append(clock, clockText);
+  $("showPopulation").closest("label").after(clockLabel);
+  const flagsLabel = document.createElement("label");
+  flagsLabel.className = "population-switch";
+  const flags = document.createElement("input");
+  flags.type = "checkbox";
+  flags.id = "showFlags";
+  flags.setAttribute("role", "switch");
+  flags.checked = false;
+  try {
+    flags.checked = localStorage.getItem("atlas-show-flags") === "true";
+  } catch {}
+  const flagsText = document.createElement("span");
+  flagsText.textContent = {
+    en: "Flags",
+    fa: "پرچم‌ها",
+    ar: "الأعلام",
+    tr: "Bayraklar",
+    fr: "Drapeaux",
+    ru: "Флаги",
+  }[lang];
+  flagsLabel.append(flags, flagsText);
+  clockLabel.after(flagsLabel);
+  const settings = document.createElement("div");
+  settings.className = "explore-settings-bar";
+  settings.setAttribute("role", "group");
+  settings.setAttribute(
+    "aria-label",
+    {
+      en: "Map settings",
+      fa: "تنظیمات نقشه",
+      ar: "إعدادات الخريطة",
+      tr: "Harita ayarları",
+      fr: "Réglages de la carte",
+      ru: "Настройки карты",
+    }[lang],
+  );
+  const panel = $("explorePanel");
+  const heading = panel.closest(".explore-heading");
+  const arrangeSettings = () => {
+    const desktop = matchMedia("(min-width: 761px)").matches;
+    if (desktop) {
+      heading.after(settings);
+      panel
+        .querySelectorAll(".population-switch")
+        .forEach((label) => settings.append(label));
+    } else {
+      settings
+        .querySelectorAll(".population-switch")
+        .forEach((label) => panel.append(label));
+      settings.remove();
+    }
+  };
+  arrangeSettings();
+  window.addEventListener("resize", arrangeSettings, {
+    signal: settingsEvents.signal,
+  });
+  const exploreName = (f) => {
+    const label = $("showPopulation").checked
       ? populationLabel(name(f), f.id, lang)
       : name(f);
+    const time = clock.checked ? capitalTime(f.id, lang) : "";
+    return label + (time ? " · " + time : "");
+  };
   const renderExploreLabels = () =>
     countryLabels.selectAll("text").each(function (f) {
       const text = d3.select(this).text(null);
-      const flag = countryFlag(
-        names.find((country) => country.ccn3 === f.id)?.cca2,
-      );
+      const flag = flags.checked
+        ? countryFlag(names.find((country) => country.ccn3 === f.id)?.cca2)
+        : "";
       if (flag) text.append("tspan").attr("class", "country-flag").text(flag);
       const countryName = name(f);
       text.append("tspan").text((flag ? "\u2009" : "") + countryName);
@@ -1099,6 +1253,45 @@ function openExplore(continent = "All") {
     land.selectAll("path").attr("aria-label", exploreName);
     labelsNeedMeasurement = true;
     queueDraw();
+  };
+
+  const updateExploreLabels = () => {
+    renderExploreLabels();
+    land.selectAll("path").attr("aria-label", exploreName);
+    labelsNeedMeasurement = true;
+    queueDraw();
+  };
+  flags.onchange = () => {
+    try {
+      localStorage.setItem("atlas-show-flags", String(flags.checked));
+    } catch {}
+    updateExploreLabels();
+  };
+  clock.onchange = () => {
+    try {
+      localStorage.setItem("atlas-show-clock", String(clock.checked));
+    } catch {}
+    updateExploreLabels();
+  };
+  const clockTimer = setInterval(() => {
+    if (clock.checked && !document.hidden) updateExploreLabels();
+  }, 1000 * 30);
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      if (clock.checked && !document.hidden) updateExploreLabels();
+    },
+    { signal: settingsEvents.signal },
+  );
+  cleanupExploreSettings = () => {
+    settingsEvents.abort();
+    clearInterval(clockTimer);
+    settings
+      .querySelectorAll(".population-switch")
+      .forEach((label) => panel.append(label));
+    settings.remove();
+    clockLabel.remove();
+    flagsLabel.remove();
   };
 
   const countries = features.filter((f) =>
@@ -1190,11 +1383,45 @@ function openExplore(continent = "All") {
             ru: "Все",
           }[lang]
         : labels[lang][6 + i];
-    if (c === continent) a.setAttribute("aria-current", "page");
+    if (c === continent) {
+      a.setAttribute("aria-current", "page");
+      const summary = panel.querySelector("summary");
+      summary.textContent =
+        c === "All"
+          ? {
+              en: "Continents",
+              fa: "قاره‌ها",
+              ar: "القارات",
+              tr: "Kıtalar",
+              fr: "Continents",
+              ru: "Континенты",
+            }[lang]
+          : a.textContent;
+    }
+    a.addEventListener("click", (event) => {
+      if (
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      )
+        return;
+      event.preventDefault();
+      if (location.href !== a.href) history.pushState(null, "", a.href);
+      openExplore(c);
+      panel.open = false;
+    });
     nav.append(a);
   });
   draw();
 }
+if (page === "explore")
+  window.addEventListener("popstate", () => {
+    if (!features.length) return;
+    const continent = new URLSearchParams(location.search).get("continent");
+    openExplore(continents.includes(continent) ? continent : "All");
+  });
 function focusAnswer() {
   if (!matchMedia("(pointer: coarse)").matches && !$("answerForm").hidden)
     $("answer").focus({ preventScroll: true });
