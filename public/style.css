@@ -3549,18 +3549,6 @@ html[data-loading="failed"] .page-skeleton {
   display: none;
 }
 
-/* Translucent menus keep the map visible with a restrained blur. */
-@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
-  html[data-page="explore"] .explore-heading,
-  .explore-settings-bar .population-switch,
-  .language-picker[open] > div,
-  dialog.app-drawer {
-    background: color-mix(in srgb, var(--surface) 38%, transparent);
-    -webkit-backdrop-filter: blur(4px) saturate(110%);
-    backdrop-filter: blur(4px) saturate(110%);
-  }
-}
-
 .satellite-download {
   position: absolute;
   inset-inline-start: 8px;
