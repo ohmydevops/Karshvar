@@ -10,7 +10,7 @@ export function loadProductionAnalytics(document, location) {
     script.id = "umamiAnalytics";
     script.defer = true;
     script.src = "https://cloud.umami.is/script.js";
-    script.dataset.websiteId = "c99dd2e3-8541-4d92-84c9-df74a8919c18";
+    script.dataset.websiteId = "8f92d457-8802-4230-8602-1445bc50840c";
     script.dataset.domains = "karshvar.ir";
     document.head.append(script);
     return script;

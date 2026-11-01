@@ -233,7 +233,7 @@ test("production loads the configured Umami tracker once and allows events", () 
   assert.equal(script.dataset.domains, "karshvar.ir");
   assert.equal(
     script.dataset.websiteId,
-    "c99dd2e3-8541-4d92-84c9-df74a8919c18",
+    "8f92d457-8802-4230-8602-1445bc50840c",
   );
   assert.equal(loadProductionAnalytics(document, location), script);
   assert.equal(scripts.length, 1);
