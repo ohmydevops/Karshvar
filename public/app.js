@@ -1,7 +1,3 @@
-import { mountMarineLabels } from "./marine-labels.js";
-import { mountGpuCountries } from "./gpu-countries.js";
-import { capitalTime } from "./clocks.js";
-import { mountSatellite } from "./satellite.js";
 import { mountJourneyArt } from "./journey-art.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
@@ -23,7 +19,6 @@ import {
   loadProductionAnalytics,
 } from "./analytics.js";
 import { resetCopy } from "./reset.js";
-import { populationLabel } from "./population.js";
 import { aboutCopy, seoCopy } from "./about.js";
 import {
   continents,
@@ -198,6 +193,17 @@ const copy = {
 };
 const $ = (id) => document.getElementById(id);
 const page = document.documentElement.dataset.page || "home";
+const { mountMarineLabels } =
+  page === "explore" ? await import("./marine-labels.js") : {};
+const { mountGpuCountries } = ["play", "explore"].includes(page)
+  ? await import("./gpu-countries.js")
+  : {};
+const { capitalTime } = page === "explore" ? await import("./clocks.js") : {};
+const { mountSatellite } = ["play", "explore"].includes(page)
+  ? await import("./satellite.js")
+  : {};
+const { populationLabel } =
+  page === "explore" ? await import("./population.js") : {};
 const selectionPage =
   document.documentElement.dataset.selectionPage || "continents";
 const routeContinent = new URLSearchParams(location.search).get("continent");
@@ -402,7 +408,9 @@ const sphere = svg
   .attr("fill", "url(#ocean)")
   .attr("stroke", "#7b9bce")
   .attr("stroke-opacity", 0.35);
-const satellite = mountSatellite(svg, projection, lang, queueDraw);
+const satellite = mountSatellite
+  ? mountSatellite(svg, projection, lang, queueDraw)
+  : { active: false, draw() {} };
 const grid = svg
   .append("path")
   .datum(d3.geoGraticule10())
@@ -661,7 +669,7 @@ function draw() {
       );
   } else marker.attr("display", "none");
 }
-function center() {
+function center(instant = false) {
   if (page === "explore") {
     openExplore(selected);
     return;
@@ -684,7 +692,7 @@ function center() {
   );
   const targetZoom = Math.max(1.15, Math.min(12, 290 / Math.max(extent, 1)));
   const dx = ((((target[0] - start[0]) % 360) + 540) % 360) - 180;
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (instant || matchMedia("(prefers-reduced-motion: reduce)").matches) {
     rotation = target;
     zoom = targetZoom;
     draw();
@@ -1448,7 +1456,7 @@ function openGame(continent) {
     .attr("stroke-width", 0.7)
     .attr("stroke-linejoin", "round");
   render();
-  center();
+  center(satellite.initiallyEnabled);
   focusAnswer();
   track("game-start", {
     answered: state.answers.length,
@@ -1778,6 +1786,7 @@ if (["continents", "play", "results", "explore"].includes(page)) {
         );
       else openGame(selected);
     }
+    await satellite.ready;
     draw();
     if (mapLoading) {
       mapLoading.hidden = true;

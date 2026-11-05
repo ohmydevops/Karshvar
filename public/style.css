@@ -3468,16 +3468,49 @@ html[data-loading="failed"] .page-skeleton {
   }
 }
 
-.map-controls button.satellite-toggle {
-  width: auto;
-  padding-inline: 10px;
-  font-size: 12px;
-  font-family: inherit;
+html[data-page="play"] .map-controls {
+  left: auto;
+  right: 16px;
+  transform: none;
+  bottom: 16px;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: 0 2px 7px #0002;
 }
-.map-controls button.satellite-toggle[aria-pressed="true"] {
-  background: #245c43;
-  color: white;
-  border-color: #a4dbb6;
+html[data-page="play"] .map-controls button {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 7px;
+}
+.map-controls .map-satellite-switch {
+  gap: 6px;
+  min-height: 32px;
+  margin: 0;
+  padding: 0 8px;
+  border-top: 0;
+  border-inline-start: 1px solid var(--line);
+  white-space: nowrap;
+}
+.map-satellite-switch input {
+  border-radius: 20px;
+}
+@media (pointer: coarse) {
+  html[data-page="play"] .map-controls button {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+  .map-controls .map-satellite-switch {
+    min-height: 40px;
+  }
 }
 
 /* Compact Explore controls, with comfortable touch targets. */
@@ -3551,7 +3584,7 @@ html[data-loading="failed"] .page-skeleton {
 
 .satellite-download {
   position: absolute;
-  inset-inline-start: 8px;
+  right: 8px;
   bottom: 8px;
   z-index: 3;
   display: flex;
@@ -3567,6 +3600,12 @@ html[data-loading="failed"] .page-skeleton {
 .satellite-download[hidden] {
   display: none;
 }
+html[data-page="play"] .satellite-credit {
+  bottom: 4px;
+}
+html[data-page="play"] .satellite-download {
+  max-width: calc(100% - 20px);
+}
 .satellite-download::before {
   content: "";
   width: 10px;
@@ -3575,6 +3614,25 @@ html[data-loading="failed"] .page-skeleton {
   border-top-color: #edf6ff;
   border-radius: 50%;
   animation: satellite-spin 0.8s linear infinite;
+}
+.map-satellite-switch .satellite-download {
+  position: static;
+  flex: 0 0 12px;
+  width: 12px;
+  padding: 0;
+  background: none;
+}
+.map-satellite-switch .satellite-download[hidden] {
+  display: flex;
+  visibility: hidden;
+}
+.map-satellite-switch .satellite-download-copy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 @keyframes satellite-spin {
   to {

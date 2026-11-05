@@ -75,10 +75,12 @@ async function setup(controller = true) {
     },
   };
   vm.runInNewContext(
-    source.replaceAll(
-      "import.meta.url",
-      JSON.stringify("https://example.test/offline.js"),
-    ),
+    source
+      .replace("export const offlineReady", "const offlineReady")
+      .replaceAll(
+        "import.meta.url",
+        JSON.stringify("https://example.test/offline.js"),
+      ),
     {
       document,
       navigator: { serviceWorker },

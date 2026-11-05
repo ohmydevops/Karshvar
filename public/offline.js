@@ -237,4 +237,4 @@ async function setupOffline() {
   }
 }
 // This module runs after HTML parsing; analytics and images must not delay installation.
-setupOffline();
+export const offlineReady = setupOffline();

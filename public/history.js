@@ -1,4 +1,3 @@
-import { latestAnswers, mountHistoryGlobe } from "./history-globe.js";
 export const historyCopy = {
   en: [
     "Game history",
@@ -139,6 +138,11 @@ export function bindHistory({ language, getSessions, sessionLabel }) {
   const content = document.getElementById("historyContent");
   const load = async () => {
     try {
+      const [{ latestAnswers, mountHistoryGlobe }] = await Promise.all([
+        import("./history-globe.js"),
+        import("./vendor/d3.min.js"),
+        import("./vendor/topojson-client.min.js"),
+      ]);
       const response = await fetch(
         new URL("./data/names.json", import.meta.url),
       );

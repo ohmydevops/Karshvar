@@ -14,9 +14,9 @@ export async function mountHomeGlobe(host) {
     const loader = new THREE.TextureLoader();
     const [texture, nightTexture] = await Promise.all([
       loader.loadAsync(
-        new URL("./art/earth-texture.jpg", import.meta.url).href,
+        new URL("./art/earth-texture.webp", import.meta.url).href,
       ),
-      loader.loadAsync(new URL("./art/earth-night.png", import.meta.url).href),
+      loader.loadAsync(new URL("./art/earth-night.webp", import.meta.url).href),
     ]);
     nightTexture.colorSpace = THREE.SRGBColorSpace;
     texture.colorSpace = THREE.SRGBColorSpace;

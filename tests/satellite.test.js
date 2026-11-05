@@ -1,6 +1,31 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mountSatellite } from "../public/satellite.js";
+import { mountSatellite, satelliteStatusBottom } from "../public/satellite.js";
+
+test("download status stays bottom-right when clear and moves above overlapping controls", () => {
+  const panel = { bottom: 400 };
+  const status = { left: 260, right: 390, height: 24 };
+  assert.equal(satelliteStatusBottom(panel, status, []), 8);
+  assert.equal(
+    satelliteStatusBottom(panel, status, [
+      { left: 10, right: 150, top: 350, bottom: 390 },
+    ]),
+    8,
+  );
+  assert.equal(
+    satelliteStatusBottom(panel, status, [
+      { left: 200, right: 390, top: 350, bottom: 395 },
+    ]),
+    58,
+  );
+  assert.equal(
+    satelliteStatusBottom(panel, status, [
+      { left: 200, right: 390, top: 380, bottom: 398 },
+      { left: 200, right: 390, top: 330, bottom: 370 },
+    ]),
+    78,
+  );
+});
 
 test("satellite defaults off and keeps the plain map when WebGL is unavailable", async () => {
   const previous = {
@@ -42,6 +67,10 @@ test("satellite defaults off and keeps the plain map when WebGL is unavailable",
       tag === "canvas"
         ? canvas
         : {
+            append: (...children) => {
+              if (tag === "label" && children[0]?.type === "checkbox")
+                button = children[0];
+            },
             setAttribute: (k, v) => {
               attributes[k] = v;
             },
@@ -51,9 +80,7 @@ test("satellite defaults off and keeps the plain map when WebGL is unavailable",
             },
           },
     querySelector: (selector) => ({
-      append: (value) => {
-        if (selector === ".map-controls") button = value;
-      },
+      append: (value) => {},
     }),
   };
   globalThis.Image = class {
@@ -72,18 +99,24 @@ test("satellite defaults off and keeps the plain map when WebGL is unavailable",
   };
   try {
     const satellite = mountSatellite(layer, projection, "en", () => {});
-    assert.equal(button.textContent, "Satellite");
+    assert.equal(button.type, "checkbox");
+    assert.equal(button.id, "showSatellite");
+    assert.equal(button.checked, false);
     assert.equal(satellite.active, false);
     assert.equal(loads, 0);
+    await click();
+    assert.equal(storage.get("atlas-satellite"), "false");
     const originalError = console.error;
     console.error = () => {};
     try {
+      button.checked = true;
       await click();
     } finally {
       console.error = originalError;
     }
     assert.equal(satellite.active, false);
-    assert.equal(attributes["aria-pressed"], "false");
+    assert.equal(button.checked, false);
+    assert.equal(storage.get("atlas-satellite"), "false");
     assert.equal(loads, 0);
   } finally {
     Object.assign(globalThis, previous);
