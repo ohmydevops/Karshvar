@@ -3,12 +3,13 @@ import * as THREE from "./vendor/three.module.min.js";
 export async function mountHomeGlobe(host) {
   let renderer;
   try {
+    const compact = matchMedia("(max-width: 767px), (pointer: coarse)").matches;
     renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
       powerPreference: "low-power",
     });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, compact ? 1 : 1.5));
     const settings = createHomeScene();
     const loader = new THREE.TextureLoader();
     const [texture, nightTexture] = await Promise.all([
@@ -33,7 +34,7 @@ export async function mountHomeGlobe(host) {
     axialFrame.rotation.set(0, settings.axisHeading, earthAxialTilt);
     system.add(axialFrame);
     const earth = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 96, 64),
+      new THREE.SphereGeometry(1, compact ? 48 : 96, compact ? 32 : 64),
       new THREE.ShaderMaterial({
         uniforms: {
           dayMap: { value: texture },
@@ -91,7 +92,7 @@ export async function mountHomeGlobe(host) {
         new THREE.Mesh(
           new THREE.TubeGeometry(
             new THREE.CatmullRomCurve3(points, true),
-            192,
+            compact ? 96 : 192,
             0.0018,
             5,
             true,
@@ -120,6 +121,12 @@ export async function mountHomeGlobe(host) {
         satellite.add(panel);
       }
       satellite.scale.setScalar(configuration.scale);
+      satellite.position.set(
+        Math.cos(configuration.phase) * radius,
+        0,
+        Math.sin(configuration.phase) * radius,
+      );
+      satellite.rotation.y = -configuration.phase;
       orbit.add(satellite);
       orbiters.push({
         satellite,
@@ -149,6 +156,9 @@ export async function mountHomeGlobe(host) {
       last = 0,
       time = 0,
       frame;
+    let visible = true;
+    let disposed = false;
+    const frameInterval = 32;
     function render() {
       renderer.render(scene, camera);
     }
@@ -171,14 +181,16 @@ export async function mountHomeGlobe(host) {
     const observer = new ResizeObserver(resize);
     observer.observe(host);
     function tick(now) {
+      frame = null;
+      if (disposed || document.hidden || !visible || motion.matches) return;
       frame = requestAnimationFrame(tick);
-      if (document.hidden || now - last < 32) return;
+      if (now - last < frameInterval) return;
       const dt = Math.min((now - last) / 1000, 0.06);
       last = now;
       if (!motion.matches && !drag) {
         earth.rotation.y += dt * 0.16;
-        time += dt;
       }
+      time += dt;
       orbiters.forEach((o) => {
         const a = time * o.speed + o.phase;
         o.satellite.position.set(
@@ -190,6 +202,20 @@ export async function mountHomeGlobe(host) {
       });
       render();
     }
+    function updateAnimation() {
+      cancelAnimationFrame(frame);
+      frame = null;
+      last = 0;
+      if (!disposed && !document.hidden && visible && !motion.matches)
+        frame = requestAnimationFrame(tick);
+    }
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      updateAnimation();
+    });
+    visibilityObserver.observe(host);
+    document.addEventListener("visibilitychange", updateAnimation);
+    motion.addEventListener("change", updateAnimation);
     const dragSensitivity = 0.009;
     const horizontalAxis = new THREE.Vector3(0, 1, 0);
     const verticalAxis = new THREE.Vector3(1, 0, 0);
@@ -208,6 +234,7 @@ export async function mountHomeGlobe(host) {
           (e.clientY - drag.y) * dragSensitivity,
         );
         drag = { x: e.clientX, y: e.clientY };
+        if (motion.matches) render();
       }
     });
     const end = () => {
@@ -218,13 +245,17 @@ export async function mountHomeGlobe(host) {
     canvas.addEventListener("lostpointercapture", end);
     resize();
     host.classList.add("globe-ready");
-    frame = requestAnimationFrame(tick);
+    updateAnimation();
     addEventListener(
       "pagehide",
       () => {
+        disposed = true;
         traffic.remove();
         cancelAnimationFrame(frame);
         observer.disconnect();
+        visibilityObserver.disconnect();
+        document.removeEventListener("visibilitychange", updateAnimation);
+        motion.removeEventListener("change", updateAnimation);
         scene.traverse((o) => {
           o.geometry?.dispose();
           o.material?.dispose();

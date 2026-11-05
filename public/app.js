@@ -1800,9 +1800,8 @@ if (["continents", "play", "results", "explore"].includes(page)) {
   }
 }
 
-let homeReady;
-if (page === "home") {
-  homeReady = import("./home-globe.js")
+function startHomeGlobe() {
+  import("./home-globe.js")
     .then(({ mountHomeGlobe }) =>
       mountHomeGlobe(document.querySelector(".welcome-art")),
     )
@@ -1825,7 +1824,6 @@ await bindHistory({
   getSessions: () => sessions,
   sessionLabel: (key) => labels[lang][7 + continents.indexOf(key)] || key,
 });
-await homeReady;
 if (page === "explore" && document.fonts) {
   try {
     await document.fonts.load('12px "Karshvar Flags"', "🇮🇷");
@@ -1836,3 +1834,9 @@ if (page === "explore" && document.fonts) {
   }
 }
 await revealPage();
+// Make the page usable before downloading and initializing decorative WebGL.
+if (page === "home") {
+  if ("requestIdleCallback" in window)
+    window.requestIdleCallback(startHomeGlobe, { timeout: 1500 });
+  else setTimeout(startHomeGlobe, 0);
+}
