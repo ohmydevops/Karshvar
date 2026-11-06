@@ -9,6 +9,7 @@ async function fixture({ compact = false, reduced = false } = {}) {
   const pending = new Map();
   const events = {};
   const canvasEvents = {};
+  const flights = [];
   let next = 0,
     draws = 0,
     ratio,
@@ -25,7 +26,31 @@ async function fixture({ compact = false, reduced = false } = {}) {
   };
   const document = {
     hidden: false,
-    createElement: () => ({ setAttribute() {}, append() {}, remove() {} }),
+    body: { append() {} },
+    createElement: () => ({
+      setAttribute() {},
+      addEventListener() {},
+      append() {},
+      remove() {},
+      animate(keyframes, options) {
+        const flight = {
+          keyframes,
+          options,
+          state: "running",
+          cancel() {
+            this.state = "cancelled";
+          },
+          pause() {
+            this.state = "paused";
+          },
+          play() {
+            this.state = "running";
+          },
+        };
+        flights.push(flight);
+        return flight;
+      },
+    }),
     querySelector: () => ({ prepend() {} }),
     addEventListener: (name, fn) => {
       events[name] = fn;
@@ -103,6 +128,7 @@ async function fixture({ compact = false, reduced = false } = {}) {
   vm.runInContext(source, context);
   await context.mountHomeGlobe(host);
   return {
+    flights,
     pending,
     events,
     motion,
@@ -119,6 +145,43 @@ async function fixture({ compact = false, reduced = false } = {}) {
     },
   };
 }
+
+test("spacecraft keep moving through successive routes and resume after tab visibility changes", async () => {
+  const f = await fixture();
+  assert.equal(f.flights.length, 3);
+  assert.deepEqual(
+    f.flights.map((flight) => flight.options.duration),
+    [16000, 24000, 48000],
+  );
+  for (const flight of f.flights.slice()) {
+    assert.equal(flight.currentTime, 0);
+    assert.equal(flight.options.easing, "linear");
+    assert.notEqual(
+      flight.keyframes[0].transform,
+      flight.keyframes[1].transform,
+    );
+    flight.onfinish();
+    const next = f.flights.at(-1);
+    assert.match(
+      next.keyframes[0].transform,
+      /translate3d\((?:(?:-30|130|-18|118)vw,|[^,]+vw, (?:-30|130|-18|118)vh)/,
+    );
+    assert.match(
+      next.keyframes.at(-1).transform,
+      /translate3d\((?:(?:-30|130|-18|118)vw,|[^,]+vw, (?:-30|130|-18|118)vh)/,
+    );
+    assert.equal(next.state, "running");
+    assert.equal(flight.state, "cancelled");
+  }
+  f.document.hidden = true;
+  f.events.visibilitychange();
+  assert.ok(f.flights.slice(3).every((flight) => flight.state === "paused"));
+  f.document.hidden = false;
+  f.events.visibilitychange();
+  assert.ok(f.flights.slice(3).every((flight) => flight.state === "running"));
+  f.events.pagehide();
+  assert.ok(f.flights.every((flight) => flight.state === "cancelled"));
+});
 
 test("home globe stops offscreen, in hidden tabs, and after disposal", async () => {
   const f = await fixture();
@@ -137,6 +200,27 @@ test("home globe stops offscreen, in hidden tabs, and after disposal", async () 
   assert.equal(f.pending.size, 0);
   assert.equal(f.events.visibilitychange, undefined);
   f.visible(true);
+  assert.equal(f.pending.size, 0);
+});
+
+test("Back restores globe and spacecraft after repeated history-cache visits", async () => {
+  const f = await fixture();
+  for (let visit = 0; visit < 3; visit++) {
+    f.events.pagehide({ persisted: true });
+    assert.equal(f.pending.size, 0);
+    assert.ok(f.flights.every((flight) => flight.state === "paused"));
+    f.events.visibilitychange();
+    assert.equal(f.pending.size, 0);
+    f.events.pageshow({ persisted: true });
+    assert.equal(f.pending.size, 1);
+    assert.ok(f.flights.every((flight) => flight.state === "running"));
+    const before = f.draws();
+    f.step(100 + visit * 100);
+    assert.ok(f.draws() > before);
+  }
+  f.events.pagehide({ persisted: false });
+  assert.ok(f.flights.every((flight) => flight.state === "cancelled"));
+  f.events.pageshow({ persisted: true });
   assert.equal(f.pending.size, 0);
 });
 

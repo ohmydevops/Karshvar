@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><defs><linearGradient id="gold" x2=".7" y2="1"><stop stop-color="#fff0ae"/><stop offset=".4" stop-color="#c38b2b"/><stop offset=".7" stop-color="#f0cf75"/><stop offset="1" stop-color="#79501e"/></linearGradient><linearGradient id="silver" x2=".8" y2="1"><stop stop-color="#fff"/><stop offset=".5" stop-color="#c4d3df"/><stop offset="1" stop-color="#52687f"/></linearGradient><linearGradient id="blue" x2="1" y2="1"><stop stop-color="#62b7ef"/><stop offset=".45" stop-color="#154f8e"/><stop offset="1" stop-color="#0b244a"/></linearGradient><linearGradient id="copper" x2="1" y2="1"><stop stop-color="#ffdeb9"/><stop offset=".45" stop-color="#cc7240"/><stop offset="1" stop-color="#583328"/></linearGradient></defs>
+<g transform="rotate(-12 120 80)" stroke-linejoin="round">
+<path d="M30 70H210" stroke="#b5c6d5" stroke-width="5"/>
+<path d="M10 43H88V105H10ZM152 43H230V105H152Z" fill="url(#blue)" stroke="#afc9df" stroke-width="2"/>
+<path d="M29 43V105M49 43V105M69 43V105M171 43V105M191 43V105M211 43V105M10 64H88M10 85H88M152 64H230M152 85H230" stroke="#8fc4ee" stroke-width=".8"/>
+<path d="M99 49L127 40L144 54V103L116 115L99 99Z" fill="url(#silver)" stroke="#dce7ef" stroke-width="2"/>
+<path d="M127 40V91L144 103M99 99L127 91" fill="none" stroke="#657f96"/>
+<rect x="106" y="61" width="14" height="24" rx="2" fill="#182e44"/>
+<circle cx="113" cy="73" r="5" fill="#65d7e8" stroke="#bffaff"/>
+<path d="M120 47V25M105 25H135" stroke="#d8e9f6" stroke-width="2"/>
+<path d="M111 110L105 133L123 125Z" fill="url(#gold)" stroke="#e1be72"/>
+<circle cx="138" cy="58" r="2" fill="#faaa73"/>
+</g></svg>

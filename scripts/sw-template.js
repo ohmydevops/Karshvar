@@ -56,6 +56,9 @@ self.addEventListener("fetch", (event) => {
     !url.href.startsWith(self.registration.scope)
   )
     return;
+  // During local development, let Vite serve current assets rather than mixing
+  // new styles with JavaScript from a previously installed offline version.
+  if (["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) return;
   // Keep the root entry point pointed at the English page, including offline.
   const scope = new URL(self.registration.scope);
   if (

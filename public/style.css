@@ -145,9 +145,21 @@ button:disabled {
 }
 @media (max-width: 760px) {
   .compare-panel {
-    top: auto;
-    bottom: 58px;
-    max-height: 25dvh;
+    bottom: auto;
+    right: 8px;
+    width: min(270px, calc(100vw - 16px));
+    padding: 10px;
+    font-size: 12px;
+    max-height: 32dvh;
+  }
+  .compare-panel p {
+    margin-block: 5px;
+  }
+  .compare-panel ol {
+    margin-block: 8px;
+  }
+  .compare-panel li {
+    margin-block: 5px;
   }
 }
 
@@ -392,6 +404,41 @@ html[dir="rtl"] h2 {
   min-height: 56px;
   box-shadow: 0 12px 25px #285ce125;
 }
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.welcome-actions > a {
+  flex: 1 1 200px;
+}
+.home-explore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  max-width: 260px;
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface);
+  font-weight: 700;
+  text-decoration: none;
+}
+.home-explore:hover {
+  border-color: var(--accent);
+}
+@media (max-width: 760px) {
+  .welcome-actions {
+    justify-content: center;
+  }
+  .welcome-actions .home-explore {
+    width: 100%;
+    max-width: 340px;
+    margin-inline: auto;
+  }
+}
 @media (min-width: 761px) {
   html[data-page="home"] .welcome {
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
@@ -592,6 +639,13 @@ html[data-page="continents"] .continent-card:not(.image-ready) .continent-art {
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
+}
+#globe,
+#globe [data-country-id] {
+  -webkit-tap-highlight-color: transparent;
+}
+#globe [data-country-id]:focus:not(:focus-visible) {
+  outline: none;
 }
 #globe:active {
   cursor: grabbing;
@@ -1362,86 +1416,71 @@ html[data-page="home"] footer {
 html[data-page="home"] .welcome-copy {
   z-index: 2;
 }
-.passing-ship {
-  position: absolute;
-  left: 0;
-  top: 22%;
-  width: clamp(65px, 8vw, 145px);
-  height: auto;
-  opacity: 0;
-  filter: drop-shadow(0 8px 10px #0008);
-  will-change: transform, opacity;
+.space-traffic-near {
+  z-index: 3;
+  /* Foreground decoration must never intercept the controls underneath. */
+  pointer-events: none;
 }
-.passing-ship.crossing {
-  animation: ship-crossing 38s linear infinite;
+.distant-meteor {
+  position: absolute;
+  width: var(--meteor-length, 48px);
+  height: 1px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, #90b8d4 80%, #e6f4ff);
+  opacity: 0;
+  pointer-events: none;
+  animation: distant-meteor-pass 4s linear infinite;
+}
+.meteor-0 {
+  animation-delay: 0s;
+}
+.meteor-1 {
   animation-delay: 2s;
 }
-.passing-ship.returning {
-  top: 72%;
-  animation: ship-returning 43s linear infinite;
-  animation-delay: 15s;
+.space-traffic[data-paused="true"] .distant-meteor {
+  animation-play-state: paused;
 }
-.passing-ship.departing {
-  top: 12%;
-  animation: ship-departing 47s linear infinite;
-  animation-delay: 27s;
-}
-@keyframes ship-crossing {
+@keyframes distant-meteor-pass {
   0% {
     opacity: 0;
-    transform: translate3d(-25vw, 8vh, -300px) rotate(-9deg) scale(0.45);
+    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle, 25deg));
   }
-  2% {
-    opacity: 0.75;
-  }
-  24% {
-    opacity: 0.85;
+  8% {
+    opacity: 0.65;
   }
   28%,
   100% {
     opacity: 0;
-    transform: translate3d(120vw, -5vh, 160px) rotate(-9deg) scale(1.1);
+    transform: translate3d(var(--meteor-x, 16vmin), var(--meteor-y, 7.5vmin), 0)
+      rotate(var(--meteor-angle, 25deg));
   }
 }
-@keyframes ship-returning {
-  0% {
-    opacity: 0;
-    transform: translate3d(120vw, 0, 100px) rotate(169deg) scale(0.9);
-  }
-  2% {
-    opacity: 0.8;
-  }
-  20% {
-    opacity: 0.65;
-  }
-  25%,
-  100% {
-    opacity: 0;
-    transform: translate3d(-25vw, 12vh, -350px) rotate(169deg) scale(0.35);
-  }
+.passing-ship {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: clamp(65px, 8vw, 145px);
+  height: auto;
+  opacity: 1;
+  filter: drop-shadow(0 8px 10px #0008);
+  will-change: transform;
 }
-@keyframes ship-departing {
-  0% {
-    opacity: 0;
-    transform: translate3d(80vw, 65vh, 150px) rotate(-150deg) scale(1.1);
-  }
-  2% {
-    opacity: 0.8;
-  }
-  18% {
-    opacity: 0.55;
-  }
-  24%,
-  100% {
-    opacity: 0;
-    transform: translate3d(24vw, -15vh, -650px) rotate(-150deg) scale(0.12);
-  }
+.passing-ship.depth-near {
+  width: clamp(96px, 10vw, 168px);
+  z-index: 2;
+}
+.passing-ship.depth-medium {
+  width: clamp(48px, 5vw, 84px);
+  z-index: 1;
+  filter: brightness(0.8) drop-shadow(0 3px 5px #0005);
+}
+.passing-ship.depth-far {
+  width: clamp(24px, 2.5vw, 42px);
+  z-index: 0;
+  filter: brightness(0.75);
 }
 @media (max-width: 760px) {
-  .passing-ship {
-    width: 75px;
-  }
-  .passing-ship.departing {
+  .space-traffic-near {
     display: none;
   }
 }

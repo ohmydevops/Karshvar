@@ -1147,7 +1147,7 @@ function renderContinents() {
   }
 }
 const comparisonLimit = () =>
-  matchMedia("(max-width: 760px)").matches ? 5 : 10;
+  matchMedia("(max-width: 760px)").matches ? 3 : 10;
 let comparisonEnabled = false;
 const comparedCountries = new Map();
 let renderComparison = () => {};
@@ -1257,6 +1257,11 @@ function openExplore(continent = "All") {
   };
   compareInput.onchange = () => {
     comparisonEnabled = compareInput.checked;
+    if (comparisonEnabled && matchMedia("(max-width: 760px)").matches) {
+      panel.open = false;
+      panel.querySelector("summary")?.focus({ preventScroll: true });
+      positionComparison();
+    }
     hoveredCountry = null;
     updateCompareAccess();
     renderComparison();
@@ -1350,10 +1355,11 @@ function openExplore(continent = "All") {
     const desktop = matchMedia("(min-width: 761px)").matches;
     comparePanel.style.top = desktop
       ? settings.getBoundingClientRect().bottom + 8 + "px"
-      : "";
+      : heading.getBoundingClientRect().bottom + 8 + "px";
   };
   const compareResize = new ResizeObserver(positionComparison);
   compareResize.observe(settings);
+  compareResize.observe(heading);
   arrangeSettings();
   positionComparison();
   window.addEventListener("resize", positionComparison, {

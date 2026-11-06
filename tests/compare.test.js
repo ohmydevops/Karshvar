@@ -3,13 +3,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { toggleComparison } from "../public/compare.js";
 
-test("mobile comparison stops at five and still allows removing a country", () => {
+test("mobile comparison stops at three and still allows removing a country", () => {
   const selected = new Map();
-  for (let i = 0; i < 5; i++) toggleComparison(selected, String(i), 5);
-  assert.equal(toggleComparison(selected, "sixth", 5), false);
-  assert.equal(toggleComparison(selected, "0", 5), true);
-  assert.equal(toggleComparison(selected, "sixth", 5), true);
-  assert.equal(selected.size, 5);
+  for (let i = 0; i < 3; i++) toggleComparison(selected, String(i), 3);
+  assert.equal(toggleComparison(selected, "fourth", 3), false);
+  assert.equal(toggleComparison(selected, "0", 3), true);
+  assert.equal(toggleComparison(selected, "fourth", 3), true);
+  assert.equal(selected.size, 3);
 });
 
 test("comparison caps selection at ten and preserves unique colors after removal", () => {
