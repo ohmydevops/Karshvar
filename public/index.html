@@ -11,12 +11,13 @@
     <title>Karshvar</title>
     <link rel="canonical" href="https://karshvar.ir/en/" />
     <script>
-      const destination = new URL("./en/", location.href);
+      const destination = new URL("/en/", location.href);
       destination.search = location.search;
       destination.hash = location.hash;
-      location.replace(destination.href);
+      if (destination.href !== location.href)
+        location.replace(destination.href);
     </script>
-    <noscript><meta http-equiv="refresh" content="0; url=./en/" /></noscript>
+    <noscript><meta http-equiv="refresh" content="0; url=/en/" /></noscript>
     <style>
       html {
         background: #060c18;
@@ -33,6 +34,6 @@
     </style>
   </head>
   <body>
-    <p>Redirecting to <a href="./en/">Karshvar in English</a>…</p>
+    <p>Redirecting to <a href="/en/">Karshvar in English</a>…</p>
   </body>
 </html>

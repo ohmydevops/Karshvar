@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="ru" dir="ltr" data-locale="ru" data-page="blog">
+  <head>
+    <base href="../../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>
+      Как говорить на французском: повседневные диалоги для русскоговорящих —
+      Karshvar
+    </title>
+    <meta
+      name="description"
+      content="Эти простые фразы на французском помогут поздороваться, сделать покупки, заказать еду, спросить дорогу и поговорить в отеле. У каждой фразы есть перевод на русский."
+    />
+    <link
+      rel="canonical"
+      href="https://karshvar.ir/ru/blog/speak-fr-everyday/"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <script>
+      // Apply the saved theme before styles or page content can paint.
+      (() => {
+        let theme = "light";
+        try {
+          if (localStorage.getItem("atlas-theme") === "dark") theme = "dark";
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", theme === "dark" ? "#0d1528" : "#f7f9ff");
+      })();
+    </script>
+    <script data-page-loading>
+      // Inlined in each page's head so loading starts before the first paint.
+      (() => {
+        const root = document.documentElement;
+        root.dataset.loading = "true";
+        const copy = {
+          en: ["Loading…", "This page could not finish loading.", "Try again"],
+          fa: ["در حال بارگذاری…", "بارگذاری صفحه کامل نشد.", "تلاش دوباره"],
+          ar: ["جارٍ التحميل…", "تعذّر إكمال تحميل الصفحة.", "حاول مجددًا"],
+          tr: ["Yükleniyor…", "Sayfa yüklenemedi.", "Tekrar dene"],
+          fr: [
+            "Chargement…",
+            "Le chargement de la page a échoué.",
+            "Réessayer",
+          ],
+          ru: ["Загрузка…", "Не удалось загрузить страницу.", "Повторить"],
+        }[root.lang] || [
+          "Loading…",
+          "This page could not finish loading.",
+          "Try again",
+        ];
+        const initialize = () => {
+          if (root.dataset.loading !== "true") return;
+          document.querySelector("main")?.setAttribute("aria-busy", "true");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[0];
+        };
+        document.addEventListener("DOMContentLoaded", initialize, {
+          once: true,
+        });
+        const timeout = setTimeout(() => {
+          if (root.dataset.loading !== "true") return;
+          root.dataset.loading = "failed";
+          document.querySelector("main")?.setAttribute("aria-busy", "false");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[1];
+          const retry = document.getElementById("pageLoadingRetry");
+          if (retry) {
+            retry.textContent = copy[2];
+            retry.href = location.href;
+            retry.hidden = false;
+          }
+        }, 15000);
+        document.addEventListener(
+          "page-ready",
+          () => {
+            clearTimeout(timeout);
+            delete root.dataset.loading;
+            document.querySelector("main")?.setAttribute("aria-busy", "false");
+          },
+          { once: true },
+        );
+      })();
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./blog/style.css" />
+    <script type="module" src="./entry.js"></script>
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://karshvar.ir/en/blog/speak-fr-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://karshvar.ir/fa/blog/speak-fr-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://karshvar.ir/ar/blog/speak-fr-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://karshvar.ir/tr/blog/speak-fr-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://karshvar.ir/ru/blog/speak-fr-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://karshvar.ir/en/blog/speak-fr-everyday/"
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta
+      property="og:title"
+      content="Как говорить на французском: повседневные диалоги для русскоговорящих"
+    />
+    <meta
+      property="og:description"
+      content="Эти простые фразы на французском помогут поздороваться, сделать покупки, заказать еду, спросить дорогу и поговорить в отеле. У каждой фразы есть перевод на русский."
+    />
+    <meta
+      property="og:url"
+      content="https://karshvar.ir/ru/blog/speak-fr-everyday/"
+    />
+    <meta property="og:locale" content="ru_RU" />
+    <meta
+      property="og:image"
+      content="https://karshvar.ir/social/karshvar-ru.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Как говорить на французском: повседневные диалоги для русскоговорящих"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Как говорить на французском: повседневные диалоги для русскоговорящих"
+    />
+    <meta
+      name="twitter:description"
+      content="Эти простые фразы на французском помогут поздороваться, сделать покупки, заказать еду, спросить дорогу и поговорить в отеле. У каждой фразы есть перевод на русский."
+    />
+    <meta
+      name="twitter:image"
+      content="https://karshvar.ir/social/karshvar-ru.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Как говорить на французском: повседневные диалоги для русскоговорящих"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Как говорить на французском: повседневные диалоги для русскоговорящих",
+        "description": "Эти простые фразы на французском помогут поздороваться, сделать покупки, заказать еду, спросить дорогу и поговорить в отеле. У каждой фразы есть перевод на русский.",
+        "inLanguage": "ru",
+        "url": "https://karshvar.ir/ru/blog/speak-fr-everyday/",
+        "image": "https://karshvar.ir/social/karshvar-ru.png",
+        "mainEntityOfPage": "https://karshvar.ir/ru/blog/speak-fr-everyday/",
+        "author": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://karshvar.ir/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://karshvar.ir/"
+        }
+      }
+    </script>
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./ru/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Язык">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">RU</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Язык">
+            <a href="./en/about/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a href="./fa/about/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/about/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a href="./tr/about/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a href="./fr/about/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a
+              href="./ru/about/"
+              lang="ru"
+              hreflang="ru"
+              data-language="ru"
+              aria-current="page"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Меню"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Меню</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Закрыть меню">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Меню">
+          <a id="footerHome" href="./ru/">Главная</a>
+          <a class="explore-link" href="./ru/explore/">Изучить карту</a>
+          <a id="aboutOpen" class="footer-about" href="./ru/about/"
+            >О Karshvar</a
+          ><a class="sources-link" href="./ru/sources/">Источники</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Настройки</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span><span>Проверить обновления</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <!-- page-skeleton:start -->
+      <div id="pageSkeleton" class="page-skeleton" data-layout="article">
+        <div aria-hidden="true" class="page-skeleton-shapes">
+          <div
+            class="page-skeleton-block page-skeleton-line page-skeleton-heading short"
+          ></div>
+          <div class="page-skeleton-info">
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+          <div class="page-skeleton-card">
+            <div class="page-skeleton-block page-skeleton-line short"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+          <div class="page-skeleton-card">
+            <div class="page-skeleton-block page-skeleton-line short"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+        </div>
+        <p id="pageLoadingStatus" role="status"></p>
+        <a id="pageLoadingRetry" hidden></a>
+      </div>
+      <!-- page-skeleton:end -->
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">Как хорошо ты знаешь мир?</h1>
+          <p id="welcomeDescription">
+            Угадай страну на карте. Каждый ход — новый уголок мира.
+          </p>
+          <a id="startGame" class="primary" href="./ru/continents/"
+            >Начать игру</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Где хотите сыграть?</h1>
+        <p>Выберите континент и угадывайте выделенные страны в нём.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Выберите приключение</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+            <button
+              class="skip-outline"
+              id="skip"
+              data-text="skip"
+              disabled
+            ></button>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">О Karshvar</h1>
+        <div id="aboutBody">
+          <p>
+            Я создал Karshvar, чтобы любителям истории было проще открывать для
+            себя мир. Главной трудностью для меня всегда была география: от
+            Анатолии до Кавказа, от Иранского нагорья до Византии я терял
+            представление о том, где происходили важные события.
+          </p>
+          <p>
+            Поэтому я начал изучать географию, и эта игра стала результатом
+            моего обучения. Это и способ проверить себя, и шаг к тому помощнику
+            для изучения мира без интернета, о котором я мечтал. Со временем я
+            планирую добавлять новые исторические возможности.
+          </p>
+          <p>
+            Название Karshvar восходит к древнему иранскому слову, связанному с
+            современным персидским словом «страна». В авестийской космологии мир
+            описывался как семь областей.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Ваши открытия</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Сыграть на этом континенте снова</button
+        ><a id="chooseAgain" class="text-button" href="./ru/continents/"
+          >Выбрать другой континент</a
+        >
+      </section>
+      <article class="blog-page info-page">
+        <header class="blog-heading">
+          <h1>
+            Как говорить на французском: повседневные диалоги для
+            русскоговорящих
+          </h1>
+          <p class="info-intro">
+            Эти простые фразы на французском помогут поздороваться, сделать
+            покупки, заказать еду, спросить дорогу и поговорить в отеле. У
+            каждой фразы есть перевод на русский.
+          </p>
+          <nav class="blog-languages" aria-label="Languages">
+            <a href="./en/blog/speak-fr-everyday/" lang="en" hreflang="en"
+              >English</a
+            ><a href="./fa/blog/speak-fr-everyday/" lang="fa" hreflang="fa"
+              >فارسی</a
+            ><a href="./ar/blog/speak-fr-everyday/" lang="ar" hreflang="ar"
+              >العربية</a
+            ><a href="./tr/blog/speak-fr-everyday/" lang="tr" hreflang="tr"
+              >Türkçe</a
+            ><a
+              href="./ru/blog/speak-fr-everyday/"
+              lang="ru"
+              hreflang="ru"
+              aria-current="page"
+              >Русский</a
+            >
+          </nav>
+        </header>
+        <section class="blog-place" id="conversation-1">
+          <span class="blog-number">1</span>
+          <h2>Приветствие и вежливость</h2>
+          <p>
+            Начните с приветствия и добавляйте пожалуйста к просьбам. Извините
+            поможет вежливо привлечь внимание.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Bonjour.</bdi
+              ><span class="conversation-meaning">Здравствуйте.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">bon-zhoor</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Au revoir.</bdi
+              ><span class="conversation-meaning">До свидания.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">oh ruh-vwar</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >S’il vous plaît.</bdi
+              ><span class="conversation-meaning">Пожалуйста.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">seel voo pleh</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr">Merci.</bdi
+              ><span class="conversation-meaning">Спасибо.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">mehr-see</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Excusez-moi.</bdi
+              ><span class="conversation-meaning">Извините.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">eks-kü-zay mwa</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr">Oui.</bdi
+              ><span class="conversation-meaning">Да.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">wee</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr">Non.</bdi
+              ><span class="conversation-meaning">Нет.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">non</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Короткий диалог</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Bonjour.</bdi
+              ><span class="conversation-meaning">Здравствуйте.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Собеседник</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Bonjour.</bdi
+              ><span class="conversation-meaning">Здравствуйте.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-2">
+          <span class="blog-number">2</span>
+          <h2>Если вы не понимаете</h2>
+          <p>
+            Если вы не поняли ответ, попросите говорить медленнее или повторить
+            сказанное.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Je ne comprends pas.</bdi
+              ><span class="conversation-meaning">Я не понимаю.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">zhuh nuh kom-pron pah</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Parlez lentement, s’il vous plaît.</bdi
+              ><span class="conversation-meaning"
+                >Говорите медленно, пожалуйста.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >par-lay lont-mon seel voo pleh</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Pouvez-vous répéter, s’il vous plaît ?</bdi
+              ><span class="conversation-meaning">Повторите, пожалуйста.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >poo-vay voo ray-pay-tay seel voo pleh</bdi
+                >
+              </details>
+            </li>
+          </ul>
+          <h3>Короткий диалог</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Parlez lentement, s’il vous plaît.</bdi
+              ><span class="conversation-meaning"
+                >Говорите медленно, пожалуйста.</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Собеседник</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr">Oui.</bdi
+              ><span class="conversation-meaning">Да.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Merci.</bdi
+              ><span class="conversation-meaning">Спасибо.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-3">
+          <span class="blog-number">3</span>
+          <h2>Покупки и оплата</h2>
+          <p>
+            Покажите товар, спросите цену и уточните возможность оплаты картой.
+            Это зависит от магазина.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Combien ça coûte ?</bdi
+              ><span class="conversation-meaning">Сколько это стоит?</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">kom-byen sah koot</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Est-ce que je peux payer par carte ?</bdi
+              ><span class="conversation-meaning">Можно оплатить картой?</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >es kuh zhuh puh pay-yay par kart</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Je voudrais ceci, s’il vous plaît.</bdi
+              ><span class="conversation-meaning">Мне это, пожалуйста.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >zhuh voo-dreh suh-see seel voo pleh</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Non, merci.</bdi
+              ><span class="conversation-meaning">Нет, спасибо.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">non mehr-see</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Короткий диалог</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Est-ce que je peux payer par carte ?</bdi
+              ><span class="conversation-meaning">Можно оплатить картой?</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Собеседник</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr">Oui.</bdi
+              ><span class="conversation-meaning">Да.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Je voudrais ceci, s’il vous plaît.</bdi
+              ><span class="conversation-meaning">Мне это, пожалуйста.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-4">
+          <span class="blog-number">4</span>
+          <h2>Кафе и ресторан</h2>
+          <p>
+            Назовите число гостей, сделайте заказ и в конце попросите счёт.
+            Фраза без мяса не описывает все ограничения в питании.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Une table pour deux, s’il vous plaît.</bdi
+              ><span class="conversation-meaning"
+                >Столик на двоих, пожалуйста.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >ün tabl poor duh seel voo pleh</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >De l’eau, s’il vous plaît.</bdi
+              ><span class="conversation-meaning">Воды, пожалуйста.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">duh lo seel voo pleh</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Sans viande, s’il vous plaît.</bdi
+              ><span class="conversation-meaning">Без мяса, пожалуйста.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">son vyand seel voo pleh</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >L’addition, s’il vous plaît.</bdi
+              ><span class="conversation-meaning">Счёт, пожалуйста.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">lah-dee-syon seel voo pleh</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Короткий диалог</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Une table pour deux, s’il vous plaît.</bdi
+              ><span class="conversation-meaning"
+                >Столик на двоих, пожалуйста.</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Собеседник</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr">Oui.</bdi
+              ><span class="conversation-meaning">Да.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Merci.</bdi
+              ><span class="conversation-meaning">Спасибо.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-5">
+          <span class="blog-number">5</span>
+          <h2>Как спросить дорогу</h2>
+          <p>
+            Спросите, где станция; французская и русская фразы обозначают именно
+            железнодорожный вокзал. Выучите также направо и налево.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Où est la gare ?</bdi
+              ><span class="conversation-meaning">Где вокзал?</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">oo eh lah gar</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Est-ce loin ?</bdi
+              ><span class="conversation-meaning">Это далеко?</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">es lwan</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >À droite.</bdi
+              ><span class="conversation-meaning">Направо.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">ah drwat</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >À gauche.</bdi
+              ><span class="conversation-meaning">Налево.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">ah gohsh</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Короткий диалог</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Où est la gare ?</bdi
+              ><span class="conversation-meaning">Где вокзал?</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Собеседник</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >À droite.</bdi
+              ><span class="conversation-meaning">Направо.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Merci.</bdi
+              ><span class="conversation-meaning">Спасибо.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-6">
+          <span class="blog-number">6</span>
+          <h2>Отель и просьба о помощи</h2>
+          <p>
+            На стойке регистрации сообщите о брони, уточните время выезда и
+            пароль Wi-Fi. Последнюю фразу можно показать, если нужна помощь.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >J’ai une réservation.</bdi
+              ><span class="conversation-meaning">У меня есть бронь.</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">zhay ün ray-zehr-vah-syon</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >À quelle heure faut-il libérer la chambre ?</bdi
+              ><span class="conversation-meaning"
+                >Во сколько нужно освободить номер?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >ah kel uhr fo-teel lee-bay-ray lah shombr</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Quel est le mot de passe du Wi-Fi ?</bdi
+              ><span class="conversation-meaning">Какой пароль от Wi-Fi?</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr"
+                  >kel eh luh mo duh pass dü wee-fee</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="fr" dir="ltr"
+                >Pouvez-vous m’aider ?</bdi
+              ><span class="conversation-meaning">Вы можете мне помочь?</span>
+              <details class="conversation-pronunciation">
+                <summary>Произношение</summary>
+                <bdi lang="fr-Latn" dir="ltr">poo-vay voo meh-day</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Короткий диалог</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Pouvez-vous m’aider ?</bdi
+              ><span class="conversation-meaning">Вы можете мне помочь?</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Собеседник</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr">Oui.</bdi
+              ><span class="conversation-meaning">Да.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Вы</strong
+              ><bdi class="conversation-original" lang="fr" dir="ltr"
+                >Quel est le mot de passe du Wi-Fi ?</bdi
+              ><span class="conversation-meaning">Какой пароль от Wi-Fi?</span>
+            </li>
+          </ol>
+        </section>
+        <aside class="blog-note">
+          <h2>Как тренироваться</h2>
+          <p>
+            Каждый день выбирайте одну ситуацию, читайте фразы вслух и меняйтесь
+            ролями. Латинская запись приблизительна и не передаёт все звуки и
+            ударения точно; при необходимости покажите оригинал.
+          </p>
+        </aside>
+        <nav
+          class="conversation-related"
+          aria-label="Другие языковые руководства"
+        >
+          <h2>Другие языковые руководства</h2>
+          <ul>
+            <li>
+              <a href="./ru/blog/speak-en-everyday/"
+                >Как говорить на английском: повседневные диалоги для
+                русскоговорящих</a
+              >
+            </li>
+            <li>
+              <a href="./ru/blog/speak-fa-everyday/"
+                >Как говорить на персидском: повседневные диалоги для
+                русскоговорящих</a
+              >
+            </li>
+            <li>
+              <a href="./ru/blog/speak-ar-everyday/"
+                >Как говорить на арабском: повседневные диалоги для
+                русскоговорящих</a
+              >
+            </li>
+            <li>
+              <a href="./ru/blog/speak-tr-everyday/"
+                >Как говорить на турецком: повседневные диалоги для
+                русскоговорящих</a
+              >
+            </li>
+          </ul>
+          <a href="./ru/blog/">Все статьи блога</a>
+        </nav>
+        <div class="blog-cta">
+          <a class="primary" data-article="speak-fr-everyday" href="./ru/"
+            >Играть в Karshvar</a
+          >
+        </div>
+      </article>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

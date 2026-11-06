@@ -1,9 +1,13 @@
 import fs from "node:fs";
-import path from "node:path";
-import { execFileSync } from "node:child_process";
-import { pathToFileURL } from "node:url";
+import {
+  languages as langs,
+  copy,
+  phrases,
+  readings,
+  groups,
+  dialogues,
+} from "./conversation-data.mjs";
 const data = JSON.parse(fs.readFileSync("scripts/blog-data.json", "utf8"));
-const langs = ["en", "fa", "ar", "tr", "fr", "ru"];
 const labels = {
   en: [
     "Blog",
@@ -77,14 +81,12 @@ const native = {
 const url = (l, slug = "") => `${l}/blog/${slug ? slug + "/" : ""}`;
 const titles = (r, l) => `${l === "en" ? r[3] : r[4]}: ${labels[l][1]}`;
 const articles = [];
-const paths = [];
 function page(l, slug, title, description, body, variants, image) {
   const rel = url(l, slug),
     canonical = origin + rel;
-  paths.push(rel);
   let template = fs.readFileSync(`public/${l}/sources/index.html`, "utf8");
-  const metadata = `<base href="${slug ? "../../../" : "../../"}"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>${esc(title)} — Karshvar</title><meta name="description" content="${esc(description)}"><link rel="canonical" href="${canonical}"><link rel="icon" href="./favicon.svg"><link rel="stylesheet" href="./style.css"><script type="module" src="./entry.js"></script>
- ${variants.map((v) => `<link rel="alternate" hreflang="${v}" href="${origin + url(v, slug)}">`).join("")}<link rel="alternate" hreflang="x-default" href="${origin + url("en", slug)}">
+  const metadata = `<base href="${slug ? "../../../" : "../../"}"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>${esc(title)} — Karshvar</title><meta name="description" content="${esc(description)}"><link rel="canonical" href="${canonical}"><link rel="icon" href="./favicon.svg"><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./blog/style.css"><script type="module" src="./entry.js"></script>
+ ${variants.map((v) => `<link rel="alternate" hreflang="${v}" href="${origin + url(v, slug)}">`).join("")}<link rel="alternate" hreflang="x-default" href="${origin + url(variants.includes("en") ? "en" : variants[0], slug)}">
  <meta property="og:type" content="${slug ? "article" : "website"}"><meta property="og:site_name" content="Karshvar"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${canonical}"><meta property="og:locale" content="${{ en: "en_US", fa: "fa_IR", ar: "ar_SA", tr: "tr_TR", fr: "fr_FR", ru: "ru_RU" }[l]}"><meta property="og:image" content="${origin + image}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${esc(title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description)}"><meta name="twitter:image" content="${origin + image}"><meta name="twitter:image:alt" content="${esc(title)}">
  <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": slug ? "BlogPosting" : "CollectionPage", headline: title, description, inLanguage: l, url: canonical, image: origin + image, mainEntityOfPage: canonical, ...(slug ? { author: { "@type": "Organization", name: "Karshvar", url: origin }, publisher: { "@type": "Organization", name: "Karshvar", url: origin } } : {}) }).replaceAll("<", "\\u003c")}</script>`;
   template = template
@@ -116,6 +118,41 @@ for (const r of data) {
     });
   }
 }
+const conversationArticles = [];
+const direction = (l) => (["fa", "ar"].includes(l) ? "rtl" : "ltr");
+const conversationSlug = (target) => `speak-${target}-everyday`;
+for (const l of langs) {
+  const c = copy[l];
+  for (const target of langs.filter((v) => v !== l)) {
+    const slug = conversationSlug(target);
+    const title = c.title.replace("{name}", c.names[target]);
+    const intro = c.intro.replace("{name}", c.names[target]);
+    const translatedPhrase = (i) =>
+      `<bdi class="conversation-original" lang="${target}" dir="${direction(target)}">${esc(phrases[target][i])}</bdi><span class="conversation-meaning">${esc(phrases[l][i])}</span>`;
+    const phrase = (i) =>
+      `${translatedPhrase(i)}<details class="conversation-pronunciation"><summary>${esc(c.reading)}</summary><bdi lang="${target}-Latn" dir="ltr">${esc(readings[target][i])}</bdi></details>`;
+    const body = `${groups.map((indices, g) => `<section class="blog-place" id="conversation-${g + 1}"><span class="blog-number">${new Intl.NumberFormat(l).format(g + 1)}</span><h2>${esc(c.groups[g])}</h2><p>${esc(c.tips[g])}</p><ul class="conversation-phrases">${indices.map((i) => `<li>${phrase(i)}</li>`).join("")}</ul><h3>${esc(c.dialogue)}</h3><ol class="conversation-dialogue">${dialogues[g].map(([role, i]) => `<li class="conversation-message conversation-message-${role === 0 ? "self" : "other"}" dir="${direction(l)}"><strong>${esc(c.roles[role])}</strong>${translatedPhrase(i)}</li>`).join("")}</ol></section>`).join("")}<aside class="blog-note"><h2>${esc(c.noteTitle)}</h2><p>${esc(c.note)}</p>${target === "ar" ? `<p>${esc(c.arabic)}</p>` : ""}</aside><nav class="conversation-related" aria-label="${esc(c.related)}"><h2>${esc(c.related)}</h2><ul>${langs
+      .filter((v) => v !== l && v !== target)
+      .map(
+        (v) =>
+          `<li><a href="./${url(l, conversationSlug(v))}">${esc(c.title.replace("{name}", c.names[v]))}</a></li>`,
+      )
+      .join(
+        "",
+      )}</ul><a href="./${url(l)}">${esc(c.back)}</a></nav><div class="blog-cta"><a class="primary" data-article="${slug}" href="./${l}/">${labels[l][3]}</a></div>`;
+    const image = `social/karshvar-${l}.png`;
+    page(
+      l,
+      slug,
+      title,
+      intro,
+      body,
+      langs.filter((v) => v !== target),
+      image,
+    );
+    conversationArticles.push({ l, target, slug, title, intro, image });
+  }
+}
 for (const l of langs) {
   const choices = data.map((r) => ({ r, lang: r[2] === l ? l : "en" }));
   page(
@@ -123,32 +160,25 @@ for (const l of langs) {
     "",
     labels[l][0],
     labels[l][2],
-    `<div class="blog-grid">${choices.map(({ r, lang }) => `<a class="blog-card" href="./${url(lang, r[0])}" hreflang="${lang}" lang="${lang}" dir="${["fa", "ar"].includes(lang) ? "rtl" : "ltr"}"><img class="blog-cover" src="./social/blog-${r[0]}-${lang}.png" width="1200" height="630" alt="" loading="lazy"><div class="blog-card-copy"><span class="blog-card-language">${native[lang]}</span><h2>${esc(titles(r, lang))}</h2><p>${esc(lang === "en" ? r[5][0][3] : r[5][0][4])}</p></div></a>`).join("")}</div>`,
+    `<h2 class="blog-section-title">${esc(copy[l].section)}</h2><div class="blog-grid conversation-grid">${conversationArticles
+      .filter((a) => a.l === l)
+      .map(
+        (a) =>
+          `<a class="blog-card" href="./${url(l, a.slug)}" hreflang="${l}" lang="${l}" dir="${direction(l)}"><div class="blog-card-copy"><span class="blog-card-language">${esc(copy[l].names[a.target])}</span><h2>${esc(a.title)}</h2><p>${esc(a.intro)}</p></div></a>`,
+      )
+      .join(
+        "",
+      )}</div><h2 class="blog-section-title">${labels[l][1]}</h2><div class="blog-grid">${choices.map(({ r, lang }) => `<a class="blog-card" href="./${url(lang, r[0])}" hreflang="${lang}" lang="${lang}" dir="${["fa", "ar"].includes(lang) ? "rtl" : "ltr"}"><img class="blog-cover" src="./social/blog-${r[0]}-${lang}.png" width="1200" height="630" alt="" loading="lazy"><div class="blog-card-copy"><span class="blog-card-language">${native[lang]}</span><h2>${esc(titles(r, lang))}</h2><p>${esc(lang === "en" ? r[5][0][3] : r[5][0][4])}</p></div></a>`).join("")}</div>`,
     langs,
     `social/karshvar-${l}.png`,
   );
 }
-let nav = fs.readFileSync("public/navigation.js", "utf8");
-if (!nav.includes('"blog",'))
-  nav = nav.replace('"sources",', '"sources",\n  "blog",');
-fs.writeFileSync("public/navigation.js", nav);
-let app = fs.readFileSync("public/app.js", "utf8");
-if (!app.includes('page !== "blog"'))
-  app = app.replace(
-    "  document.title =\n",
-    '  if (page !== "blog") document.title =\n',
-  );
-fs.writeFileSync("public/app.js", app);
-let sitemap = fs
-  .readFileSync("public/sitemap.xml", "utf8")
-  .replace(/\s*<url>\s*<loc>[^<]*\/blog\/[^<]*<\/loc>[\s\S]*?<\/url>/g, "");
-sitemap = sitemap.replace(
-  "</urlset>",
-  paths.map((p) => `<url><loc>${origin + p}</loc></url>`).join("\n") +
-    "\n</urlset>",
+fs.writeFileSync(
+  "scripts/blog-images.json",
+  JSON.stringify(articles, null, 2) + "\n",
 );
-fs.writeFileSync("public/sitemap.xml", sitemap);
-fs.writeFileSync("scripts/blog-images.json", JSON.stringify(articles, null, 2));
-console.log(`Built ${articles.length} articles and ${langs.length} indexes`);
+console.log(
+  `Built ${articles.length} heritage articles, ${conversationArticles.length} conversation guides and ${langs.length} indexes`,
+);
 
 await import("./build-seo.mjs");

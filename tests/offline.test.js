@@ -218,6 +218,8 @@ test("blog pages and blog-only images are never precached or served by the worke
   await w.lifecycle("activate");
   const paths = [
     "blog/",
+    "blog/style.css",
+    "blog/style.css?v=2",
     "social/blog-iran-en.png",
     "social/blog-iran-en.png?v=2",
   ];
@@ -226,6 +228,7 @@ test("blog pages and blog-only images are never precached or served by the worke
       `${locale}/blog`,
       `${locale}/blog/`,
       `${locale}/blog/iran/`,
+      `${locale}/blog/speak-en-everyday/`,
       `${locale}/blog/iran/index.html?version=2`,
     );
   // Even if an old blog entry exists, the fetch handler must not serve it.

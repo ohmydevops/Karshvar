@@ -212,7 +212,7 @@ test("all localized pages and assets resolve on the custom domain", () => {
     fs.readFileSync("public/robots.txt", "utf8").includes(`${root}sitemap.xml`),
   );
   const sitemap = fs.readFileSync("public/sitemap.xml", "utf8");
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 66);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 96);
 });
 import { pagePath, pageTypes, routeLanguages } from "../public/navigation.js";
 test("Persian UI numbers use Persian digits without changing other languages", () => {

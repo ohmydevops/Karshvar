@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="tr" dir="ltr" data-locale="tr" data-page="blog">
+  <head>
+    <base href="../../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>
+      Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar —
+      Karshvar
+    </title>
+    <meta
+      name="description"
+      content="Bu basit Arapça ifadelerle selamlaşın, alışveriş yapın, yemek sipariş edin, yol sorun ve otelde konuşun. Her ifadenin Türkçe anlamı verilmiştir."
+    />
+    <link
+      rel="canonical"
+      href="https://karshvar.ir/tr/blog/speak-ar-everyday/"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <script>
+      // Apply the saved theme before styles or page content can paint.
+      (() => {
+        let theme = "light";
+        try {
+          if (localStorage.getItem("atlas-theme") === "dark") theme = "dark";
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", theme === "dark" ? "#0d1528" : "#f7f9ff");
+      })();
+    </script>
+    <script data-page-loading>
+      // Inlined in each page's head so loading starts before the first paint.
+      (() => {
+        const root = document.documentElement;
+        root.dataset.loading = "true";
+        const copy = {
+          en: ["Loading…", "This page could not finish loading.", "Try again"],
+          fa: ["در حال بارگذاری…", "بارگذاری صفحه کامل نشد.", "تلاش دوباره"],
+          ar: ["جارٍ التحميل…", "تعذّر إكمال تحميل الصفحة.", "حاول مجددًا"],
+          tr: ["Yükleniyor…", "Sayfa yüklenemedi.", "Tekrar dene"],
+          fr: [
+            "Chargement…",
+            "Le chargement de la page a échoué.",
+            "Réessayer",
+          ],
+          ru: ["Загрузка…", "Не удалось загрузить страницу.", "Повторить"],
+        }[root.lang] || [
+          "Loading…",
+          "This page could not finish loading.",
+          "Try again",
+        ];
+        const initialize = () => {
+          if (root.dataset.loading !== "true") return;
+          document.querySelector("main")?.setAttribute("aria-busy", "true");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[0];
+        };
+        document.addEventListener("DOMContentLoaded", initialize, {
+          once: true,
+        });
+        const timeout = setTimeout(() => {
+          if (root.dataset.loading !== "true") return;
+          root.dataset.loading = "failed";
+          document.querySelector("main")?.setAttribute("aria-busy", "false");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[1];
+          const retry = document.getElementById("pageLoadingRetry");
+          if (retry) {
+            retry.textContent = copy[2];
+            retry.href = location.href;
+            retry.hidden = false;
+          }
+        }, 15000);
+        document.addEventListener(
+          "page-ready",
+          () => {
+            clearTimeout(timeout);
+            delete root.dataset.loading;
+            document.querySelector("main")?.setAttribute("aria-busy", "false");
+          },
+          { once: true },
+        );
+      })();
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./blog/style.css" />
+    <script type="module" src="./entry.js"></script>
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://karshvar.ir/en/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://karshvar.ir/fa/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://karshvar.ir/tr/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://karshvar.ir/fr/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://karshvar.ir/ru/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://karshvar.ir/en/blog/speak-ar-everyday/"
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta
+      property="og:title"
+      content="Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar"
+    />
+    <meta
+      property="og:description"
+      content="Bu basit Arapça ifadelerle selamlaşın, alışveriş yapın, yemek sipariş edin, yol sorun ve otelde konuşun. Her ifadenin Türkçe anlamı verilmiştir."
+    />
+    <meta
+      property="og:url"
+      content="https://karshvar.ir/tr/blog/speak-ar-everyday/"
+    />
+    <meta property="og:locale" content="tr_TR" />
+    <meta
+      property="og:image"
+      content="https://karshvar.ir/social/karshvar-tr.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar"
+    />
+    <meta
+      name="twitter:description"
+      content="Bu basit Arapça ifadelerle selamlaşın, alışveriş yapın, yemek sipariş edin, yol sorun ve otelde konuşun. Her ifadenin Türkçe anlamı verilmiştir."
+    />
+    <meta
+      name="twitter:image"
+      content="https://karshvar.ir/social/karshvar-tr.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar",
+        "description": "Bu basit Arapça ifadelerle selamlaşın, alışveriş yapın, yemek sipariş edin, yol sorun ve otelde konuşun. Her ifadenin Türkçe anlamı verilmiştir.",
+        "inLanguage": "tr",
+        "url": "https://karshvar.ir/tr/blog/speak-ar-everyday/",
+        "image": "https://karshvar.ir/social/karshvar-tr.png",
+        "mainEntityOfPage": "https://karshvar.ir/tr/blog/speak-ar-everyday/",
+        "author": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://karshvar.ir/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://karshvar.ir/"
+        }
+      }
+    </script>
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./tr/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Dil">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">TR</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Dil">
+            <a href="./en/about/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a href="./fa/about/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/about/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a
+              href="./tr/about/"
+              lang="tr"
+              hreflang="tr"
+              data-language="tr"
+              aria-current="page"
+              >TR</a
+            ><a href="./fr/about/" lang="fr" hreflang="fr" data-language="fr"
+              >FR</a
+            ><a href="./ru/about/" lang="ru" hreflang="ru" data-language="ru"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Menü"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Menü</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Menüyü kapat">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Menü">
+          <a id="footerHome" href="./tr/">Ana sayfa</a>
+          <a class="explore-link" href="./tr/explore/">Haritayı keşfet</a>
+          <a id="aboutOpen" class="footer-about" href="./tr/about/"
+            >Karshvar hakkında</a
+          ><a class="sources-link" href="./tr/sources/">Kaynaklar</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Ayarlar</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span
+          ><span>Güncellemeleri kontrol et</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <!-- page-skeleton:start -->
+      <div id="pageSkeleton" class="page-skeleton" data-layout="article">
+        <div aria-hidden="true" class="page-skeleton-shapes">
+          <div
+            class="page-skeleton-block page-skeleton-line page-skeleton-heading short"
+          ></div>
+          <div class="page-skeleton-info">
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+          <div class="page-skeleton-card">
+            <div class="page-skeleton-block page-skeleton-line short"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+          <div class="page-skeleton-card">
+            <div class="page-skeleton-block page-skeleton-line short"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+        </div>
+        <p id="pageLoadingStatus" role="status"></p>
+        <a id="pageLoadingRetry" hidden></a>
+      </div>
+      <!-- page-skeleton:end -->
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">Dünyayı ne kadar tanıyorsun?</h1>
+          <p id="welcomeDescription">
+            Haritadaki ülkeyi tahmin et. Her turda dünyanın yeni bir köşesini
+            keşfet.
+          </p>
+          <a id="startGame" class="primary" href="./tr/continents/"
+            >Oyuna başla</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Nerede oynamak istersin?</h1>
+        <p>Bir kıta seç, ardından vurgulanan ülkelerini tahmin et.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Maceranı seç</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+            <button
+              class="skip-outline"
+              id="skip"
+              data-text="skip"
+              disabled
+            ></button>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">Karshvar hakkında</h1>
+        <div id="aboutBody">
+          <p>
+            Karshvar’ı tarih okumayı sevenler için dünyayı keşfetmeyi
+            kolaylaştırmak amacıyla yaptım. En büyük zorluğum hep coğrafyaydı:
+            Anadolu’dan Kafkasya’ya, İran platosundan Bizans’a kadar önemli
+            olayların nerede geçtiğini zihnimde kaybediyordum.
+          </p>
+          <p>
+            Bu yüzden coğrafya çalışmaya başladım ve bu oyun o öğrenme
+            sürecinden doğdu. Hem kendimi sınamanın bir yolu hem de dünyayı
+            keşfetmek için istediğim çevrimdışı yardımcıya doğru bir adım.
+            Zamanla yeni tarih özellikleri eklemeyi planlıyorum.
+          </p>
+          <p>
+            Karshvar adını, günümüzde Farsçada ülke anlamına gelen sözcükle
+            ilişkili eski bir İran sözcüğünden alır. Avesta kozmolojisinde dünya
+            yedi bölge olarak anlatılır.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Keşiflerin</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Bu kıtayı tekrar oyna</button
+        ><a id="chooseAgain" class="text-button" href="./tr/continents/"
+          >Başka bir kıta seç</a
+        >
+      </section>
+      <article class="blog-page info-page">
+        <header class="blog-heading">
+          <h1>
+            Arapça nasıl konuşulur? Türkçe konuşanlar için günlük diyaloglar
+          </h1>
+          <p class="info-intro">
+            Bu basit Arapça ifadelerle selamlaşın, alışveriş yapın, yemek
+            sipariş edin, yol sorun ve otelde konuşun. Her ifadenin Türkçe
+            anlamı verilmiştir.
+          </p>
+          <nav class="blog-languages" aria-label="Languages">
+            <a href="./en/blog/speak-ar-everyday/" lang="en" hreflang="en"
+              >English</a
+            ><a href="./fa/blog/speak-ar-everyday/" lang="fa" hreflang="fa"
+              >فارسی</a
+            ><a
+              href="./tr/blog/speak-ar-everyday/"
+              lang="tr"
+              hreflang="tr"
+              aria-current="page"
+              >Türkçe</a
+            ><a href="./fr/blog/speak-ar-everyday/" lang="fr" hreflang="fr"
+              >Français</a
+            ><a href="./ru/blog/speak-ar-everyday/" lang="ru" hreflang="ru"
+              >Русский</a
+            >
+          </nav>
+        </header>
+        <section class="blog-place" id="conversation-1">
+          <span class="blog-number">1</span>
+          <h2>Selamlaşma ve nezaket</h2>
+          <p>
+            Önce selam verin, isteklerinize lütfen ekleyin. Birinin dikkatini
+            kibarca çekmek için affedersiniz kullanın.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >مرحبًا.</bdi
+              ><span class="conversation-meaning">Merhaba.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">marhaban</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اللقاء.</bdi
+              ><span class="conversation-meaning">Görüşürüz.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">ilâ al-liqâ’</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >من فضلك.</bdi
+              ><span class="conversation-meaning">Lütfen.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">شكرًا.</bdi
+              ><span class="conversation-meaning">Teşekkür ederim.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">shukran</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">عفوًا.</bdi
+              ><span class="conversation-meaning">Affedersiniz.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">‘afwan</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Evet.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">na‘am</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">لا.</bdi
+              ><span class="conversation-meaning">Hayır.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">lâ</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Kısa diyalog</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >مرحبًا.</bdi
+              ><span class="conversation-meaning">Merhaba.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Karşınızdaki kişi</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >مرحبًا.</bdi
+              ><span class="conversation-meaning">Merhaba.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-2">
+          <span class="blog-number">2</span>
+          <h2>Anlamadığınızda</h2>
+          <p>
+            Cevabı anlamadıysanız tahmin etmek yerine yavaş konuşmasını veya
+            tekrar etmesini isteyin.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >لا أفهم.</bdi
+              ><span class="conversation-meaning">Anlamıyorum.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">lâ afham</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >تحدث ببطء، من فضلك.</bdi
+              ><span class="conversation-meaning">Lütfen yavaş konuşun.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">tahaddath bi-but’ min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنك أن تكرر ذلك، من فضلك؟</bdi
+              ><span class="conversation-meaning"
+                >Lütfen tekrar eder misiniz?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >hal yumkinuka an tukarrira dhâlika min fadlik</bdi
+                >
+              </details>
+            </li>
+          </ul>
+          <h3>Kısa diyalog</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >تحدث ببطء، من فضلك.</bdi
+              ><span class="conversation-meaning">Lütfen yavaş konuşun.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Karşınızdaki kişi</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Evet.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >شكرًا.</bdi
+              ><span class="conversation-meaning">Teşekkür ederim.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-3">
+          <span class="blog-number">3</span>
+          <h2>Alışveriş ve ödeme</h2>
+          <p>
+            Ürünü gösterin, fiyatını sorun ve kartla ödeme yapılıp
+            yapılamadığını öğrenin. Kart kabulü mağazaya bağlıdır.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >بكم هذا؟</bdi
+              ><span class="conversation-meaning">Bu ne kadar?</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">bikam hâdhâ</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنني الدفع بالبطاقة؟</bdi
+              ><span class="conversation-meaning"
+                >Kartla ödeyebilir miyim?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >hal yumkinunî ad-daf‘ bil-bitâqa</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >أريد هذا، من فضلك.</bdi
+              ><span class="conversation-meaning">Bunu istiyorum, lütfen.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">urîdu hâdhâ min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >لا، شكرًا.</bdi
+              ><span class="conversation-meaning">Hayır, teşekkür ederim.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">lâ shukran</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Kısa diyalog</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنني الدفع بالبطاقة؟</bdi
+              ><span class="conversation-meaning"
+                >Kartla ödeyebilir miyim?</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Karşınızdaki kişi</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Evet.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >أريد هذا، من فضلك.</bdi
+              ><span class="conversation-meaning">Bunu istiyorum, lütfen.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-4">
+          <span class="blog-number">4</span>
+          <h2>Kafe ve restoran</h2>
+          <p>
+            Önce kişi sayısını söyleyin, sonra sipariş verin ve sonunda hesabı
+            isteyin. Etsiz ifadesi tüm beslenme kısıtlamalarını anlatmaz.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >طاولة لشخصين، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >İki kişilik bir masa, lütfen.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >tâwila li-shakhsayn min fadlik</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >ماء، من فضلك.</bdi
+              ><span class="conversation-meaning">Su, lütfen.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">mâ’ min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >بدون لحم، من فضلك.</bdi
+              ><span class="conversation-meaning">Etsiz olsun, lütfen.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">bidûn lahm min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >الحساب، من فضلك.</bdi
+              ><span class="conversation-meaning">Hesap, lütfen.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">al-hisâb min fadlik</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Kısa diyalog</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >طاولة لشخصين، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >İki kişilik bir masa, lütfen.</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Karşınızdaki kişi</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Evet.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >شكرًا.</bdi
+              ><span class="conversation-meaning">Teşekkür ederim.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-5">
+          <span class="blog-number">5</span>
+          <h2>Yol sorma</h2>
+          <p>
+            İstasyonun yerini sorun; Fransızca ve Rusça örnekler özellikle tren
+            istasyonunu belirtir. Yanıtları anlamak için sağ ve sol ifadelerini
+            çalışın.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >أين المحطة؟</bdi
+              ><span class="conversation-meaning">İstasyon nerede?</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">ayna al-mahatta</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل هي بعيدة؟</bdi
+              ><span class="conversation-meaning">Uzak mı?</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">hal hiya ba‘îda</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اليمين.</bdi
+              ><span class="conversation-meaning">Sağa.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">ilâ al-yamîn</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اليسار.</bdi
+              ><span class="conversation-meaning">Sola.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">ilâ al-yasâr</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Kısa diyalog</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >أين المحطة؟</bdi
+              ><span class="conversation-meaning">İstasyon nerede?</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Karşınızdaki kişi</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اليمين.</bdi
+              ><span class="conversation-meaning">Sağa.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >شكرًا.</bdi
+              ><span class="conversation-meaning">Teşekkür ederim.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-6">
+          <span class="blog-number">6</span>
+          <h2>Otel ve yardım isteme</h2>
+          <p>
+            Resepsiyonda rezervasyonunuzu belirtin, çıkış saatini ve internet
+            şifresini sorun. Yardım gerektiğinde son cümleyi gösterebilirsiniz.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >لدي حجز.</bdi
+              ><span class="conversation-meaning">Rezervasyonum var.</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">ladayya hajz</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >متى موعد تسجيل المغادرة؟</bdi
+              ><span class="conversation-meaning">Çıkış saati kaç?</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >matâ maw‘id tasjîl al-mughâdara</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >ما كلمة مرور الواي فاي؟</bdi
+              ><span class="conversation-meaning">Wi-Fi şifresi nedir?</span>
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">mâ kalimat murûr al-wây fây</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنك مساعدتي؟</bdi
+              ><span class="conversation-meaning"
+                >Bana yardım eder misiniz?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Yaklaşık okunuş</summary>
+                <bdi lang="ar-Latn" dir="ltr">hal yumkinuka musâ‘adatî</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Kısa diyalog</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنك مساعدتي؟</bdi
+              ><span class="conversation-meaning"
+                >Bana yardım eder misiniz?</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Karşınızdaki kişi</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Evet.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Siz</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >ما كلمة مرور الواي فاي؟</bdi
+              ><span class="conversation-meaning">Wi-Fi şifresi nedir?</span>
+            </li>
+          </ol>
+        </section>
+        <aside class="blog-note">
+          <h2>Nasıl çalışmalı?</h2>
+          <p>
+            Her gün bir durum seçin, cümleleri sesli okuyun ve rolleri
+            değiştirin. Latin harfli okunuşlar yaklaşık olup tüm sesleri ve
+            vurguları tam yansıtmaz; gerekirse asıl metni gösterin.
+          </p>
+          <p>
+            Arapça ifadeler Modern Standart Arapçadır. Arapça konuşulan
+            ülkelerde günlük lehçeler farklıdır. Bazı isteklerde tekil erkek
+            hitap biçimi kullanılır.
+          </p>
+        </aside>
+        <nav class="conversation-related" aria-label="Diğer dil rehberleri">
+          <h2>Diğer dil rehberleri</h2>
+          <ul>
+            <li>
+              <a href="./tr/blog/speak-en-everyday/"
+                >İngilizce nasıl konuşulur? Türkçe konuşanlar için günlük
+                diyaloglar</a
+              >
+            </li>
+            <li>
+              <a href="./tr/blog/speak-fa-everyday/"
+                >Farsça nasıl konuşulur? Türkçe konuşanlar için günlük
+                diyaloglar</a
+              >
+            </li>
+            <li>
+              <a href="./tr/blog/speak-fr-everyday/"
+                >Fransızca nasıl konuşulur? Türkçe konuşanlar için günlük
+                diyaloglar</a
+              >
+            </li>
+            <li>
+              <a href="./tr/blog/speak-ru-everyday/"
+                >Rusça nasıl konuşulur? Türkçe konuşanlar için günlük
+                diyaloglar</a
+              >
+            </li>
+          </ul>
+          <a href="./tr/blog/">Tüm blog yazıları</a>
+        </nav>
+        <div class="blog-cta">
+          <a class="primary" data-article="speak-ar-everyday" href="./tr/"
+            >Karshvar oyna</a
+          >
+        </div>
+      </article>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

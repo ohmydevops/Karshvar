@@ -10,6 +10,8 @@ test("root redirects to English on the custom domain and preserves query and fra
     "https://karshvar.ir/",
     "https://karshvar.ir/index.html?from=google#map",
     "http://127.0.0.1:5174/?from=google#map",
+    "http://127.0.0.1:5174/en/en/en/?from=google#map",
+    "http://127.0.0.1:5174/missing/page/",
   ]) {
     const url = new URL(address);
     let target;
@@ -31,12 +33,22 @@ test("root redirects to English on the custom domain and preserves query and fra
   }
 });
 test("root has a no-script fallback and canonical English URL without a duplicate app", () => {
-  assert.match(
-    html,
-    /<noscript>[\s\S]*http-equiv="refresh"[\s\S]*url=\.\/en\//,
-  );
+  assert.match(html, /<noscript>[\s\S]*http-equiv="refresh"[\s\S]*url=\/en\//);
   assert.ok(html.includes('href="https://karshvar.ir/en/"'));
-  assert.ok(html.includes('href="./en/"'));
+  assert.ok(html.includes('href="/en/"'));
   assert.ok(!html.includes("app.js"));
   assert.ok(!html.includes("pageSkeleton"));
+});
+
+test("a fallback served at the English destination cannot redirect to itself", () => {
+  const script = html.match(/<script>([\s\S]*?)<\/script>/)[1];
+  vm.runInNewContext(script, {
+    URL,
+    location: {
+      href: "http://127.0.0.1:5174/en/",
+      search: "",
+      hash: "",
+      replace: () => assert.fail("Redirect loop"),
+    },
+  });
 });

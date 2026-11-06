@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="fr" dir="ltr" data-locale="fr" data-page="blog">
+  <head>
+    <base href="../../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>
+      Comment parler arabe ? Conversations du quotidien pour francophones —
+      Karshvar
+    </title>
+    <meta
+      name="description"
+      content="Avec ces phrases simples en arabe, saluez, faites vos achats, commandez un repas, demandez votre chemin et échangez à l’hôtel. Chaque phrase est expliquée en français."
+    />
+    <link
+      rel="canonical"
+      href="https://karshvar.ir/fr/blog/speak-ar-everyday/"
+    />
+    <link rel="icon" href="./favicon.svg" />
+    <script>
+      // Apply the saved theme before styles or page content can paint.
+      (() => {
+        let theme = "light";
+        try {
+          if (localStorage.getItem("atlas-theme") === "dark") theme = "dark";
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", theme === "dark" ? "#0d1528" : "#f7f9ff");
+      })();
+    </script>
+    <script data-page-loading>
+      // Inlined in each page's head so loading starts before the first paint.
+      (() => {
+        const root = document.documentElement;
+        root.dataset.loading = "true";
+        const copy = {
+          en: ["Loading…", "This page could not finish loading.", "Try again"],
+          fa: ["در حال بارگذاری…", "بارگذاری صفحه کامل نشد.", "تلاش دوباره"],
+          ar: ["جارٍ التحميل…", "تعذّر إكمال تحميل الصفحة.", "حاول مجددًا"],
+          tr: ["Yükleniyor…", "Sayfa yüklenemedi.", "Tekrar dene"],
+          fr: [
+            "Chargement…",
+            "Le chargement de la page a échoué.",
+            "Réessayer",
+          ],
+          ru: ["Загрузка…", "Не удалось загрузить страницу.", "Повторить"],
+        }[root.lang] || [
+          "Loading…",
+          "This page could not finish loading.",
+          "Try again",
+        ];
+        const initialize = () => {
+          if (root.dataset.loading !== "true") return;
+          document.querySelector("main")?.setAttribute("aria-busy", "true");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[0];
+        };
+        document.addEventListener("DOMContentLoaded", initialize, {
+          once: true,
+        });
+        const timeout = setTimeout(() => {
+          if (root.dataset.loading !== "true") return;
+          root.dataset.loading = "failed";
+          document.querySelector("main")?.setAttribute("aria-busy", "false");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[1];
+          const retry = document.getElementById("pageLoadingRetry");
+          if (retry) {
+            retry.textContent = copy[2];
+            retry.href = location.href;
+            retry.hidden = false;
+          }
+        }, 15000);
+        document.addEventListener(
+          "page-ready",
+          () => {
+            clearTimeout(timeout);
+            delete root.dataset.loading;
+            document.querySelector("main")?.setAttribute("aria-busy", "false");
+          },
+          { once: true },
+        );
+      })();
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./blog/style.css" />
+    <script type="module" src="./entry.js"></script>
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://karshvar.ir/en/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://karshvar.ir/fa/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://karshvar.ir/tr/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://karshvar.ir/fr/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://karshvar.ir/ru/blog/speak-ar-everyday/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://karshvar.ir/en/blog/speak-ar-everyday/"
+    />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta
+      property="og:title"
+      content="Comment parler arabe ? Conversations du quotidien pour francophones"
+    />
+    <meta
+      property="og:description"
+      content="Avec ces phrases simples en arabe, saluez, faites vos achats, commandez un repas, demandez votre chemin et échangez à l’hôtel. Chaque phrase est expliquée en français."
+    />
+    <meta
+      property="og:url"
+      content="https://karshvar.ir/fr/blog/speak-ar-everyday/"
+    />
+    <meta property="og:locale" content="fr_FR" />
+    <meta
+      property="og:image"
+      content="https://karshvar.ir/social/karshvar-fr.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Comment parler arabe ? Conversations du quotidien pour francophones"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Comment parler arabe ? Conversations du quotidien pour francophones"
+    />
+    <meta
+      name="twitter:description"
+      content="Avec ces phrases simples en arabe, saluez, faites vos achats, commandez un repas, demandez votre chemin et échangez à l’hôtel. Chaque phrase est expliquée en français."
+    />
+    <meta
+      name="twitter:image"
+      content="https://karshvar.ir/social/karshvar-fr.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Comment parler arabe ? Conversations du quotidien pour francophones"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Comment parler arabe ? Conversations du quotidien pour francophones",
+        "description": "Avec ces phrases simples en arabe, saluez, faites vos achats, commandez un repas, demandez votre chemin et échangez à l’hôtel. Chaque phrase est expliquée en français.",
+        "inLanguage": "fr",
+        "url": "https://karshvar.ir/fr/blog/speak-ar-everyday/",
+        "image": "https://karshvar.ir/social/karshvar-fr.png",
+        "mainEntityOfPage": "https://karshvar.ir/fr/blog/speak-ar-everyday/",
+        "author": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://karshvar.ir/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Karshvar",
+          "url": "https://karshvar.ir/"
+        }
+      }
+    </script>
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./fr/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Langue">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">FR</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Langue">
+            <a href="./en/about/" lang="en" hreflang="en" data-language="en"
+              >EN</a
+            ><a href="./fa/about/" lang="fa" hreflang="fa" data-language="fa"
+              >FA</a
+            ><a href="./ar/about/" lang="ar" hreflang="ar" data-language="ar"
+              >AR</a
+            ><a href="./tr/about/" lang="tr" hreflang="tr" data-language="tr"
+              >TR</a
+            ><a
+              href="./fr/about/"
+              lang="fr"
+              hreflang="fr"
+              data-language="fr"
+              aria-current="page"
+              >FR</a
+            ><a href="./ru/about/" lang="ru" hreflang="ru" data-language="ru"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Menu"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Menu</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Fermer le menu">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Menu">
+          <a id="footerHome" href="./fr/">Accueil</a>
+          <a class="explore-link" href="./fr/explore/">Explorer la carte</a>
+          <a id="aboutOpen" class="footer-about" href="./fr/about/"
+            >À propos de Karshvar</a
+          ><a class="sources-link" href="./fr/sources/">Sources</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Réglages</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span
+          ><span>Rechercher des mises à jour</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main>
+      <!-- page-skeleton:start -->
+      <div id="pageSkeleton" class="page-skeleton" data-layout="article">
+        <div aria-hidden="true" class="page-skeleton-shapes">
+          <div
+            class="page-skeleton-block page-skeleton-line page-skeleton-heading short"
+          ></div>
+          <div class="page-skeleton-info">
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+          <div class="page-skeleton-card">
+            <div class="page-skeleton-block page-skeleton-line short"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+          <div class="page-skeleton-card">
+            <div class="page-skeleton-block page-skeleton-line short"></div>
+            <div class="page-skeleton-block page-skeleton-line"></div>
+            <div class="page-skeleton-block page-skeleton-line medium"></div>
+          </div>
+        </div>
+        <p id="pageLoadingStatus" role="status"></p>
+        <a id="pageLoadingRetry" hidden></a>
+      </div>
+      <!-- page-skeleton:end -->
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">Connaissez-vous bien le monde ?</h1>
+          <p id="welcomeDescription">
+            Devinez le pays sur la carte. À chaque tour, découvrez un nouveau
+            coin du monde.
+          </p>
+          <a id="startGame" class="primary" href="./fr/continents/">Jouer</a>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Où voulez-vous jouer ?</h1>
+        <p>Choisissez un continent, puis devinez ses pays en surbrillance.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Choisissez votre aventure</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+            <button
+              class="skip-outline"
+              id="skip"
+              data-text="skip"
+              disabled
+            ></button>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">À propos de Karshvar</h1>
+        <div id="aboutBody">
+          <p>
+            J’ai créé Karshvar pour faciliter la découverte du monde aux
+            personnes qui aiment lire l’histoire. Ma plus grande difficulté
+            était la géographie : de l’Anatolie au Caucase, du plateau iranien à
+            Byzance, je perdais le fil des lieux où se déroulaient les
+            événements importants.
+          </p>
+          <p>
+            J’ai donc commencé à étudier la géographie, et ce jeu est né de cet
+            apprentissage. C’est à la fois une façon de me tester et un pas vers
+            le compagnon hors ligne dont je rêvais pour explorer le monde. Je
+            compte ajouter progressivement de nouvelles fonctionnalités
+            historiques.
+          </p>
+          <p>
+            Karshvar doit son nom à un ancien mot iranien lié au mot persan
+            actuel désignant un pays. Dans la cosmologie avestique, le monde
+            était décrit en sept régions.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Vos découvertes</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Rejouer ce continent</button
+        ><a id="chooseAgain" class="text-button" href="./fr/continents/"
+          >Choisir un autre continent</a
+        >
+      </section>
+      <article class="blog-page info-page">
+        <header class="blog-heading">
+          <h1>
+            Comment parler arabe ? Conversations du quotidien pour francophones
+          </h1>
+          <p class="info-intro">
+            Avec ces phrases simples en arabe, saluez, faites vos achats,
+            commandez un repas, demandez votre chemin et échangez à l’hôtel.
+            Chaque phrase est expliquée en français.
+          </p>
+          <nav class="blog-languages" aria-label="Languages">
+            <a href="./en/blog/speak-ar-everyday/" lang="en" hreflang="en"
+              >English</a
+            ><a href="./fa/blog/speak-ar-everyday/" lang="fa" hreflang="fa"
+              >فارسی</a
+            ><a href="./tr/blog/speak-ar-everyday/" lang="tr" hreflang="tr"
+              >Türkçe</a
+            ><a
+              href="./fr/blog/speak-ar-everyday/"
+              lang="fr"
+              hreflang="fr"
+              aria-current="page"
+              >Français</a
+            ><a href="./ru/blog/speak-ar-everyday/" lang="ru" hreflang="ru"
+              >Русский</a
+            >
+          </nav>
+        </header>
+        <section class="blog-place" id="conversation-1">
+          <span class="blog-number">1</span>
+          <h2>Salutations et politesse</h2>
+          <p>
+            Commencez par saluer et accompagnez vos demandes d’une formule de
+            politesse. Excusez-moi permet d’attirer l’attention.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >مرحبًا.</bdi
+              ><span class="conversation-meaning">Bonjour.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">marhaban</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اللقاء.</bdi
+              ><span class="conversation-meaning">Au revoir.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">ilâ al-liqâ’</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >من فضلك.</bdi
+              ><span class="conversation-meaning">S’il vous plaît.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">شكرًا.</bdi
+              ><span class="conversation-meaning">Merci.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">shukran</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">عفوًا.</bdi
+              ><span class="conversation-meaning">Excusez-moi.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">‘afwan</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Oui.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">na‘am</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl">لا.</bdi
+              ><span class="conversation-meaning">Non.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">lâ</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Petit dialogue</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >مرحبًا.</bdi
+              ><span class="conversation-meaning">Bonjour.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Votre interlocuteur</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >مرحبًا.</bdi
+              ><span class="conversation-meaning">Bonjour.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-2">
+          <span class="blog-number">2</span>
+          <h2>Quand on ne comprend pas</h2>
+          <p>
+            Si la réponse vous échappe, demandez à votre interlocuteur de
+            ralentir ou de répéter.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >لا أفهم.</bdi
+              ><span class="conversation-meaning">Je ne comprends pas.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">lâ afham</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >تحدث ببطء، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Parlez lentement, s’il vous plaît.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">tahaddath bi-but’ min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنك أن تكرر ذلك، من فضلك؟</bdi
+              ><span class="conversation-meaning"
+                >Pouvez-vous répéter, s’il vous plaît ?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >hal yumkinuka an tukarrira dhâlika min fadlik</bdi
+                >
+              </details>
+            </li>
+          </ul>
+          <h3>Petit dialogue</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >تحدث ببطء، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Parlez lentement, s’il vous plaît.</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Votre interlocuteur</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Oui.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >شكرًا.</bdi
+              ><span class="conversation-meaning">Merci.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-3">
+          <span class="blog-number">3</span>
+          <h2>Achats et paiement</h2>
+          <p>
+            Montrez l’article, demandez le prix et vérifiez si le paiement par
+            carte est possible. Cela dépend du commerce.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >بكم هذا؟</bdi
+              ><span class="conversation-meaning">Combien ça coûte ?</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">bikam hâdhâ</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنني الدفع بالبطاقة؟</bdi
+              ><span class="conversation-meaning"
+                >Est-ce que je peux payer par carte ?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >hal yumkinunî ad-daf‘ bil-bitâqa</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >أريد هذا، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Je voudrais ceci, s’il vous plaît.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">urîdu hâdhâ min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >لا، شكرًا.</bdi
+              ><span class="conversation-meaning">Non, merci.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">lâ shukran</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Petit dialogue</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنني الدفع بالبطاقة؟</bdi
+              ><span class="conversation-meaning"
+                >Est-ce que je peux payer par carte ?</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Votre interlocuteur</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Oui.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >أريد هذا، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Je voudrais ceci, s’il vous plaît.</span
+              >
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-4">
+          <span class="blog-number">4</span>
+          <h2>Cafés et restaurants</h2>
+          <p>
+            Précisez le nombre de personnes, commandez puis demandez l’addition.
+            Sans viande ne décrit pas toutes les restrictions alimentaires.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >طاولة لشخصين، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Une table pour deux, s’il vous plaît.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >tâwila li-shakhsayn min fadlik</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >ماء، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >De l’eau, s’il vous plaît.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">mâ’ min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >بدون لحم، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Sans viande, s’il vous plaît.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">bidûn lahm min fadlik</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >الحساب، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >L’addition, s’il vous plaît.</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">al-hisâb min fadlik</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Petit dialogue</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >طاولة لشخصين، من فضلك.</bdi
+              ><span class="conversation-meaning"
+                >Une table pour deux, s’il vous plaît.</span
+              >
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Votre interlocuteur</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Oui.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >شكرًا.</bdi
+              ><span class="conversation-meaning">Merci.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-5">
+          <span class="blog-number">5</span>
+          <h2>Demander son chemin</h2>
+          <p>
+            Demandez où se trouve la station ; les phrases française et russe
+            désignent précisément une gare ferroviaire. Apprenez aussi droite et
+            gauche.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >أين المحطة؟</bdi
+              ><span class="conversation-meaning">Où est la gare ?</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">ayna al-mahatta</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل هي بعيدة؟</bdi
+              ><span class="conversation-meaning">Est-ce loin ?</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">hal hiya ba‘îda</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اليمين.</bdi
+              ><span class="conversation-meaning">À droite.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">ilâ al-yamîn</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اليسار.</bdi
+              ><span class="conversation-meaning">À gauche.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">ilâ al-yasâr</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Petit dialogue</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >أين المحطة؟</bdi
+              ><span class="conversation-meaning">Où est la gare ?</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Votre interlocuteur</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >إلى اليمين.</bdi
+              ><span class="conversation-meaning">À droite.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >شكرًا.</bdi
+              ><span class="conversation-meaning">Merci.</span>
+            </li>
+          </ol>
+        </section>
+        <section class="blog-place" id="conversation-6">
+          <span class="blog-number">6</span>
+          <h2>Hôtel et demande d’aide</h2>
+          <p>
+            À la réception, indiquez votre réservation et demandez l’heure de
+            départ et le mot de passe Wi-Fi. Montrez la dernière phrase pour
+            demander de l’aide.
+          </p>
+          <ul class="conversation-phrases">
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >لدي حجز.</bdi
+              ><span class="conversation-meaning">J’ai une réservation.</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">ladayya hajz</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >متى موعد تسجيل المغادرة؟</bdi
+              ><span class="conversation-meaning"
+                >À quelle heure faut-il libérer la chambre ?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr"
+                  >matâ maw‘id tasjîl al-mughâdara</bdi
+                >
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >ما كلمة مرور الواي فاي؟</bdi
+              ><span class="conversation-meaning"
+                >Quel est le mot de passe du Wi-Fi ?</span
+              >
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">mâ kalimat murûr al-wây fây</bdi>
+              </details>
+            </li>
+            <li>
+              <bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنك مساعدتي؟</bdi
+              ><span class="conversation-meaning">Pouvez-vous m’aider ?</span>
+              <details class="conversation-pronunciation">
+                <summary>Prononciation</summary>
+                <bdi lang="ar-Latn" dir="ltr">hal yumkinuka musâ‘adatî</bdi>
+              </details>
+            </li>
+          </ul>
+          <h3>Petit dialogue</h3>
+          <ol class="conversation-dialogue">
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >هل يمكنك مساعدتي؟</bdi
+              ><span class="conversation-meaning">Pouvez-vous m’aider ?</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-other"
+              dir="ltr"
+            >
+              <strong>Votre interlocuteur</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl">نعم.</bdi
+              ><span class="conversation-meaning">Oui.</span>
+            </li>
+            <li
+              class="conversation-message conversation-message-self"
+              dir="ltr"
+            >
+              <strong>Vous</strong
+              ><bdi class="conversation-original" lang="ar" dir="rtl"
+                >ما كلمة مرور الواي فاي؟</bdi
+              ><span class="conversation-meaning"
+                >Quel est le mot de passe du Wi-Fi ?</span
+              >
+            </li>
+          </ol>
+        </section>
+        <aside class="blog-note">
+          <h2>Comment s’entraîner ?</h2>
+          <p>
+            Choisissez une situation par jour, lisez à voix haute et échangez
+            les rôles. La transcription latine reste approximative et ne
+            restitue pas tous les sons ni les accents ; montrez le texte
+            original au besoin.
+          </p>
+          <p>
+            Ces phrases arabes sont en arabe standard moderne. Les dialectes du
+            quotidien varient selon les pays. Certaines demandes emploient le
+            masculin singulier pour s’adresser à une personne.
+          </p>
+        </aside>
+        <nav class="conversation-related" aria-label="Autres guides de langues">
+          <h2>Autres guides de langues</h2>
+          <ul>
+            <li>
+              <a href="./fr/blog/speak-en-everyday/"
+                >Comment parler anglais ? Conversations du quotidien pour
+                francophones</a
+              >
+            </li>
+            <li>
+              <a href="./fr/blog/speak-fa-everyday/"
+                >Comment parler persan ? Conversations du quotidien pour
+                francophones</a
+              >
+            </li>
+            <li>
+              <a href="./fr/blog/speak-tr-everyday/"
+                >Comment parler turc ? Conversations du quotidien pour
+                francophones</a
+              >
+            </li>
+            <li>
+              <a href="./fr/blog/speak-ru-everyday/"
+                >Comment parler russe ? Conversations du quotidien pour
+                francophones</a
+              >
+            </li>
+          </ul>
+          <a href="./fr/blog/">Tous les articles</a>
+        </nav>
+        <div class="blog-cta">
+          <a class="primary" data-article="speak-ar-everyday" href="./fr/"
+            >Jouer à Karshvar</a
+          >
+        </div>
+      </article>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

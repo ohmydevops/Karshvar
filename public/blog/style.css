@@ -1,0 +1,133 @@
+.conversation-phrases,
+.conversation-dialogue {
+  padding: 0;
+  list-style: none;
+}
+.blog-page .conversation-phrases li {
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+.conversation-phrases .conversation-original {
+  text-align: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0;
+}
+.conversation-phrases .conversation-meaning {
+  margin: 3px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.conversation-pronunciation {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.conversation-pronunciation summary {
+  cursor: pointer;
+}
+.conversation-pronunciation bdi {
+  display: block;
+  margin-top: 6px;
+}
+.blog-place:has(.conversation-phrases) {
+  padding-block: 24px;
+}
+.blog-place:has(.conversation-phrases) > .blog-number {
+  display: none;
+}
+.blog-place:has(.conversation-phrases) > h2 {
+  font-size: 22px;
+  margin-block: 0 10px;
+}
+.blog-place:has(.conversation-phrases) > p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.conversation-phrases li,
+.conversation-dialogue li {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.conversation-original,
+.conversation-meaning,
+.conversation-dialogue strong {
+  display: block;
+  margin-block: 4px;
+  line-height: 1.9;
+}
+.conversation-original {
+  font-size: 1.15em;
+  font-weight: 600;
+  text-align: start;
+}
+.conversation-related li {
+  margin-block: 12px;
+}
+.conversation-dialogue {
+  display: flex;
+  flex-direction: column;
+  direction: ltr;
+  gap: 10px;
+  margin-block: 20px 0;
+}
+.conversation-dialogue .conversation-message {
+  width: fit-content;
+  max-width: 82%;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface);
+}
+.conversation-dialogue .conversation-message-self {
+  align-self: flex-end;
+  background: color-mix(in srgb, var(--accent) 9%, var(--bg));
+}
+.conversation-dialogue .conversation-message-other {
+  align-self: flex-start;
+}
+.conversation-dialogue strong {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  text-align: start;
+  margin: 0 0 4px;
+}
+.conversation-dialogue .conversation-original {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.65;
+}
+.conversation-dialogue .conversation-meaning {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.blog-page > .blog-section-title {
+  margin-block: 40px 20px;
+  font-size: 22px;
+  line-height: 1.6;
+}
+.blog-page .conversation-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.conversation-grid .blog-card .blog-card-copy {
+  padding: 20px 24px;
+}
+.conversation-grid .blog-card .blog-card-copy h2 {
+  margin-block: 6px 8px;
+  font-size: 18px;
+  line-height: 1.7;
+}
+.conversation-grid .blog-card .blog-card-copy p {
+  display: block;
+  overflow: visible;
+  font-size: 14px;
+}
