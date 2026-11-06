@@ -141,6 +141,9 @@ export async function mountHomeGlobe(host) {
     const foregroundTraffic = document.createElement("div");
     foregroundTraffic.className = "space-traffic space-traffic-near";
     foregroundTraffic.setAttribute("aria-hidden", "true");
+    const mediumTraffic = document.createElement("div");
+    mediumTraffic.className = "space-traffic space-traffic-medium";
+    mediumTraffic.setAttribute("aria-hidden", "true");
     const ships = [];
     const shipAssets = [
       "orbital-telescope.svg",
@@ -173,7 +176,12 @@ export async function mountHomeGlobe(host) {
       ship.alt = "";
       ship.className = "passing-ship depth-" + depth;
       ships.push(ship);
-      (depth === "near" ? foregroundTraffic : traffic).append(ship);
+      (depth === "near"
+        ? foregroundTraffic
+        : depth === "medium"
+          ? mediumTraffic
+          : traffic
+      ).append(ship);
     }
     for (let i = 0; i < 2; i++) {
       const meteor = document.createElement("span");
@@ -205,6 +213,7 @@ export async function mountHomeGlobe(host) {
       traffic.append(meteor);
     }
     document.querySelector("main").prepend(traffic);
+    document.querySelector("main").prepend(mediumTraffic);
     document.body.append(foregroundTraffic);
     const canvas = renderer.domElement;
     canvas.className = "home-canvas";
@@ -397,6 +406,7 @@ export async function mountHomeGlobe(host) {
       for (const flight of flights.values()) flight.cancel();
       traffic.remove();
       foregroundTraffic.remove();
+      mediumTraffic.remove();
       cancelAnimationFrame(frame);
       observer.disconnect();
       visibilityObserver.disconnect();

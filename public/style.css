@@ -1416,6 +1416,12 @@ html[data-page="home"] footer {
 html[data-page="home"] .welcome-copy {
   z-index: 2;
 }
+html[data-page="home"] .welcome-art {
+  z-index: 0;
+}
+.space-traffic-medium {
+  z-index: 1;
+}
 .space-traffic-near {
   z-index: 3;
   /* Foreground decoration must never intercept the controls underneath. */
