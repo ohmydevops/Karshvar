@@ -6,11 +6,13 @@ const source = await readFile(
   new URL("../public/sw.js", import.meta.url),
   "utf8",
 );
-function worker({ fail = false } = {}) {
+function worker({ fail = false, delayed = false } = {}) {
   const events = {},
     stores = new Map();
   let online = true,
     claimed = false;
+  let active = 0,
+    peak = 0;
   const caches = {
     async open(name) {
       if (!stores.has(name)) stores.set(name, new Map());
@@ -48,6 +50,10 @@ function worker({ fail = false } = {}) {
       },
     },
     fetch: async (url) => {
+      active++;
+      peak = Math.max(peak, active);
+      if (delayed) await new Promise((resolve) => setImmediate(resolve));
+      active--;
       if (!online) throw Error("offline");
       if (fail && String(url).includes("names.json"))
         return new Response("", { status: 500 });
@@ -61,6 +67,12 @@ function worker({ fail = false } = {}) {
     },
   });
   return {
+    get peak() {
+      return peak;
+    },
+    get active() {
+      return active;
+    },
     stores,
     caches,
     offline() {
@@ -94,6 +106,19 @@ function worker({ fail = false } = {}) {
     },
   };
 }
+test("offline downloads overlap with a maximum of six requests", async () => {
+  const w = worker({ delayed: true });
+  await w.lifecycle("install");
+  assert.equal(w.peak, 6);
+  assert.equal(w.active, 0);
+});
+
+test("failed parallel installation settles requests before cleaning its cache", async () => {
+  const w = worker({ delayed: true, fail: true });
+  await assert.rejects(w.lifecycle("install"));
+  assert.equal(w.active, 0);
+  assert.equal(w.stores.size, 0);
+});
 test("installed worker serves all game routes and assets without network", async () => {
   const w = worker();
   await w.lifecycle("install");

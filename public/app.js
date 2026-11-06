@@ -1253,12 +1253,7 @@ function openExplore(continent = "All") {
       renderComparison();
       queueDraw();
     };
-    const source = document.createElement("a");
-    source.href = "https://github.com/mledoze/countries";
-    source.target = "_blank";
-    source.rel = "noopener";
-    source.textContent = copy[6] + ": Countries";
-    comparePanel.append(title, help, list, clear, source);
+    comparePanel.append(title, help, list, clear);
   };
   compareInput.onchange = () => {
     comparisonEnabled = compareInput.checked;

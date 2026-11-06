@@ -5,16 +5,32 @@ self.addEventListener("install", (event) =>
     (async () => {
       const cache = await caches.open(CACHE);
       try {
-        // Sequential downloads bound memory use and make failed installs easy to clean up.
-        for (const asset of ASSETS) {
-          const url = new URL(asset, self.registration.scope);
-          const requestUrl = new URL(url);
-          if (url.pathname.endsWith(".css")) requestUrl.search = "?direct";
-          const response = await fetch(requestUrl, { cache: "reload" });
-          if (!response.ok)
-            throw new Error("Offline download failed: " + asset);
-          await cache.put(url, response);
-        }
+        // Overlap network latency while bounding downloads and cache writes.
+        let next = 0;
+        let failed = false;
+        const download = async () => {
+          while (!failed && next < ASSETS.length) {
+            const asset = ASSETS[next++];
+            try {
+              const url = new URL(asset, self.registration.scope);
+              const requestUrl = new URL(url);
+              if (url.pathname.endsWith(".css")) requestUrl.search = "?direct";
+              const response = await fetch(requestUrl, { cache: "reload" });
+              if (!response.ok)
+                throw new Error("Offline download failed: " + asset);
+              await cache.put(url, response);
+            } catch (error) {
+              failed = true;
+              throw error;
+            }
+          }
+        };
+        // Settle every in-flight write before deleting an incomplete cache.
+        const results = await Promise.allSettled(
+          Array.from({ length: Math.min(6, ASSETS.length) }, download),
+        );
+        const failure = results.find((result) => result.status === "rejected");
+        if (failure) throw failure.reason;
       } catch (error) {
         await caches.delete(CACHE);
         throw error;
