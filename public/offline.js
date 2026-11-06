@@ -193,6 +193,7 @@ async function setupOffline() {
         }
         if (navigator.onLine === false) return showCheckStatus(3);
         checkButton.disabled = true;
+        checkButton.setAttribute?.("aria-busy", "true");
         showCheckStatus(0);
         try {
           await registration.update();
@@ -205,6 +206,7 @@ async function setupOffline() {
           showCheckStatus(4);
         } finally {
           checkButton.disabled = false;
+          checkButton.setAttribute?.("aria-busy", "false");
         }
       };
     }

@@ -103,6 +103,23 @@ button:disabled {
   opacity: 0.45;
   cursor: default;
 }
+@keyframes update-check-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#checkUpdates[aria-busy="true"] > [aria-hidden="true"] {
+  display: inline-block;
+  animation: update-check-spin 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #checkUpdates[aria-busy="true"] > [aria-hidden="true"] {
+    animation: none;
+  }
+}
+
 [hidden] {
   display: none !important;
 }

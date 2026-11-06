@@ -1,4 +1,5 @@
 import { pagePath } from "./navigation.js";
+import { setUpdateLoading } from "./update-loading.js";
 import { resetCopy } from "./reset.js";
 import { bindHistory } from "./history.js";
 import { revealPage } from "./page-ready.js";
@@ -187,7 +188,7 @@ const updateButton = $("checkUpdates");
 if (updateButton && "serviceWorker" in navigator && window.isSecureContext) {
   updateButton.hidden = false;
   const startOffline = async () => {
-    updateButton.disabled = true;
+    setUpdateLoading(updateButton, true);
     try {
       const { offlineReady } = await import("./offline.js");
       await offlineReady;
@@ -195,7 +196,7 @@ if (updateButton && "serviceWorker" in navigator && window.isSecureContext) {
     } catch (error) {
       console.warn("Offline setup unavailable", error);
     } finally {
-      updateButton.disabled = false;
+      setUpdateLoading(updateButton, false);
     }
   };
   updateButton.onclick = startOffline;
