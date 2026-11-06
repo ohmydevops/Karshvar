@@ -1,3 +1,4 @@
+import { toggleComparison, compareCopy } from "./compare.js";
 import { mountJourneyArt } from "./journey-art.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
@@ -508,8 +509,9 @@ let drawnZoom;
 let drawnLabelSize;
 let drawnLabelScale;
 function draw() {
-  const activeCountry =
-    page === "explore"
+  const activeCountry = comparisonEnabled
+    ? null
+    : page === "explore"
       ? $("highlightCountries")?.checked
         ? hoveredCountry || current
         : null
@@ -545,14 +547,17 @@ function draw() {
   gpuCountries?.draw(
     land.selectAll("path").data(),
     (f) =>
-      answerFill(
-        f.id,
-        activeCountry?.id,
-        page === "play" ? state?.answers : [],
-      ),
+      comparedCountries.get(f.id) && comparisonEnabled
+        ? comparedCountries.get(f.id)
+        : answerFill(
+            f.id,
+            activeCountry?.id,
+            page === "play" ? state?.answers : [],
+          ),
     (f) =>
       satellite.active
-        ? f.id === activeCountry?.id ||
+        ? (comparisonEnabled && comparedCountries.has(f.id)) ||
+          f.id === activeCountry?.id ||
           (page === "play" && state?.answers?.some((a) => a.id === f.id))
           ? 0.72
           : 0.04
@@ -565,22 +570,31 @@ function draw() {
       .selectAll("path")
       .attr("d", path)
       .attr("fill", (f) =>
-        answerFill(
-          f.id,
-          activeCountry?.id,
-          page === "play" ? state?.answers : [],
-        ),
+        comparedCountries.get(f.id) && comparisonEnabled
+          ? comparedCountries.get(f.id)
+          : answerFill(
+              f.id,
+              activeCountry?.id,
+              page === "play" ? state?.answers : [],
+            ),
       )
       .attr("fill-opacity", (f) =>
         satellite.active
-          ? f.id === activeCountry?.id ||
+          ? (comparisonEnabled && comparedCountries.has(f.id)) ||
+            f.id === activeCountry?.id ||
             (page === "play" && state?.answers.some((a) => a.id === f.id))
             ? 0.72
             : 0.04
           : 1,
       )
       .attr("aria-pressed", (f) =>
-        page === "explore" ? String(f.id === current?.id) : null,
+        page === "explore"
+          ? String(
+              comparisonEnabled
+                ? comparedCountries.has(f.id)
+                : f.id === current?.id,
+            )
+          : null,
       );
   countryLabels.attr("display", null);
   labelLeaders.attr("display", null);
@@ -605,6 +619,7 @@ function draw() {
     drawnLabelScale = mapScale;
   }
   countryLabels.selectAll("text").attr("display", function (f) {
+    if (comparisonEnabled && !comparedCountries.has(f.id)) return "none";
     const point = focusPoint(f);
     const p = projection(point);
     if (
@@ -726,7 +741,13 @@ bindGlobeGestures($("globe"), {
     gestureTimer = setTimeout(finishGesture, 180);
   },
   onTap: ({ target }) => {
-    if (page !== "explore" || !$("highlightCountries")?.checked) return;
+    if (page !== "explore") return;
+    if (comparisonEnabled) {
+      const id = target.closest?.("[data-country-id]")?.dataset.countryId;
+      selectComparison(features.find((f) => f.id === id));
+      return;
+    }
+    if (!$("highlightCountries")?.checked) return;
     const id = target.closest?.("[data-country-id]")?.dataset.countryId;
     current = features.find((country) => country.id === id) || null;
     draw();
@@ -1125,6 +1146,26 @@ function renderContinents() {
     prepareContinentImages(button);
   }
 }
+const comparisonLimit = () =>
+  matchMedia("(max-width: 760px)").matches ? 5 : 10;
+let comparisonEnabled = false;
+const comparedCountries = new Map();
+let renderComparison = () => {};
+const areaData =
+  page === "explore"
+    ? await fetch(new URL("./data/areas.json", import.meta.url))
+        .then((r) => {
+          if (!r.ok) throw Error("Area data unavailable");
+          return r.json();
+        })
+        .catch(() => ({ countries: {} }))
+    : { countries: {} };
+function selectComparison(f) {
+  if (!f) return;
+  const ok = toggleComparison(comparedCountries, f.id, comparisonLimit());
+  renderComparison(!ok);
+  queueDraw();
+}
 let cleanupExploreSettings = () => {};
 function openExplore(continent = "All") {
   cleanupExploreSettings();
@@ -1137,11 +1178,96 @@ function openExplore(continent = "All") {
     hoveredCountry = null;
     land
       .selectAll("path")
-      .attr("tabindex", enabled ? 0 : -1)
-      .attr("aria-disabled", String(!enabled))
+      .attr("tabindex", enabled || comparisonEnabled ? 0 : -1)
+      .attr("aria-disabled", String(!enabled && !comparisonEnabled))
       .style("cursor", enabled ? "pointer" : null);
     draw();
   });
+  const copy = compareCopy[lang] || compareCopy.en;
+  const compareLabel = document.createElement("label");
+  compareLabel.className = "population-switch";
+  const compareInput = document.createElement("input");
+  compareInput.type = "checkbox";
+  compareInput.checked = comparisonEnabled;
+  compareInput.setAttribute("role", "switch");
+  const compareText = document.createElement("span");
+  compareText.textContent = copy[0];
+  compareLabel.append(compareInput, compareText);
+  $("showPopulation").closest("label").after(compareLabel);
+  const comparePanel = document.createElement("aside");
+  comparePanel.className = "compare-panel";
+  comparePanel.setAttribute("aria-label", copy[0]);
+  document.body.append(comparePanel);
+  const updateCompareAccess = () =>
+    land
+      .selectAll("path")
+      .attr(
+        "tabindex",
+        comparisonEnabled || $("highlightCountries").checked ? 0 : -1,
+      )
+      .attr(
+        "aria-disabled",
+        String(!comparisonEnabled && !$("highlightCountries").checked),
+      );
+  renderComparison = (limit = false) => {
+    comparePanel.hidden = !comparisonEnabled;
+    comparePanel.replaceChildren();
+    const title = document.createElement("strong");
+    title.textContent =
+      copy[0] + " (" + comparedCountries.size + "/" + comparisonLimit() + ")";
+    const help = document.createElement("p");
+    help.setAttribute("role", "status");
+    help.textContent = limit
+      ? copy[4]
+      : comparedCountries.size
+        ? copy[2]
+        : copy[1];
+    help.textContent = help.textContent.replace(
+      /10|۱۰/g,
+      new Intl.NumberFormat(lang).format(comparisonLimit()),
+    );
+    const list = document.createElement("ol");
+    const entries = [...comparedCountries.keys()].sort(
+      (a, b) =>
+        (areaData.countries[b]?.km2 || 0) - (areaData.countries[a]?.km2 || 0),
+    );
+    for (const id of entries) {
+      const f = features.find((f) => f.id === id);
+      const row = document.createElement("li");
+      row.style.borderInlineStart = "5px solid " + comparedCountries.get(id);
+      const remove = document.createElement("button");
+      const area = areaData.countries[id]?.km2;
+      remove.textContent =
+        name(f) +
+        " — " +
+        (area ? new Intl.NumberFormat(lang).format(area) + " km²" : copy[5]) +
+        " ×";
+      remove.onclick = () => selectComparison(f);
+      row.append(remove);
+      list.append(row);
+    }
+    const clear = document.createElement("button");
+    clear.textContent = copy[3];
+    clear.onclick = () => {
+      comparedCountries.clear();
+      renderComparison();
+      queueDraw();
+    };
+    const source = document.createElement("a");
+    source.href = "https://github.com/mledoze/countries";
+    source.target = "_blank";
+    source.rel = "noopener";
+    source.textContent = copy[6] + ": Countries";
+    comparePanel.append(title, help, list, clear, source);
+  };
+  compareInput.onchange = () => {
+    comparisonEnabled = compareInput.checked;
+    hoveredCountry = null;
+    updateCompareAccess();
+    renderComparison();
+    queueDraw();
+  };
+  renderComparison();
   const clockLabel = document.createElement("label");
   clockLabel.className = "population-switch";
   clockLabel.title = {
@@ -1209,6 +1335,10 @@ function openExplore(continent = "All") {
   const heading = panel.closest(".explore-heading");
   const arrangeSettings = () => {
     const desktop = matchMedia("(min-width: 761px)").matches;
+    while (comparedCountries.size > comparisonLimit())
+      comparedCountries.delete([...comparedCountries.keys()].at(-1));
+    renderComparison();
+    queueDraw();
     if (desktop) {
       heading.after(settings);
       panel
@@ -1221,7 +1351,19 @@ function openExplore(continent = "All") {
       settings.remove();
     }
   };
+  const positionComparison = () => {
+    const desktop = matchMedia("(min-width: 761px)").matches;
+    comparePanel.style.top = desktop
+      ? settings.getBoundingClientRect().bottom + 8 + "px"
+      : "";
+  };
+  const compareResize = new ResizeObserver(positionComparison);
+  compareResize.observe(settings);
   arrangeSettings();
+  positionComparison();
+  window.addEventListener("resize", positionComparison, {
+    signal: settingsEvents.signal,
+  });
   window.addEventListener("resize", arrangeSettings, {
     signal: settingsEvents.signal,
   });
@@ -1293,11 +1435,14 @@ function openExplore(continent = "All") {
   );
   cleanupExploreSettings = () => {
     settingsEvents.abort();
+    compareResize.disconnect();
     clearInterval(clockTimer);
     settings
       .querySelectorAll(".population-switch")
       .forEach((label) => panel.append(label));
     settings.remove();
+    compareLabel.remove();
+    comparePanel.remove();
     clockLabel.remove();
     flagsLabel.remove();
   };
@@ -1352,12 +1497,23 @@ function openExplore(continent = "All") {
       hoveredCountry = null;
       queueDraw();
     })
-    .on("click", (_, f) => {
+    .on("click", (event, f) => {
+      if (comparisonEnabled) {
+        if (event.detail === 0) selectComparison(f);
+        return;
+      }
       if (!$("highlightCountries").checked) return;
       current = f;
       draw();
     })
     .on("keydown", (event, f) => {
+      if (comparisonEnabled) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectComparison(f);
+        }
+        return;
+      }
       if (!$("highlightCountries").checked) return;
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
@@ -1371,6 +1527,7 @@ function openExplore(continent = "All") {
     .join("text")
     .attr("text-anchor", "middle")
     .attr("dy", ".35em");
+  updateCompareAccess();
   renderExploreLabels();
   labelsNeedMeasurement = true;
   labelOrderCurrent = undefined;
