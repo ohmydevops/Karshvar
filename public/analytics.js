@@ -28,6 +28,7 @@ export function quizContext(selection) {
 
 const events = new Set([
   "play-click",
+  "explore-click",
   "mode-select",
   "country-select",
   "game-start",

@@ -320,6 +320,7 @@ test("quiz events distinguish country mode from continent mode and omit raw inpu
   });
   for (const event of [
     "play-click",
+    "explore-click",
     "mode-select",
     "country-select",
     "game-start",
@@ -333,10 +334,10 @@ test("quiz events distinguish country mode from continent mode and omit raw inpu
       score: 2,
     });
   }
-  assert.equal(sent.length, 7);
+  assert.equal(sent.length, 8);
   for (const [, data] of sent)
     assert.deepEqual(data, { mode: "country", country: "364", score: 2 });
   analytics.track("map-interaction", { input: "touch" });
   analytics.track("map-control", { action: "zoom-in" });
-  assert.equal(sent.length, 7);
+  assert.equal(sent.length, 8);
 });

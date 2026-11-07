@@ -1799,6 +1799,9 @@ $("resetDialog").addEventListener("close", () => {
   navigate("home");
 });
 $("startGame").onclick = () => track("play-click");
+document.querySelectorAll(".home-explore").forEach((link) => {
+  link.addEventListener("click", () => track("explore-click"));
+});
 $("aboutOpen").onclick = () => {
   track("about-open");
 };
