@@ -4153,7 +4153,7 @@ export function mountMarineLabels(svg, language) {
   return mountFeatureLabels(svg, language, marineLabels, "marine-labels");
 }
 
-export function mountFeatureLabels(svg, language, data, className) {
+function mountFeatureLabels(svg, language, data, className) {
   const d3 = globalThis.d3;
   const group = svg
     .append("g")

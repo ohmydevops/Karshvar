@@ -194,7 +194,11 @@ test("all localized pages and assets resolve on the custom domain", () => {
         html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/)[1],
         `${root}${locale}/${suffix}`,
       );
-      assert(html.includes(`content="${root}social/karshvar-${locale}.png"`));
+      const image = new URL(
+        html.match(/property="og:image"\s+content="([^"]+)"/)[1],
+      );
+      assert.equal(image.pathname, `/social/karshvar-${locale}.png`);
+      assert.match(image.searchParams.get("v"), /^[a-f0-9]{12}$/);
       assert(
         !html.includes("https://cloud.umami.is/script.js"),
         "Analytics must be gated by the production loader",

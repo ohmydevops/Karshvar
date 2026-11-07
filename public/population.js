@@ -1,9 +1,6 @@
 // Worldometer annual 2026 estimates, retrieved 2026-10-30.
 // https://www.worldometers.info/world-population/population-by-country/
 // Keys are ISO 3166-1 numeric codes, matching the map feature IDs.
-export const populationYear = 2026;
-export const populationSource =
-  "https://www.worldometers.info/world-population/population-by-country/";
 export const populations = {
   100: 6667659,
   104: 55184819,

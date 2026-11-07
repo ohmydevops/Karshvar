@@ -1077,11 +1077,8 @@ function renderContinents() {
   }
 
   if (selectionPage === "modes") {
-    mountJourneyArt(
-      features,
-      $(selectionPage === "modes" ? "modeChoices" : "nearbyMode"),
-    );
-    if (selectionPage === "modes") $("modeChoices").before($("chooseTitle"));
+    mountJourneyArt(features, $("modeChoices"));
+    $("modeChoices").before($("chooseTitle"));
   }
   if (selectionPage !== "continents") return;
   if (!features.length) {
@@ -1802,9 +1799,6 @@ $("resetDialog").addEventListener("close", () => {
   navigate("home");
 });
 $("startGame").onclick = () => track("play-click");
-document.querySelectorAll(".home-explore").forEach((link) => {
-  link.addEventListener("click", () => track("explore-click"));
-});
 $("aboutOpen").onclick = () => {
   track("about-open");
 };
@@ -1973,25 +1967,6 @@ if (["continents", "play", "results", "explore"].includes(page)) {
   }
 }
 
-function startHomeGlobe() {
-  import("./home-globe.js")
-    .then(({ mountHomeGlobe }) =>
-      mountHomeGlobe(document.querySelector(".welcome-art")),
-    )
-    .catch((error) => {
-      const host = document.querySelector(".welcome-art");
-      host.classList.add("globe-failed");
-      const fallback = host.querySelector(".home-earth");
-      if (fallback) fallback.hidden = false;
-      console.warn(error);
-    });
-}
-
-// Track article-to-game clicks without interrupting normal link navigation.
-document.querySelector(".blog-cta a")?.addEventListener("click", (event) => {
-  track("blog-play-click", { article: event.currentTarget.dataset.article });
-});
-
 await bindHistory({
   language: lang,
   getSessions: () => sessions,
@@ -2007,9 +1982,3 @@ if (page === "explore" && document.fonts) {
   }
 }
 await revealPage();
-// Make the page usable before downloading and initializing decorative WebGL.
-if (page === "home") {
-  if ("requestIdleCallback" in window)
-    window.requestIdleCallback(startHomeGlobe, { timeout: 1500 });
-  else setTimeout(startHomeGlobe, 0);
-}

@@ -8,7 +8,7 @@ const block = (name) => `<div class="page-skeleton-block ${name}"></div>`;
 const line = (name = "") => block(`page-skeleton-line ${name}`);
 const card = () =>
   `<div class="page-skeleton-card">${line("short")}${line()}${line("medium")}</div>`;
-export function skeletonFor(page) {
+function skeletonFor(page) {
   const heading = line("page-skeleton-heading short");
   const globe = block("page-skeleton-globe");
   const map = block("page-skeleton-map");

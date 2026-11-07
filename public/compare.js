@@ -1,4 +1,4 @@
-export const comparisonColors = [
+const comparisonColors = [
   "#ffbf47",
   "#60c5ff",
   "#ef80b1",

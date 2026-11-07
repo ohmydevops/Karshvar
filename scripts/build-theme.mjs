@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-export const themeBootstrap =
+const themeBootstrap =
   '<script>\n      // Apply the saved theme before styles or page content can paint.\n      (() => {\n        let theme = "light";\n        try {\n          if (localStorage.getItem("atlas-theme") === "dark") theme = "dark";\n        } catch {}\n        document.documentElement.dataset.theme = theme;\n        document.querySelector(\'meta[name="theme-color"]\')?.setAttribute("content", theme === "dark" ? "#0d1528" : "#f7f9ff");\n      })();\n    </script>';
 export function buildTheme(dir = "public") {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

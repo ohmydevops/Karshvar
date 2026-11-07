@@ -151,6 +151,9 @@ document.querySelectorAll(".site-menu a").forEach((link) => {
   else link.removeAttribute("aria-current");
 });
 $("startGame")?.addEventListener("click", () => track("play-click"));
+document.querySelectorAll(".home-explore").forEach((link) => {
+  link.addEventListener("click", () => track("explore-click"));
+});
 $("aboutOpen")?.addEventListener("click", () => track("about-open"));
 document.querySelector(".blog-cta a")?.addEventListener("click", (event) => {
   track("blog-play-click", { article: event.currentTarget.dataset.article });

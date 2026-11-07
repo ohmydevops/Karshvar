@@ -2019,8 +2019,34 @@ html[data-page="about"] main {
 }
 
 .about-page .source-link {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   width: fit-content;
+  min-height: 48px;
+  padding: 10px 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 150ms,
+    background 150ms;
+}
+.about-page .source-link::after {
+  content: "↗";
+  color: var(--accent);
+}
+.about-page .source-link:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+.about-page .source-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
 
 /* Present in the HTML so slow module downloads never leave a blank map. */
@@ -2200,17 +2226,6 @@ html:is([data-page="about"], [data-page="sources"]) main {
   }
 }
 
-.nearby-mode {
-  padding: 24px;
-  margin-block: 24px;
-  border: 1px solid var(--muted);
-  border-radius: var(--radius);
-}
-.nearby-mode label {
-  display: block;
-  margin-block: 20px 8px;
-  font-weight: 600;
-}
 .country-picker {
   margin-bottom: 16px;
 }
@@ -2984,6 +2999,7 @@ html[data-selection-page="countries"] #nearbyMode {
   margin-block: 28px 0;
   padding: clamp(20px, 4vw, 28px);
   border-radius: 16px;
+  border: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface) 55%, var(--bg));
   box-shadow: 0 12px 32px #0000000a;
 }
@@ -3057,16 +3073,6 @@ html:is([data-selection-page="modes"], [data-selection-page="countries"])
 }
 .mode-card span {
   font-size: 0.95rem;
-}
-.nearby-mode {
-  border-radius: 8px;
-  border-color: var(--line);
-  background: var(--bg);
-  margin-block: 12px 16px;
-}
-.country-picker input,
-.nearby-mode > .primary {
-  border-radius: 8px;
 }
 html.keyboard-open .journey-art {
   display: none;

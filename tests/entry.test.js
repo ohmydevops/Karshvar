@@ -2,11 +2,40 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
+import { createAnalytics } from "../public/analytics.js";
 
 const source = await readFile(
   new URL("../public/entry.js", import.meta.url),
   "utf8",
 );
+test("home entry sends both CTA click events to analytics", async () => {
+  const site = await readFile(
+    new URL("../public/site.js", import.meta.url),
+    "utf8",
+  );
+  const bindings = site.slice(
+    site.indexOf('$("startGame")?.addEventListener'),
+    site.indexOf('$("aboutOpen")?.addEventListener'),
+  );
+  const start = new EventTarget();
+  const explore = new EventTarget();
+  const sent = [];
+  const analytics = createAnalytics({
+    enabled: true,
+    getTracker: () => ({ track: (...args) => sent.push(args) }),
+  });
+  vm.runInNewContext(bindings, {
+    $: () => start,
+    document: { querySelectorAll: () => [explore] },
+    track: (event) => analytics.track(event, { language: "fa" }),
+  });
+  start.dispatchEvent(new Event("click"));
+  explore.dispatchEvent(new Event("click"));
+  assert.deepEqual(sent, [
+    ["play-click", { language: "fa" }],
+    ["explore-click", { language: "fa" }],
+  ]);
+});
 for (const page of [
   "home",
   "about",
