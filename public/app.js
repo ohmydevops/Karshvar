@@ -2228,6 +2228,11 @@ if (["continents", "play", "results", "explore"].includes(page)) {
       else openGame(selected);
     }
     if (page !== "explore") await satellite.ready;
+    await flagFontReady;
+    await document.fonts?.ready;
+    labelsNeedMeasurement = true;
+    draw();
+    await drawMarineLabels?.whenSettled();
     draw();
     if (mapLoading) {
       mapLoading.hidden = true;

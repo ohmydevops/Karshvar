@@ -1,7 +1,9 @@
 import { buildTheme } from "./build-theme.mjs";
 import { buildLoading } from "./build-loading.mjs";
+import { buildFonts } from "./build-fonts.mjs";
 buildTheme();
 await buildLoading();
+await buildFonts();
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";

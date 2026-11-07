@@ -4191,10 +4191,19 @@ function mountFeatureLabels(svg, language, data, className, getLand, redraw) {
     movingNow = false;
   let fontVersion = 0;
   let settledPlacements = new Map();
+  let settledKey;
+  let layoutError;
+  const waiting = [];
+  worker.onerror = (event) => {
+    layoutError = new Error(event.message || "Marine label layout failed");
+    waiting.splice(0).forEach(({ reject }) => reject(layoutError));
+  };
   worker.onmessage = ({ data: result }) => {
     if (result.key !== currentKey || movingNow) return;
     settledPlacements = new Map(result.placements);
+    settledKey = result.key;
     redraw();
+    waiting.splice(0).forEach(({ resolve }) => resolve());
   };
   window.addEventListener("pagehide", (event) => {
     if (!event.persisted) worker.terminate();
@@ -4204,7 +4213,7 @@ function mountFeatureLabels(svg, language, data, className, getLand, redraw) {
     fontVersion++;
     redraw();
   });
-  return (
+  const draw = (
     projection,
     scale,
     bounds,
@@ -4300,4 +4309,11 @@ function mountFeatureLabels(svg, language, data, className, getLand, redraw) {
       return null;
     });
   };
+  // Only startup waits for placement. Interaction continues to use cached labels.
+  draw.whenSettled = () => {
+    if (layoutError) return Promise.reject(layoutError);
+    if (!requestedKey || settledKey === currentKey) return Promise.resolve();
+    return new Promise((resolve, reject) => waiting.push({ resolve, reject }));
+  };
+  return draw;
 }

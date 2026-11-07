@@ -138,3 +138,26 @@ test("visible image errors release loading; offscreen and lazy images never bloc
     globalThis.window = originalWindow;
   }
 });
+
+test("page skeleton remains until the fonts finish loading", async () => {
+  const originalDocument = globalThis.document;
+  let finishFonts;
+  let revealed = false;
+  globalThis.document = {
+    querySelectorAll: () => [],
+    fonts: { ready: new Promise((resolve) => (finishFonts = resolve)) },
+    dispatchEvent: () => {
+      revealed = true;
+    },
+  };
+  try {
+    const pending = revealPage();
+    await Promise.resolve();
+    assert.equal(revealed, false);
+    finishFonts();
+    await pending;
+    assert.equal(revealed, true);
+  } finally {
+    globalThis.document = originalDocument;
+  }
+});

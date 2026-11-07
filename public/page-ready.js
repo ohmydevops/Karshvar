@@ -27,5 +27,7 @@ export async function revealPage() {
         }),
     ),
   );
+  // Keep the existing skeleton while text is still using temporary font metrics.
+  await document.fonts?.ready;
   document.dispatchEvent(new Event("page-ready"));
 }
