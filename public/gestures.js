@@ -1,7 +1,7 @@
 // Pointer Events work for mouse, pen, real touchscreens, and device emulation.
 export function bindGlobeGestures(
   element,
-  { onStart, onRotate, onZoom, onEnd, onTap },
+  { onStart, onRotate, onBearing, onZoom, onEnd, onTap },
 ) {
   const pointers = new Map();
   let changed = false;
@@ -46,7 +46,10 @@ export function bindGlobeGestures(
       dy = after.y - before.y;
     if (dx || dy) {
       changed = true;
-      onRotate(dx, dy);
+      if (event.pointerType === "mouse" && event.ctrlKey && onBearing) {
+        tap = null;
+        onBearing(dx);
+      } else onRotate(dx, dy);
     }
     if (
       before.distance > 0 &&

@@ -2,50 +2,44 @@ export const densityCopy = {
   en: [
     "Population density",
     "People / km²",
-    "2025 estimate · ~5.6 km grid",
+    "2025 estimate · ~2.8 km grid",
     "Loading population…",
     "Population layer unavailable. Toggle to retry.",
-    "Below 1: transparent",
   ],
   fa: [
     "پراکندگی جمعیت",
     "نفر در کیلومتر مربع",
-    "برآورد ۲۰۲۵ · شبکهٔ حدود ۵٫۶ کیلومتری",
+    "برآورد ۲۰۲۵ · شبکهٔ حدود ۲٫۸ کیلومتری",
     "بارگیری جمعیت…",
     "لایهٔ جمعیت بارگیری نشد؛ دوباره فعال کنید.",
-    "کمتر از ۱: شفاف",
   ],
   ar: [
     "الكثافة السكانية",
     "نسمة / كم²",
-    "تقدير ٢٠٢٥ · شبكة نحو ٥٫٦ كم",
+    "تقدير ٢٠٢٥ · شبكة نحو ٢٫٨ كم",
     "تحميل السكان…",
     "تعذّر تحميل الطبقة. فعّلها مجددًا.",
-    "أقل من ١: شفاف",
   ],
   tr: [
     "Nüfus yoğunluğu",
     "Kişi / km²",
-    "2025 tahmini · ~5,6 km ızgara",
+    "2025 tahmini · ~2,8 km ızgara",
     "Nüfus yükleniyor…",
     "Katman yüklenemedi. Yeniden açın.",
-    "1’in altı: saydam",
   ],
   fr: [
     "Densité de population",
     "Habitants / km²",
-    "Estimation 2025 · grille ~5,6 km",
+    "Estimation 2025 · grille ~2,8 km",
     "Chargement de la population…",
     "Couche indisponible. Réactivez pour réessayer.",
-    "Moins de 1 : transparent",
   ],
   ru: [
     "Плотность населения",
     "Человек / км²",
-    "Оценка 2025 · сетка ~5,6 км",
+    "Оценка 2025 · сетка ~2,8 км",
     "Загрузка населения…",
     "Слой недоступен. Включите повторно.",
-    "Менее 1: прозрачно",
   ],
 };
 
@@ -98,9 +92,7 @@ export function mountPopulationLayer(svg, projection, language, redraw) {
   }
   const detail = document.createElement("p");
   detail.textContent = copy[2];
-  const threshold = document.createElement("p");
-  threshold.textContent = copy[5];
-  legend.append(title, ramp, ticks, detail, threshold);
+  legend.append(title, ramp, ticks, detail);
   const status = document.createElement("p");
   status.className = "population-status";
   status.setAttribute("role", "status");

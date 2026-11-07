@@ -19,7 +19,10 @@ class GestureSurface extends EventTarget {
   releasePointerCapture(id) {
     this.captures.delete(id);
   }
-  send(type, { id = 1, x = 0, y = 0, input = "touch", button = 0 } = {}) {
+  send(
+    type,
+    { id = 1, x = 0, y = 0, input = "touch", button = 0, ctrlKey = false } = {},
+  ) {
     const event = new Event(type, { cancelable: true });
     Object.assign(event, {
       pointerId: id,
@@ -27,6 +30,7 @@ class GestureSurface extends EventTarget {
       clientY: y,
       pointerType: input,
       button,
+      ctrlKey,
     });
     this.dispatchEvent(event);
     return event;
@@ -38,10 +42,12 @@ function fixture() {
     zooms = [],
     ends = [];
   const taps = [];
+  const bearings = [];
   let starts = 0;
   const detach = bindGlobeGestures(surface, {
     onStart: () => starts++,
     onRotate: (...v) => rotations.push(v),
+    onBearing: (v) => bearings.push(v),
     onZoom: (v) => zooms.push(v),
     onEnd: (v) => ends.push(v),
     onTap: (v) => taps.push(v),
@@ -49,6 +55,7 @@ function fixture() {
   return {
     surface,
     rotations,
+    bearings,
     zooms,
     ends,
     taps,
@@ -58,6 +65,22 @@ function fixture() {
     },
   };
 }
+
+test("Ctrl drag changes bearing only for a mouse and never selects a country", () => {
+  const f = fixture();
+  f.surface.send("pointerdown", { input: "mouse", ctrlKey: true });
+  f.surface.send("pointermove", { input: "mouse", ctrlKey: true, x: 4 });
+  f.surface.send("pointerup", { input: "mouse" });
+  assert.deepEqual(f.bearings, [4]);
+  assert.deepEqual(f.rotations, []);
+  assert.deepEqual(f.taps, []);
+  assert.deepEqual(f.ends, ["mouse"]);
+  f.surface.send("pointerdown", { input: "touch", ctrlKey: true });
+  f.surface.send("pointermove", { input: "touch", ctrlKey: true, x: 20 });
+  f.surface.send("pointerup");
+  assert.deepEqual(f.bearings, [4]);
+  assert.deepEqual(f.rotations, [[20, 0]]);
+});
 
 test("a touchscreen tap survives pointer capture and small finger movement", () => {
   const f = fixture();

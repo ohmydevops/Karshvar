@@ -22,7 +22,7 @@ SOURCE_URL = (
     "GHS_POP_GLOBE_R2023A/GHS_POP_E2025_GLOBE_R2023A_4326_30ss/"
     "V1-0/GHS_POP_E2025_GLOBE_R2023A_4326_30ss_V1_0.zip"
 )
-WIDTH, HEIGHT = 7200, 3600  # 0.05 degrees, ~5.6 km at the equator
+WIDTH, HEIGHT = 14400, 7200  # 0.025 degrees, ~2.8 km at the equator
 
 
 def encode_density(density):
@@ -68,19 +68,24 @@ def main():
         raise ValueError("Population total changed during aggregation")
     edges = np.linspace(math.pi / 2, -math.pi / 2, HEIGHT + 1)
     area = 6371.0088 ** 2 * (2 * math.pi / WIDTH) * (np.sin(edges[:-1]) - np.sin(edges[1:]))
-    density = counts / area[:, None]
+    # Encode in strips to avoid several full-size floating-point allocations.
+    encoded = np.empty((HEIGHT, WIDTH), dtype=np.uint8)
+    for top in range(0, HEIGHT, 128):
+        encoded[top:top + 128] = encode_density(
+            counts[top:top + 128] / area[top:top + 128, None]
+        )
     output = ROOT / "public/data/population-density.png"
-    Image.fromarray(encode_density(density)).save(output, optimize=True)
+    Image.fromarray(encoded).save(output, optimize=True)
     metadata = {
         "dataset": "GHS-POP R2023A", "epoch": 2025,
         "kind": "population projection", "source": SOURCE_URL,
         "doi": "10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE",
         "credit": "European Commission, Joint Research Centre (JRC), © European Union",
         "citation": "Schiavina, M., Freire, S., Carioli, A., MacManus, K. (2023)",
-        "sourceResolutionArcSeconds": 30, "resolutionDegrees": 0.05,
+        "sourceResolutionArcSeconds": 30, "resolutionDegrees": 360 / WIDTH,
         "bounds": [-180, -90, 180, 90], "width": WIDTH, "height": HEIGHT,
         "unit": "people/km²", "encoding": "round(log1p(min(density,10000))/log1p(10000)*255)",
-        "processing": "Assign source cell centres to 0.05-degree cells and sum residents; divide by spherical cell area; logarithmic 8-bit encoding. No-data treated as empty. For visual exploration, not precise local counts.",
+        "processing": "Assign source cell centres to 0.025-degree cells and sum residents; divide by spherical cell area; logarithmic 8-bit encoding. No-data treated as empty. For visual exploration, not precise local counts.",
         "populationSum": round(float(counts.sum())),
     }
     output.with_suffix(".json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

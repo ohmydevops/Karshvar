@@ -2,6 +2,8 @@
 // https://www.marineregions.org/gazetteer.php?p=details&id=4266
 // Marine names and approximate label locations: Natural Earth, public domain.
 // https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-physical-labels/
+import { marineAxes } from "./marine-axes.js";
+import { marineAngle } from "./marine-placement.js";
 export const marineLabels = [
   {
     id: 1159115017,
@@ -4149,11 +4151,23 @@ export const marineLabels = [
   },
 ];
 
-export function mountMarineLabels(svg, language) {
-  return mountFeatureLabels(svg, language, marineLabels, "marine-labels");
+export function mountMarineLabels(
+  svg,
+  language,
+  getLand = () => [],
+  redraw = () => {},
+) {
+  return mountFeatureLabels(
+    svg,
+    language,
+    marineLabels,
+    "marine-labels",
+    getLand,
+    redraw,
+  );
 }
 
-function mountFeatureLabels(svg, language, data, className) {
+function mountFeatureLabels(svg, language, data, className, getLand, redraw) {
   const d3 = globalThis.d3;
   const group = svg
     .append("g")
@@ -4164,34 +4178,126 @@ function mountFeatureLabels(svg, language, data, className) {
     .data(data)
     .join("text")
     .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "central")
     .text((d) => d.names[language] || d.names.en);
-  return (projection, scale, bounds, occupied, place, enabled = true) => {
+  const worker = new Worker(
+    new URL("./marine-layout-worker.js", import.meta.url),
+    { type: "module" },
+  );
+  let previousLand,
+    textWidths,
+    currentKey,
+    requestedKey,
+    movingNow = false;
+  let fontVersion = 0;
+  let settledPlacements = new Map();
+  worker.onmessage = ({ data: result }) => {
+    if (result.key !== currentKey || movingNow) return;
+    settledPlacements = new Map(result.placements);
+    redraw();
+  };
+  window.addEventListener("pagehide", (event) => {
+    if (!event.persisted) worker.terminate();
+  });
+  document.fonts?.ready.then(() => {
+    textWidths = null;
+    fontVersion++;
+    redraw();
+  });
+  return (
+    projection,
+    scale,
+    bounds,
+    occupied,
+    place,
+    enabled = true,
+    moving = false,
+  ) => {
     group.attr("display", enabled ? null : "none");
     if (!enabled) return;
+    if (!textWidths) {
+      textWidths = new Map();
+      texts.attr("display", null).style("font-size", "13px");
+      texts.each(function (d) {
+        textWidths.set(d.id, this.getComputedTextLength());
+      });
+    }
+    const land = getLand();
+    if (land !== previousLand) {
+      previousLand = land;
+      worker.postMessage({ land });
+      requestedKey = null;
+    }
+    const camera = {
+      rotation: projection.rotate(),
+      translation: projection.translate(),
+      zoom: projection.scale(),
+    };
+    currentKey = JSON.stringify([camera, scale, bounds, fontVersion]);
+    movingNow = moving;
     const center = projection.invert(projection.translate());
     const level = Math.log2((projection.scale() * scale) / 220) + 2;
-    texts
-      .style("font-size", 13 / scale + "px")
-      .style("stroke-width", 3 / scale + "px")
-      .attr("display", function (d) {
-        if (level < d.rank || d3.geoDistance(center, d.point) >= Math.PI / 2)
-          return "none";
-        const point = projection(d.point),
-          text = d.names[language] || d.names.en;
-        if (
-          point[0] < bounds[0] ||
-          point[0] > bounds[2] ||
-          point[1] < bounds[1] ||
-          point[1] > bounds[3]
-        )
-          return "none";
-        const width = (Array.from(text).length * 7.5 + 12) / scale,
-          height = 20 / scale;
-        const placement = place(point, width, height, bounds, occupied, false);
-        if (!placement) return "none";
-        occupied.push(placement.box);
-        this.setAttribute("transform", "translate(" + placement.point + ")");
-        return null;
+    const visible = data.filter((d) => {
+      if (level < d.rank || d3.geoDistance(center, d.point) >= Math.PI / 2)
+        return false;
+      const p = projection(d.point);
+      return (
+        p[0] >= bounds[0] &&
+        p[0] <= bounds[2] &&
+        p[1] >= bounds[1] &&
+        p[1] <= bounds[3]
+      );
+    });
+    if (moving) requestedKey = null;
+    else if (currentKey !== requestedKey && land.length) {
+      requestedKey = currentKey;
+      worker.postMessage({
+        key: currentKey,
+        camera,
+        scale,
+        bounds,
+        labels: visible.map((d) => ({
+          id: d.id,
+          point: d.point,
+          width: textWidths.get(d.id),
+        })),
       });
+    }
+    const visibleIds = new Set(visible.map((d) => d.id));
+    texts.attr("display", function (d) {
+      const cached = settledPlacements.get(d.id);
+      if (
+        !visibleIds.has(d.id) ||
+        !cached ||
+        d3.geoDistance(center, cached.point) >= Math.PI / 2
+      )
+        return "none";
+      const position = projection(cached.point);
+      const angle = marineAngle(projection, d.point, marineAxes[d.id]);
+      const radians = (angle * Math.PI) / 180;
+      const width = ((textWidths.get(d.id) * cached.fontSize) / 13 + 4) / scale;
+      const height = (cached.fontSize + 3) / scale;
+      const halfWidth =
+        (Math.abs(Math.cos(radians)) * width +
+          Math.abs(Math.sin(radians)) * height) /
+        2;
+      const halfHeight =
+        (Math.abs(Math.sin(radians)) * width +
+          Math.abs(Math.cos(radians)) * height) /
+        2;
+      occupied.push([
+        position[0] - halfWidth,
+        position[1] - halfHeight,
+        position[0] + halfWidth,
+        position[1] + halfHeight,
+      ]);
+      this.style.fontSize = cached.fontSize / scale + "px";
+      this.style.strokeWidth = Math.max(1, cached.fontSize / 6) / scale + "px";
+      this.setAttribute(
+        "transform",
+        "translate(" + position + ") rotate(" + angle + ")",
+      );
+      return null;
+    });
   };
 }

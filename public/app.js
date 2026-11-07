@@ -1,6 +1,7 @@
 import { toggleComparison, compareCopy } from "./compare.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
+import { interiorLabelPoint } from "./label-anchor.js";
 import { bindHighlightSwitch } from "./explore-settings.js";
 import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
@@ -229,6 +230,7 @@ let lang = "en",
   selected = null,
   legacy,
   features = [],
+  landFeatures = [],
   names = [],
   current,
   hoveredCountry,
@@ -454,8 +456,14 @@ const countryLabels = svg
   .append("g")
   .attr("class", "country-labels")
   .attr("pointer-events", "none");
+const activeLabelBackground = countryLabels
+  .append("rect")
+  .attr("class", "active-country-label-background")
+  .attr("display", "none");
 const drawMarineLabels =
-  page === "explore" ? mountMarineLabels(svg, lang) : null;
+  page === "explore"
+    ? mountMarineLabels(svg, lang, () => landFeatures, queueDraw)
+    : null;
 const marker = svg
   .append("circle")
   .attr("r", 14)
@@ -479,6 +487,7 @@ function countryGeometry(f) {
   const result = {
     geometry,
     point: d3.geoCentroid(geometry),
+    labelPoint: interiorLabelPoint(geometry, d3),
     area: d3.geoArea(f),
   };
   geography.set(f, result);
@@ -526,7 +535,44 @@ function finishGesture() {
 let drawnZoom;
 let drawnLabelSize;
 let drawnLabelScale;
-function draw() {
+let hitPathFrame;
+let hitPathKey;
+let completedHitPathKey;
+let gridPathKey;
+function updateHitPaths(key) {
+  if (key === completedHitPathKey || key === hitPathKey) return;
+  cancelAnimationFrame(hitPathFrame);
+  hitPathKey = key;
+  // GPU renders the visible map. Refresh invisible SVG hit targets in short
+  // slices, rather than blocking the first frame after a drag.
+  const nodes = land.selectAll("path").nodes();
+  const hitProjection = d3
+    .geoOrthographic()
+    .rotate(projection.rotate())
+    .translate(projection.translate())
+    .scale(projection.scale())
+    .clipAngle(projection.clipAngle())
+    .precision(projection.precision());
+  const hitPath = d3.geoPath(hitProjection);
+  let index = 0;
+  land.style("pointer-events", "none");
+  function step() {
+    const began = performance.now();
+    do {
+      const node = nodes[index++];
+      if (node) node.setAttribute("d", hitPath(node.__data__) || "");
+    } while (index < nodes.length && performance.now() - began < 3);
+    if (index < nodes.length) hitPathFrame = requestAnimationFrame(step);
+    else {
+      completedHitPathKey = key;
+      hitPathKey = null;
+      land.style("pointer-events", null);
+    }
+  }
+  hitPathFrame = requestAnimationFrame(step);
+}
+function draw(animating = false) {
+  const moving = gestureActive || animating === true;
   const activeCountry = comparisonEnabled
     ? null
     : page === "explore"
@@ -550,6 +596,8 @@ function draw() {
     : { x: 600, y: 530 };
   measureLabels();
   projection.rotate(rotation).scale(220 * zoom);
+  const northNeedle = document.querySelector("#north svg");
+  if (northNeedle) northNeedle.style.transform = `rotate(${-rotation[2]}deg)`;
   // The circular ocean and shading do not change when the Earth rotates.
   if (drawnZoom !== zoom) {
     const outline = path({ type: "Sphere" });
@@ -559,10 +607,10 @@ function draw() {
   }
   satellite.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
   populationLayer?.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
-  grid.attr("display", gestureActive ? "none" : null);
+  grid.attr("display", moving ? "none" : null);
   land
     .attr("opacity", gpuCountries ? 0 : 1)
-    .attr("display", gestureActive && gpuCountries ? "none" : null);
+    .attr("display", moving && gpuCountries ? "none" : null);
   gpuCountries?.draw(
     land.selectAll("path").data(),
     (f) =>
@@ -583,11 +631,28 @@ function draw() {
         : 1,
     [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
   );
-  if (!gestureActive) grid.attr("d", path);
-  if (!gestureActive)
+  const geometryKey = JSON.stringify([
+    rotation,
+    zoom,
     land
       .selectAll("path")
-      .attr("d", path)
+      .data()
+      .map((f) => f.id),
+  ]);
+  if (moving && hitPathKey) {
+    cancelAnimationFrame(hitPathFrame);
+    hitPathKey = null;
+    completedHitPathKey = null;
+  }
+  if (!moving && gridPathKey !== geometryKey) {
+    grid.attr("d", path);
+    gridPathKey = geometryKey;
+  }
+  if (!moving && gpuCountries) updateHitPaths(geometryKey);
+  if (!gpuCountries) land.selectAll("path").attr("d", path);
+  if (!moving || !gpuCountries)
+    land
+      .selectAll("path")
       .attr("fill", (f) =>
         comparedCountries.get(f.id) && comparisonEnabled
           ? comparedCountries.get(f.id)
@@ -619,9 +684,22 @@ function draw() {
   labelLeaders.attr("display", null);
   const labelSize = Math.max(14, Math.min(18, 13 + zoom));
   const occupied = [];
+  // Water labels have little room to move; reserve their water-only footprint
+  // before placing country callouts, which can use several nearby positions.
+  drawMarineLabels?.(
+    projection,
+    mapScale,
+    [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
+    occupied,
+    placeMapLabel,
+    true,
+    moving,
+  );
   const leaders = [];
+  const highlightedLabel = page === "explore" ? activeCountry : null;
   const viewCenter = projection.invert([300, 267]);
   const texts = countryLabels.selectAll("text");
+  texts.classed("active-country-label", (f) => f === highlightedLabel);
   if (labelOrderCurrent !== activeCountry) {
     texts.sort(
       (a, b) =>
@@ -637,9 +715,10 @@ function draw() {
     drawnLabelSize = labelSize;
     drawnLabelScale = mapScale;
   }
+  activeLabelBackground.attr("display", "none");
   countryLabels.selectAll("text").attr("display", function (f) {
     if (comparisonEnabled && !comparedCountries.has(f.id)) return "none";
-    const point = focusPoint(f);
+    const point = countryGeometry(f).labelPoint;
     const p = projection(point);
     if (
       d3.geoDistance(point, viewCenter) >= Math.PI / 2 ||
@@ -660,6 +739,17 @@ function draw() {
       page === "explore",
     );
     if (!placement) return "none";
+    if (f === highlightedLabel) {
+      const padding = 4 / mapScale;
+      activeLabelBackground
+        .attr("display", null)
+        .attr("x", placement.box[0] - padding)
+        .attr("y", placement.box[1] - padding)
+        .attr("width", placement.box[2] - placement.box[0] + padding * 2)
+        .attr("height", placement.box[3] - placement.box[1] + padding * 2)
+        .attr("rx", 6 / mapScale)
+        .attr("stroke-width", 1 / mapScale);
+    }
     occupied.push(placement.box);
     if (placement.shifted)
       leaders.push({ id: f.id, anchor: p, point: placement.connector });
@@ -681,13 +771,6 @@ function draw() {
     .attr("cx", (d) => d.anchor[0])
     .attr("cy", (d) => d.anchor[1])
     .attr("r", 2 / mapScale);
-  drawMarineLabels?.(
-    projection,
-    mapScale,
-    [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
-    occupied,
-    placeMapLabel,
-  );
   if (activeCountry) {
     const point = focusPoint(activeCountry),
       p = projection(point);
@@ -751,6 +834,44 @@ function center(instant = false) {
   }
   animation = requestAnimationFrame(step);
 }
+if (page === "explore") {
+  const north = document.createElement("button");
+  north.id = "north";
+  north.type = "button";
+  const title = {
+    en: "Reset north · Ctrl + drag to rotate",
+    fa: "شمال رو به بالا · چرخش با Ctrl و درگ",
+    ar: "إعادة الشمال للأعلى · Ctrl والسحب للتدوير",
+    tr: "Kuzeyi sıfırla · Ctrl + sürükle ile döndür",
+    fr: "Nord en haut · Ctrl + glisser pour tourner",
+    ru: "Север сверху · Ctrl + перетаскивание для поворота",
+  }[lang];
+  north.title = title;
+  north.setAttribute("aria-label", title);
+  north.innerHTML =
+    '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="7" text-anchor="middle" fill="currentColor" font-size="7" font-family="sans-serif">N</text><path d="M12 9 7 21 12 18 17 21Z" fill="currentColor"/></svg>';
+  north.onclick = () => {
+    cancelAnimationFrame(animation);
+    const start = rotation[2];
+    const delta = (((-start % 360) + 540) % 360) - 180;
+    if (!delta || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      rotation[2] = 0;
+      queueDraw();
+      return;
+    }
+    const began = performance.now();
+    function step(now) {
+      const progress = Math.min(1, (now - began) / 550);
+      rotation[2] =
+        progress === 1 ? 0 : start + delta * d3.easeCubicInOut(progress);
+      // Use the same GPU path as dragging; rebuild SVG hit targets at rest.
+      draw(progress < 1);
+      if (progress < 1) animation = requestAnimationFrame(step);
+    }
+    animation = requestAnimationFrame(step);
+  };
+  $("center").after(north);
+}
 bindGlobeGestures($("globe"), {
   onStart: () => {
     cancelAnimationFrame(animation);
@@ -777,6 +898,11 @@ bindGlobeGestures($("globe"), {
     gestureTimer = setTimeout(finishGesture, 180);
     const bounds = $("globe").getBoundingClientRect();
     const viewScale = Math.min(bounds.width / 600, bounds.height / 530) || 1;
+    const angle = (rotation[2] * Math.PI) / 180;
+    [dx, dy] = [
+      dx * Math.cos(angle) - dy * Math.sin(angle),
+      dx * Math.sin(angle) + dy * Math.cos(angle),
+    ];
     rotation[0] += (dx * 0.3) / (zoom * viewScale);
     rotation[1] = Math.max(
       -89,
@@ -784,6 +910,17 @@ bindGlobeGestures($("globe"), {
     );
     queueDraw();
   },
+  onBearing:
+    page === "explore"
+      ? (dx) => {
+          gestureActive = true;
+          clearTimeout(gestureTimer);
+          gestureTimer = setTimeout(finishGesture, 180);
+          rotation[2] =
+            ((((rotation[2] - dx * 0.4 + 180) % 360) + 360) % 360) - 180;
+          queueDraw();
+        }
+      : undefined,
   onZoom: scale,
   onEnd: finishGesture,
 });
@@ -1991,11 +2128,13 @@ if (["continents", "play", "results", "explore"].includes(page)) {
   try {
     const responses = await mapData;
     names = responses[1];
-    features = topojson
-      .feature(responses[0], responses[0].objects.countries)
-      .features.filter((f) =>
-        names.some((n) => n.ccn3 === f.id && n.independent === true),
-      );
+    landFeatures = topojson.feature(
+      responses[0],
+      responses[0].objects.countries,
+    ).features;
+    features = landFeatures.filter((f) =>
+      names.some((n) => n.ccn3 === f.id && n.independent === true),
+    );
     if (!sessions || typeof sessions !== "object" || Array.isArray(sessions))
       sessions = {};
     for (const continent of continents) {

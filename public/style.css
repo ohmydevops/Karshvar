@@ -679,6 +679,11 @@ html[data-page="continents"] .continent-card:not(.image-ready) .continent-art {
   place-items: center;
   box-shadow: 0 2px 7px #0002;
 }
+@media (hover: none), (pointer: coarse) {
+  .map-controls #north {
+    display: none;
+  }
+}
 .answer-panel {
   align-self: center;
   min-width: 0;
@@ -1280,6 +1285,15 @@ html[data-page="explore"] .globe-panel {
 html[data-theme="dark"] .country-labels text {
   fill: #f5f8ff;
   stroke: #132c4b;
+}
+.country-labels .active-country-label-background {
+  fill: #101e33;
+  stroke: #ffcf70;
+}
+.country-labels text.active-country-label,
+html[data-theme="dark"] .country-labels text.active-country-label {
+  fill: #fff;
+  stroke: #101e33;
 }
 .label-leaders line {
   stroke: var(--text);

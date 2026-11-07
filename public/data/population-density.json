@@ -7,17 +7,17 @@
   "credit": "European Commission, Joint Research Centre (JRC), © European Union",
   "citation": "Schiavina, M., Freire, S., Carioli, A., MacManus, K. (2023)",
   "sourceResolutionArcSeconds": 30,
-  "resolutionDegrees": 0.05,
+  "resolutionDegrees": 0.025,
   "bounds": [
     -180,
     -90,
     180,
     90
   ],
-  "width": 7200,
-  "height": 3600,
+  "width": 14400,
+  "height": 7200,
   "unit": "people/km²",
   "encoding": "round(log1p(min(density,10000))/log1p(10000)*255)",
-  "processing": "Assign source cell centres to 0.05-degree cells and sum residents; divide by spherical cell area; logarithmic 8-bit encoding. No-data treated as empty. For visual exploration, not precise local counts.",
+  "processing": "Assign source cell centres to 0.025-degree cells and sum residents; divide by spherical cell area; logarithmic 8-bit encoding. No-data treated as empty. For visual exploration, not precise local counts.",
   "populationSum": 8191988517
 }
