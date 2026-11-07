@@ -6,14 +6,23 @@ const source = await readFile(
   new URL("../public/offline.js", import.meta.url),
   "utf8",
 );
-async function setup(controller = true, register) {
+async function setup(controller = true, register, hostname = "example.test") {
   const nodes = [],
     events = {},
     sent = [];
+  const timers = new Map();
+  const workerEvents = {};
   let reloads = 0,
     checks = 0,
     now = 100_000;
   const waiting = {
+    scriptURL: "https://example.test/sw.js",
+    addEventListener(name, handler) {
+      workerEvents[name] = handler;
+    },
+    removeEventListener(name) {
+      delete workerEvents[name];
+    },
     postMessage(message) {
       sent.push(message);
     },
@@ -24,11 +33,17 @@ async function setup(controller = true, register) {
     async update() {
       checks++;
     },
+    async unregister() {
+      this.unregistered = true;
+    },
   };
   const serviceWorker = {
     controller: controller ? {} : null,
     async register() {
       return register ? register(registration) : registration;
+    },
+    async getRegistration() {
+      return registration;
     },
     addEventListener(name, handler) {
       events[name] = handler;
@@ -92,10 +107,19 @@ async function setup(controller = true, register) {
         setInterval(handler) {
           events.interval = handler;
         },
+        setTimeout(handler) {
+          const id = timers.size + 1;
+          timers.set(id, handler);
+          return id;
+        },
+        clearTimeout(id) {
+          timers.delete(id);
+        },
       },
       Date: { now: () => now },
       URL,
       location: {
+        hostname,
         reload() {
           reloads++;
         },
@@ -117,12 +141,60 @@ async function setup(controller = true, register) {
       return checks;
     },
     events,
+    workerEvents,
+    expireTimers() {
+      for (const fn of [...timers.values()]) fn();
+    },
     sent,
     get reloads() {
       return reloads;
     },
   };
 }
+
+test("local development keeps the same update prompt as production", async () => {
+  const app = await setup(true, undefined, "localhost");
+  assert.equal(app.registration.unregistered, undefined);
+  assert.equal(app.menuButton.hidden, false);
+  assert.ok(app.nodes.some((n) => n.textContent === "Update now"));
+});
+
+test("a stalled activation restores retry and Later without reloading", async () => {
+  const app = await setup();
+  const button = app.nodes.find((n) => n.textContent === "Update now");
+  button.onclick();
+  assert.equal(button.disabled, true);
+  assert.notEqual(
+    app.nodes.find((n) => n.textContent === "Later").disabled,
+    true,
+  );
+  app.expireTimers();
+  assert.equal(button.disabled, false);
+  assert.equal(button.textContent, "Try again");
+  assert.equal(app.reloads, 0);
+  button.onclick();
+  assert.equal(app.sent.length, 2);
+  app.events.controllerchange();
+  assert.equal(app.reloads, 1);
+});
+
+test("activated state recovers a missed controllerchange and reloads once", async () => {
+  const app = await setup();
+  app.nodes.find((n) => n.textContent === "Update now").onclick();
+  app.registration.active = app.registration.waiting;
+  app.registration.active.state = "activated";
+  app.workerEvents.statechange();
+  app.events.controllerchange();
+  assert.equal(app.reloads, 1);
+});
+
+test("Later during activation cancels automatic reload", async () => {
+  const app = await setup();
+  app.nodes.find((n) => n.textContent === "Update now").onclick();
+  app.nodes.find((n) => n.textContent === "Later").onclick();
+  app.events.controllerchange();
+  assert.equal(app.reloads, 0);
+});
 
 test("update button is visible while service worker registration is still pending", async () => {
   let finish;

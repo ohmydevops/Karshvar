@@ -50,8 +50,11 @@ export function mountSatellite(svg, projection, language, redraw) {
   button.checked = false;
   const label = document.createElement("label");
   label.className =
-    "population-switch" + (inExplore ? "" : " map-satellite-switch");
+    "population-switch" +
+    (inExplore ? " satellite-control" : " map-satellite-switch");
   const text = document.createElement("span");
+  text.id = "satelliteLabel";
+  button.setAttribute("aria-labelledby", text.id);
   text.textContent = labels[language] || labels.en;
   label.append(button, text);
   document
@@ -66,7 +69,7 @@ export function mountSatellite(svg, projection, language, redraw) {
   credit.textContent = "NASA GIBS / MODIS";
   credit.hidden = true;
   document.querySelector(".globe-panel").append(credit);
-  const downloadIndicator = document.createElement("div");
+  const downloadIndicator = document.createElement("span");
   downloadIndicator.className = "satellite-download";
   downloadIndicator.setAttribute("role", "status");
   downloadIndicator.setAttribute("aria-live", "polite");
@@ -83,9 +86,7 @@ export function mountSatellite(svg, projection, language, redraw) {
     }[language] || "Downloading imagery…";
   downloadIndicator.hidden = true;
   downloadIndicator.append(downloadText);
-  if (inExplore)
-    document.querySelector(".globe-panel").append(downloadIndicator);
-  else label.append(downloadIndicator);
+  label.append(downloadIndicator);
   const panel = document.querySelector(".globe-panel");
   const controls = document.querySelector(".map-controls");
   const answers = document.querySelector(".answer-panel");
@@ -110,14 +111,6 @@ export function mountSatellite(svg, projection, language, redraw) {
       );
       controls.style.bottom = bottom + "px";
     }
-    if (!inExplore || downloadIndicator.hidden) return;
-    const obstacles = visibleBounds([controls, credit, answers]);
-    const bottom = satelliteStatusBottom(
-      panelBounds,
-      downloadIndicator.getBoundingClientRect(),
-      obstacles,
-    );
-    downloadIndicator.style.bottom = bottom + "px";
   }
   if (typeof ResizeObserver !== "undefined") {
     const observer = new ResizeObserver(placeStatus);
@@ -148,6 +141,7 @@ export function mountSatellite(svg, projection, language, redraw) {
       localStorage.setItem("atlas-satellite", String(enabled));
     } catch {}
     if (enabled && !pixels) {
+      onDownload(true);
       button.setAttribute("aria-busy", "true");
       try {
         const { createSatelliteRenderer } =
@@ -170,6 +164,7 @@ export function mountSatellite(svg, projection, language, redraw) {
         } catch {}
         label.title = (labels[language] || labels.en) + " ↻";
       } finally {
+        onDownload(false);
         button.removeAttribute("aria-busy");
       }
     }

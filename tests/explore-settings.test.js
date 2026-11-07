@@ -14,7 +14,7 @@ test("labels start enabled and hide all details without losing preferences", () 
   assert.equal(input.checked, true);
   input.checked = false;
   input.onchange();
-  assert.ok(details.every((control) => !control.checked && control.disabled));
+  assert.ok(details.every((control) => !control.checked && !control.disabled));
   input.checked = true;
   input.onchange();
   assert.deepEqual(
@@ -29,6 +29,24 @@ test("labels start enabled and hide all details without losing preferences", () 
     details.map((control) => control.checked),
     [true, false, true],
   );
+});
+
+test("enabling any detail also enables labels and restores the other preferences", () => {
+  for (let selected = 0; selected < 3; selected++) {
+    const input = {};
+    const details = [true, false, false].map((checked) =>
+      Object.assign(new EventTarget(), { checked }),
+    );
+    const cleanup = bindLabelsSwitch(input, details, () => {});
+    input.checked = false;
+    input.onchange();
+    details[selected].checked = true;
+    details[selected].dispatchEvent(new Event("change"));
+    assert.equal(input.checked, true);
+    assert.equal(details[selected].checked, true);
+    assert.equal(details[0].checked, true);
+    cleanup();
+  }
 });
 
 test("country highlighting defaults off and persists both switch states", () => {

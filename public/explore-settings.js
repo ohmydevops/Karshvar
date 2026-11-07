@@ -15,7 +15,6 @@ export function bindLabelsSwitch(input, details, onChange) {
       previous = details.map((control) => control.checked);
       details.forEach((control) => {
         control.checked = false;
-        control.disabled = true;
       });
     } else {
       details.forEach((control, index) => {
@@ -25,7 +24,22 @@ export function bindLabelsSwitch(input, details, onChange) {
     }
     onChange();
   };
+  const enableLabels = (event) => {
+    if (input.checked || !event.currentTarget.checked) return;
+    const selected = event.currentTarget;
+    input.checked = true;
+    details.forEach((control, index) => {
+      control.checked = control === selected || (previous?.[index] ?? false);
+    });
+    onChange();
+  };
+  details.forEach((control) =>
+    control.addEventListener?.("change", enableLabels, true),
+  );
   return () => {
+    details.forEach((control) =>
+      control.removeEventListener?.("change", enableLabels, true),
+    );
     if (!input.checked) {
       input.checked = true;
       input.onchange();

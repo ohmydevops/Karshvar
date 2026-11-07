@@ -136,10 +136,10 @@ export function createSatelliteRenderer(
             key +
             "&WIDTH=2048&HEIGHT=" +
             height;
+          onDownload(true);
           try {
             const { blob, url: storedUrl } = await loadSatelliteImage(url, {
               withRegion: true,
-              onDownload,
             });
             const storedBox = satelliteRegion(storedUrl)?.box || box;
             const objectUrl = URL.createObjectURL(blob);
@@ -161,6 +161,8 @@ export function createSatelliteRenderer(
           } catch {
             if (id === generation) requested = "";
             /* Keep the local image when offline. */
+          } finally {
+            onDownload(false);
           }
         },
         uniforms.hasDetail.value ? 300 : 0,

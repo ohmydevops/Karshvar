@@ -42,9 +42,11 @@ self.addEventListener("install", (event) =>
 self.addEventListener("activate", (event) =>
   event.waitUntil(
     (async () => {
+      // Take control before old-cache cleanup, so slow storage cannot leave the
+      // approved update dialog waiting for controllerchange.
+      await self.clients.claim();
       for (const key of await caches.keys())
         if (key.startsWith(PREFIX) && key !== CACHE) await caches.delete(key);
-      await self.clients.claim();
     })(),
   ),
 );

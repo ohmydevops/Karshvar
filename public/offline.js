@@ -127,7 +127,7 @@ async function setupOffline() {
       reloadIfApproved,
     );
     const offerUpdate = () => {
-      const worker = registration.waiting;
+      let worker = registration.waiting;
       // Initial installation is silent; only offer a fully downloaded replacement.
       if (
         !worker ||
@@ -146,6 +146,8 @@ async function setupOffline() {
       title.textContent = copy[0];
       const description = document.createElement("p");
       description.id = "updateDescription";
+      description.setAttribute("role", "status");
+      description.setAttribute("aria-live", "polite");
       description.textContent = copy[1];
       const actions = document.createElement("div");
       actions.className = "dialog-actions";
@@ -156,17 +158,89 @@ async function setupOffline() {
       update.className = "primary";
       update.textContent = copy[2];
       later.onclick = () => dialog.close();
-      dialog.addEventListener("close", () => dialog.remove(), { once: true });
-      update.onclick = () => {
-        if (registration.waiting !== worker) {
-          dialog.close();
+      let activationTimer;
+      const restoreUpdate = () => {
+        approved = false;
+        window.clearTimeout(activationTimer);
+        update.disabled = false;
+        later.disabled = false;
+        dialog.setAttribute("data-state", "error");
+        update.setAttribute("aria-busy", "false");
+        update.textContent =
+          {
+            en: "Try again",
+            fa: "تلاش مجدد",
+            ar: "حاول مجددًا",
+            tr: "Tekrar dene",
+            fr: "Réessayer",
+            ru: "Повторить",
+          }[document.documentElement.lang] || "Try again";
+        description.textContent =
+          {
+            en: "The update is taking longer than expected. Try again, or choose Later to continue.",
+            fa: "به‌روزرسانی بیشتر از انتظار طول کشید. دوباره تلاش کنید یا برای ادامه «بعداً» را بزنید.",
+            ar: "استغرق التحديث وقتًا أطول من المتوقع. حاول مجددًا أو اختر لاحقًا للمتابعة.",
+            tr: "Güncelleme beklenenden uzun sürdü. Tekrar deneyin veya devam etmek için Daha sonra seçeneğini kullanın.",
+            fr: "La mise à jour prend plus de temps que prévu. Réessayez ou choisissez Plus tard pour continuer.",
+            ru: "Обновление занимает больше времени. Повторите попытку или выберите «Позже».",
+          }[document.documentElement.lang] ||
+          "The update is taking longer than expected. Try again or continue later.";
+      };
+      const activated = () => {
+        if (worker.state === "activated" && registration.active === worker) {
+          window.clearTimeout(activationTimer);
+          reloadIfApproved();
+        } else if (worker.state === "redundant" && approved) restoreUpdate();
+      };
+      worker.addEventListener?.("statechange", activated);
+      dialog.addEventListener(
+        "close",
+        () => {
+          approved = false;
+          window.clearTimeout(activationTimer);
+          worker.removeEventListener?.("statechange", activated);
+          dialog.remove();
+        },
+        { once: true },
+      );
+      update.onclick = async () => {
+        if (registration.active === worker && worker.state === "activated") {
+          approved = true;
+          reloadIfApproved();
           return;
         }
         approved = true;
         update.disabled = true;
-        later.disabled = true;
+        update.setAttribute("aria-busy", "true");
+        dialog.setAttribute("data-state", "updating");
+        description.textContent = copy[4];
         update.textContent = copy[4];
-        worker.postMessage({ type: "ACTIVATE_UPDATE" });
+        activationTimer = window.setTimeout(() => {
+          activated();
+          if (!reloaded) restoreUpdate();
+        }, 8000);
+        try {
+          if (
+            registration.waiting !== worker &&
+            worker.state !== "activating"
+          ) {
+            await registration.update();
+            if (!approved) return;
+            if (!registration.waiting) {
+              if (registration.active?.state === "activated")
+                reloadIfApproved();
+              else restoreUpdate();
+              return;
+            }
+            worker.removeEventListener?.("statechange", activated);
+            worker = registration.waiting;
+            offeredWorker = worker;
+            worker.addEventListener?.("statechange", activated);
+          }
+          worker.postMessage({ type: "ACTIVATE_UPDATE" });
+        } catch {
+          restoreUpdate();
+        }
       };
       actions.append(later, update);
       dialog.append(title, description, actions);
