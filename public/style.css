@@ -2229,6 +2229,10 @@ html:is([data-page="about"], [data-page="sources"]) main {
 .country-picker {
   margin-bottom: 16px;
 }
+.country-picker .country-suggestions {
+  top: calc(100% + 8px);
+  bottom: auto;
+}
 .country-picker input {
   display: block;
   width: 100%;
@@ -2436,10 +2440,6 @@ html.keyboard-open #next {
 html.keyboard-open .country-suggestions {
   max-height: min(140px, 35vh);
 }
-html.keyboard-open .country-picker .country-suggestions {
-  top: calc(100% + 4px);
-  bottom: auto;
-}
 
 @media (max-height: 620px) and (max-width: 599px) {
   .answer-panel.has-feedback .question[hidden] {
@@ -2502,25 +2502,6 @@ dialog.app-drawer[open] {
 }
 .app-drawer::backdrop {
   background: #07101e55;
-}
-
-@media (max-width: 640px) {
-  html[data-selection-page="countries"] #continentSelection {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: min-content;
-  }
-  html[data-selection-page="countries"] #nearbyMode {
-    margin-block-start: 24px;
-    margin-block-end: max(16px, env(safe-area-inset-bottom));
-  }
-  html[data-selection-page="countries"] #chooseTitle {
-    flex-shrink: 0;
-  }
-  html[data-selection-page="countries"].keyboard-open #nearbyMode {
-    margin-block-start: 12px;
-  }
 }
 
 /* Subtle separators keep menu items easy to scan in both themes. */
@@ -3021,6 +3002,19 @@ html[data-selection-page="countries"] #nearbyMode > .primary {
   line-height: 1.9;
   margin: 16px 16px 0;
   text-align: center;
+}
+@media (max-width: 640px) {
+  html[data-selection-page="countries"] #continentSelection {
+    justify-content: center;
+    min-height: min-content;
+  }
+  html[data-selection-page="countries"] #continentSelection > * {
+    flex-shrink: 0;
+  }
+  html[data-selection-page="countries"].keyboard-open #continentSelection {
+    justify-content: flex-start;
+    padding-block: 12px;
+  }
 }
 
 /* A compact visual journey between the page title and the controls. */
