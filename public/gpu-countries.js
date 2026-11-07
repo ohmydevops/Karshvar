@@ -1,15 +1,26 @@
 // Country shapes are rasterized once into an ID atlas. Rotation and coloring run on the GPU.
 import * as THREE from "./vendor/three.module.min.js";
 export function mountGpuCountries(svg, projection) {
+  // WebKit can composite accelerated foreignObject children outside the SVG
+  // transform and paint order. Keep GPU rendering, but present its frame as an
+  // SVG image there so the SVG owns positioning, scaling and stacking.
+  const ua = globalThis.navigator?.userAgent || "";
+  const svgFrame =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (/Macintosh/.test(ua) && globalThis.navigator?.maxTouchPoints > 1) ||
+    (/AppleWebKit/.test(ua) && !/Chrome|Chromium|Edg|OPR/.test(ua));
   const layer = svg
-    .append("foreignObject")
+    .append(svgFrame ? "image" : "foreignObject")
+    .attr("preserveAspectRatio", "none")
     .attr("pointer-events", "none")
     .attr("aria-hidden", "true");
-  const canvas = layer
-    .append("xhtml:canvas")
-    .style("width", "100%")
-    .style("height", "100%")
-    .node();
+  const canvas = svgFrame
+    ? document.createElement("canvas")
+    : layer
+        .append("xhtml:canvas")
+        .style("width", "100%")
+        .style("height", "100%")
+        .node();
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
@@ -183,12 +194,16 @@ export function mountGpuCountries(svg, projection) {
         .attr("y", bounds[1])
         .attr("width", bounds[2] - bounds[0])
         .attr("height", bounds[3] - bounds[1]);
-      const rect = canvas.getBoundingClientRect(),
+      const rect = (svgFrame ? layer.node() : canvas).getBoundingClientRect(),
         w = Math.max(1, Math.round(rect.width)),
         h = Math.max(1, Math.round(rect.height));
       const size = renderer.getSize(new THREE.Vector2());
       if (size.x !== w || size.y !== h) renderer.setSize(w, h, false);
       renderer.render(scene, camera);
+      // Capture synchronously before WebGL clears the drawing buffer. This
+      // avoids preserveDrawingBuffer and leaves other browsers on direct GPU
+      // presentation. PNG retains transparent oceans and country opacity.
+      if (svgFrame) layer.attr("href", canvas.toDataURL("image/png"));
     },
   };
 }
