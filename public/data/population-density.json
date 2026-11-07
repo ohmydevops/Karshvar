@@ -1,0 +1,23 @@
+{
+  "dataset": "GHS-POP R2023A",
+  "epoch": 2025,
+  "kind": "population projection",
+  "source": "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/GHS_POP_GLOBE_R2023A/GHS_POP_E2025_GLOBE_R2023A_4326_30ss/V1-0/GHS_POP_E2025_GLOBE_R2023A_4326_30ss_V1_0.zip",
+  "doi": "10.2905/2FF68A52-5B5B-4A22-8F40-C41DA8332CFE",
+  "credit": "European Commission, Joint Research Centre (JRC), © European Union",
+  "citation": "Schiavina, M., Freire, S., Carioli, A., MacManus, K. (2023)",
+  "sourceResolutionArcSeconds": 30,
+  "resolutionDegrees": 0.05,
+  "bounds": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "width": 7200,
+  "height": 3600,
+  "unit": "people/km²",
+  "encoding": "round(log1p(min(density,10000))/log1p(10000)*255)",
+  "processing": "Assign source cell centres to 0.05-degree cells and sum residents; divide by spherical cell area; logarithmic 8-bit encoding. No-data treated as empty. For visual exploration, not precise local counts.",
+  "populationSum": 8191988517
+}

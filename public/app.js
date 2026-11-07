@@ -205,6 +205,8 @@ const { mountSatellite } = ["play", "explore"].includes(page)
   : {};
 const { populationLabel } =
   page === "explore" ? await import("./population.js") : {};
+const { mountPopulationLayer } =
+  page === "explore" ? await import("./population-layer.js") : {};
 const selectionPage =
   document.documentElement.dataset.selectionPage || "continents";
 const routeContinent = new URLSearchParams(location.search).get("continent");
@@ -428,6 +430,9 @@ const shadow = svg
   .datum({ type: "Sphere" })
   .attr("fill", "url(#shade)")
   .attr("pointer-events", "none");
+const populationLayer = mountPopulationLayer
+  ? mountPopulationLayer(svg, projection, lang, queueDraw)
+  : null;
 const labelLeaders = svg
   .append("g")
   .attr("class", "label-leaders")
@@ -540,6 +545,7 @@ function draw() {
     drawnZoom = zoom;
   }
   satellite.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+  populationLayer?.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
   grid.attr("display", gestureActive ? "none" : null);
   land
     .attr("opacity", gpuCountries ? 0 : 1)
@@ -773,7 +779,7 @@ function scale(amount) {
   clearTimeout(gestureTimer);
   gestureTimer = setTimeout(finishGesture, 180);
   cancelAnimationFrame(animation);
-  zoom = Math.max(0.8, Math.min(12, zoom * amount));
+  zoom = Math.max(0.8, Math.min(80, zoom * amount));
   queueDraw();
 }
 svg

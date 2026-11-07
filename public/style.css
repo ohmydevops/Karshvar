@@ -3776,6 +3776,76 @@ html[data-page="play"] .map-controls button {
   border-radius: 4px;
   font-size: 9px;
 }
+
+.population-legend,
+.population-status {
+  position: absolute;
+  inset-inline-start: 12px;
+  bottom: 14px;
+  z-index: 3;
+  width: min(270px, calc(100% - 84px));
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 4px 20px #0002;
+  font-size: 11px;
+}
+.population-legend[hidden],
+.population-status[hidden] {
+  display: none;
+}
+.population-legend strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.population-ramp {
+  height: 7px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    rgb(166 69 26 / 4%),
+    rgb(201 87 19 / 7%) 20%,
+    rgb(255 115 10 / 57%) 50%,
+    rgb(255 179 88 / 95%) 75%,
+    rgb(255 242 166 / 98%)
+  );
+}
+.population-ticks {
+  position: relative;
+  height: 16px;
+  margin-top: 4px;
+  font-size: 10px;
+}
+.population-ticks span {
+  position: absolute;
+  transform: translateX(-50%);
+}
+.population-ticks span:first-child {
+  transform: none;
+}
+.population-ticks span:last-child {
+  transform: translateX(-100%);
+}
+.population-legend p {
+  color: var(--muted);
+  margin: 6px 0;
+  line-height: 1.5;
+}
+.population-status {
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .population-legend,
+  .population-status {
+    inset-inline-start: 8px;
+    bottom: max(64px, calc(env(safe-area-inset-bottom) + 52px));
+    padding: 9px 11px;
+    width: min(240px, calc(100% - 84px));
+  }
+}
 .satellite-credit[hidden] {
   display: none;
 }
