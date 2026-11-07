@@ -2,9 +2,34 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   bindHighlightSwitch,
+  bindLabelsSwitch,
   highlightCopy,
 } from "../public/explore-settings.js";
 import fs from "node:fs";
+
+test("labels start enabled and hide all details without losing preferences", () => {
+  const input = {};
+  const details = [{ checked: true }, { checked: false }, { checked: true }];
+  const cleanup = bindLabelsSwitch(input, details, () => {});
+  assert.equal(input.checked, true);
+  input.checked = false;
+  input.onchange();
+  assert.ok(details.every((control) => !control.checked && control.disabled));
+  input.checked = true;
+  input.onchange();
+  assert.deepEqual(
+    details.map((control) => control.checked),
+    [true, false, true],
+  );
+  assert.ok(details.every((control) => !control.disabled));
+  input.checked = false;
+  input.onchange();
+  cleanup();
+  assert.deepEqual(
+    details.map((control) => control.checked),
+    [true, false, true],
+  );
+});
 
 test("country highlighting defaults off and persists both switch states", () => {
   let value = null;

@@ -2,7 +2,7 @@ import { toggleComparison, compareCopy } from "./compare.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
 import { interiorLabelPoint } from "./label-anchor.js";
-import { bindHighlightSwitch } from "./explore-settings.js";
+import { bindHighlightSwitch, bindLabelsSwitch } from "./explore-settings.js";
 import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
@@ -680,8 +680,10 @@ function draw(animating = false) {
             )
           : null,
       );
-  countryLabels.attr("display", null);
-  labelLeaders.attr("display", null);
+  const labelsVisible =
+    page !== "explore" || $("showLabels")?.checked !== false;
+  countryLabels.attr("display", labelsVisible ? null : "none");
+  labelLeaders.attr("display", labelsVisible ? null : "none");
   const labelSize = Math.max(14, Math.min(18, 13 + zoom));
   const occupied = [];
   // Water labels have little room to move; reserve their water-only footprint
@@ -692,9 +694,13 @@ function draw(animating = false) {
     [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
     occupied,
     placeMapLabel,
-    true,
+    labelsVisible,
     moving,
   );
+  if (!labelsVisible) {
+    marker.attr("display", "none");
+    return;
+  }
   const leaders = [];
   const highlightedLabel = page === "explore" ? activeCountry : null;
   const viewCenter = projection.invert([300, 267]);
@@ -1486,6 +1492,24 @@ function openExplore(continent = "All") {
   }[lang];
   flagsLabel.append(flags, flagsText);
   clockLabel.after(flagsLabel);
+  const labelsLabel = document.createElement("label");
+  labelsLabel.className = "population-switch";
+  const labelsInput = document.createElement("input");
+  labelsInput.type = "checkbox";
+  labelsInput.id = "showLabels";
+  labelsInput.checked = true;
+  labelsInput.setAttribute("role", "switch");
+  const labelsText = document.createElement("span");
+  labelsText.textContent = {
+    en: "Labels",
+    fa: "برچسب‌ها",
+    ar: "التسميات",
+    tr: "Etiketler",
+    fr: "Étiquettes",
+    ru: "Подписи",
+  }[lang];
+  labelsLabel.append(labelsInput, labelsText);
+  $("showPopulation").closest("label").before(labelsLabel);
   const settings = document.createElement("div");
   settings.className = "explore-settings-bar";
   settings.setAttribute("role", "group");
@@ -1654,6 +1678,11 @@ function openExplore(continent = "All") {
     labelsNeedMeasurement = true;
     queueDraw();
   };
+  const unbindLabels = bindLabelsSwitch(
+    labelsInput,
+    [$("showPopulation"), clock, flags],
+    updateExploreLabels,
+  );
   flags.onchange = () => {
     try {
       localStorage.setItem("atlas-show-flags", String(flags.checked));
@@ -1679,6 +1708,8 @@ function openExplore(continent = "All") {
     { signal: settingsEvents.signal },
   );
   cleanupExploreSettings = () => {
+    unbindLabels();
+    labelsLabel.remove();
     mobileDialog.close();
     panel.append(...dialogContent.children);
     mobileDialog.remove();
