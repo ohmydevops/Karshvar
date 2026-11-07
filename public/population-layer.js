@@ -146,7 +146,14 @@ export function mountPopulationLayer(svg, projection, language, redraw) {
     legend.hidden = !enabled || !loaded;
     if (!disposed) redraw();
   }
-  input.addEventListener("change", toggle);
+  input.addEventListener("change", () => {
+    if (input.checked && matchMedia("(max-width: 760px)").matches) {
+      const panel = document.getElementById("explorePanel");
+      panel.open = false;
+      panel.querySelector("summary")?.focus({ preventScroll: true });
+    }
+    toggle();
+  });
   try {
     input.checked = localStorage.getItem("atlas-population-density") === "true";
   } catch {}
