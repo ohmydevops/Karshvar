@@ -3794,8 +3794,7 @@ html[data-page="play"] .map-controls button {
   font-size: 9px;
 }
 
-.population-legend,
-.population-status {
+.population-legend {
   position: absolute;
   inset-inline-start: 12px;
   bottom: 14px;
@@ -3852,15 +3851,41 @@ html[data-page="play"] .map-controls button {
   line-height: 1.5;
 }
 .population-status {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline-start: 0;
+  width: max-content;
+  max-width: 230px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 4px 16px #0002;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: normal;
+  pointer-events: none;
   margin: 0;
 }
+.population-density-control {
+  position: relative;
+}
 @media (max-width: 760px) {
-  .population-legend,
-  .population-status {
+  .population-legend {
     inset-inline-start: 8px;
     bottom: max(64px, calc(env(safe-area-inset-bottom) + 52px));
     padding: 9px 11px;
     width: min(240px, calc(100% - 84px));
+  }
+  .population-density-control {
+    flex-wrap: wrap;
+  }
+  .population-density-control .population-status {
+    position: static;
+    flex-basis: 100%;
+    max-width: 100%;
+    width: auto;
   }
 }
 .satellite-credit[hidden] {

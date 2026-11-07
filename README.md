@@ -1,5 +1,7 @@
 # Karshvar
 
+A browser-based country guessing game. Choose a continent, explore the globe, and guess the highlighted country.
+
 ## Run locally
 
 ```sh

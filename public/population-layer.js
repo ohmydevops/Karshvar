@@ -57,12 +57,15 @@ export function mountPopulationLayer(svg, projection, language, redraw) {
     .style("height", "100%")
     .node();
   const label = document.createElement("label");
-  label.className = "population-switch";
+  label.className = "population-switch population-density-control";
   const input = document.createElement("input");
   input.type = "checkbox";
   input.id = "showPopulationDensity";
   input.setAttribute("role", "switch");
   const text = document.createElement("span");
+  text.id = "populationDensityLabel";
+  input.setAttribute("aria-labelledby", text.id);
+  input.setAttribute("aria-describedby", "populationDensityStatus");
   text.textContent = copy[0];
   label.append(input, text);
   document.getElementById("explorePanel").append(label);
@@ -93,11 +96,13 @@ export function mountPopulationLayer(svg, projection, language, redraw) {
   const detail = document.createElement("p");
   detail.textContent = copy[2];
   legend.append(title, ramp, ticks, detail);
-  const status = document.createElement("p");
+  const status = document.createElement("span");
+  status.id = "populationDensityStatus";
   status.className = "population-status";
   status.setAttribute("role", "status");
   status.hidden = true;
-  document.querySelector(".globe-panel").append(legend, status);
+  label.append(status);
+  document.querySelector(".globe-panel").append(legend);
   let renderer,
     loaded = false,
     enabled = false,
