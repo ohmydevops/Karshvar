@@ -7,6 +7,7 @@ import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
 import { modeCopy, modeRecommendation } from "./mode-copy.js";
+import { countrySetupCopy } from "./country-setup.js";
 import "./offline.js";
 import { nearbyOrder, restoreNearbySession } from "./nearby.js";
 import { bindCountrySuggestions } from "./suggestions.js";
@@ -1004,18 +1005,21 @@ function renderContinents() {
   }
 
   if (selectionPage === "countries" && !$("nearbyMode") && features.length) {
+    const copy = countrySetupCopy[lang];
+    $("chooseTitle").textContent = copy.title;
+    document.title = copy.title + " — Karshvar";
+    const step = document.createElement("p");
+    step.className = "setup-step";
+    step.textContent = copy.step;
+    $("chooseTitle").before(step);
     const section = document.createElement("section");
     section.id = "nearbyMode";
     section.className = "nearby-mode";
-    const description = document.createElement("p");
-    description.textContent = modeCopy[lang][4];
-    const label = document.createElement("label");
-    label.textContent = t("country");
-    label.htmlFor = "startingCountry";
     const entry = document.createElement("div");
     entry.className = "answer-entry country-picker";
     const input = document.createElement("input");
     input.id = "startingCountry";
+    input.setAttribute("aria-label", copy.label);
     input.type = "search";
     input.autocomplete = "off";
     input.spellcheck = false;
@@ -1023,14 +1027,7 @@ function renderContinents() {
     input.setAttribute("aria-autocomplete", "list");
     input.setAttribute("aria-expanded", "false");
     input.setAttribute("aria-controls", "startingCountrySuggestions");
-    input.placeholder = {
-      en: "Type a country name in English…",
-      fa: "اسم کشور رو به فارسی بنویس…",
-      ar: "اكتب اسم البلد بالعربية…",
-      tr: "Ülke adını Türkçe yaz…",
-      fr: "Écrivez le nom du pays en français…",
-      ru: "Введите название страны по-русски…",
-    }[lang];
+    input.placeholder = copy.placeholder;
     const list = document.createElement("div");
     list.id = "startingCountrySuggestions";
     list.className = "country-suggestions";
@@ -1044,6 +1041,7 @@ function renderContinents() {
     input.addEventListener("input", () => {
       selectedCountry = null;
       button.disabled = true;
+      button.textContent = pageCopy[lang].start;
     });
     const candidates = features.map((f) => ({
       id: f.id,
@@ -1061,6 +1059,7 @@ function renderContinents() {
       (country) => {
         selectedCountry = country.id;
         button.disabled = false;
+        button.textContent = copy.start.replace("{country}", country.label);
       },
     );
     button.onclick = () => {
@@ -1069,11 +1068,15 @@ function renderContinents() {
       navigate("play", "country:" + selectedCountry);
     };
     entry.append(input, list);
-    section.append(description, label, entry, button);
+    const hint = document.createElement("p");
+    hint.className = "setup-hint";
+    hint.textContent = copy.hint;
+    section.append(entry, button);
     $("continentChoices").before(section);
+    section.after(hint);
   }
 
-  if (["modes", "countries"].includes(selectionPage)) {
+  if (selectionPage === "modes") {
     mountJourneyArt(
       features,
       $(selectionPage === "modes" ? "modeChoices" : "nearbyMode"),

@@ -2497,7 +2497,7 @@ dialog.app-drawer[open] {
     min-height: min-content;
   }
   html[data-selection-page="countries"] #nearbyMode {
-    margin-block-start: auto;
+    margin-block-start: 24px;
     margin-block-end: max(16px, env(safe-area-inset-bottom));
   }
   html[data-selection-page="countries"] #chooseTitle {
@@ -2956,6 +2956,55 @@ html[data-page="history"] #selectionStatus:empty {
 #historyProgressLabel {
   font-size: 14px;
   margin-bottom: 8px;
+}
+
+/* Country selection is a compact setup form, separate from the quiz. */
+html[data-selection-page="countries"] #continentSelection {
+  width: min(100%, 480px);
+  align-self: center;
+  padding-block: clamp(28px, 7vh, 72px);
+}
+html[data-selection-page="countries"] #chooseTitle {
+  font-size: clamp(24px, 4vw, 32px);
+  line-height: 1.5;
+  margin-block: 8px 0;
+  text-align: center;
+}
+.setup-step {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  align-self: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+html[data-selection-page="countries"] #nearbyMode {
+  margin-block: 28px 0;
+  padding: clamp(20px, 4vw, 28px);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 55%, var(--bg));
+  box-shadow: 0 12px 32px #0000000a;
+}
+html[data-selection-page="countries"] .country-picker {
+  margin-bottom: 14px;
+}
+html[data-selection-page="countries"] .country-picker input {
+  min-height: 58px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+html[data-selection-page="countries"] #nearbyMode > .primary {
+  min-height: 52px;
+  border-radius: 10px;
+}
+.setup-hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+  margin: 16px 16px 0;
+  text-align: center;
 }
 
 /* A compact visual journey between the page title and the controls. */
