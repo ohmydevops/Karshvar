@@ -10,9 +10,16 @@ const fonts = ["Regular", "Bold"]
   )
   .join("");
 
-export function socialTemplate({ lang, title, globe, article = false }) {
+export function socialTemplate({
+  lang,
+  title,
+  globe,
+  article = false,
+  explore = false,
+}) {
   const rtl = ["fa", "ar"].includes(lang);
   const brand = lang === "fa" ? "کَرشوَر" : "Karshvar";
+  if (explore) return exploreSocialTemplate({ lang, title, globe, rtl, brand });
   if (!article) return mainSocialTemplate({ lang, title, globe, rtl, brand });
   return `<!doctype html><html lang="${lang}"><meta charset="utf-8"><style>
 ${fonts}
@@ -27,6 +34,26 @@ body{background:radial-gradient(ellipse at 20% 60%,#162b48,#0d1528 75%);color:#e
 h1{margin:0;text-align:${rtl ? "right" : "left"};direction:${rtl ? "rtl" : "ltr"};font-size:38px;font-weight:700;line-height:1.65}
 .domain{position:absolute;bottom:58px;right:72px;color:#a4b4d0;font-size:20px;letter-spacing:1px}
 </style><body><div class="frame"></div><div class="brand"><img src="${logo}" alt=""/><span>${brand}</span></div><div class="globe">${globe}</div><div class="copy"><div class="accent"></div><h1>${title}</h1></div><div class="domain">karshvar.ir</div></body></html>`;
+}
+
+function exploreSocialTemplate({ lang, title, globe, rtl, brand }) {
+  return `<!doctype html><html lang="${lang}" dir="${rtl ? "rtl" : "ltr"}"><meta charset="utf-8"><style>
+${fonts}
+*{box-sizing:border-box}html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+body{position:relative;font-family:Vazir,Arial,sans-serif;background:#ede4cd;color:#1c3541}
+.paper{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 30%,#fff9e933,transparent 70%),linear-gradient(110deg,#baa27115,transparent 45%,#fff7dd66)}
+.map{position:absolute;${rtl ? "left:0" : "right:0"};direction:ltr;top:0;width:800px;height:630px;mix-blend-mode:multiply}
+.paper-edge{position:absolute;inset:22px;border:1px solid #596e6e55;box-shadow:inset 0 0 0 4px #ede4cd,inset 0 0 0 5px #596e6e22}
+.fold{position:absolute;inset-inline-end:390px;inset-block:0;width:6px;background:linear-gradient(90deg,transparent,#6b5d3522,transparent);transform:rotate(1deg)}
+.panel{position:absolute;inset-inline-start:0;width:462px;inset-block:0;background:#142b36;clip-path:polygon(${rtl ? "5% 0,100% 0,100% 100%,0 100%,3% 82%,1% 63%,4% 40%,2% 21%" : "0 0,95% 0,98% 21%,96% 40%,99% 63%,97% 82%,100% 100%,0 100%"})}
+.brand{position:absolute;top:62px;inset-inline-start:52px;display:flex;align-items:center;gap:13px;direction:${rtl ? "rtl" : "ltr"};font-size:28px;font-weight:700;color:#f2e6c9}
+.brand img{width:56px;height:56px}
+.copy{position:absolute;inset-inline-start:52px;width:331px;top:190px;height:300px;display:flex;flex-direction:column;justify-content:center;direction:${rtl ? "rtl" : "ltr"}}
+h1{margin:0;width:max-content;white-space:nowrap;font-size:52px;line-height:1.6;color:#f2e6c9}
+.rule{position:absolute;inset-inline-start:52px;width:331px;bottom:110px;height:1px;background:#d3ac5977}
+.domain{position:absolute;bottom:64px;inset-inline-start:52px;width:331px;font-size:17px;color:#c6b689;letter-spacing:2px;text-align:${rtl ? "right" : "left"}}
+.grain{position:absolute;inset:0;opacity:.12;mix-blend-mode:multiply;pointer-events:none}
+</style><body><div class="paper"></div><div class="paper-edge"></div><div class="map">${globe}</div><div class="fold"></div><div class="panel"></div><div class="brand"><img src="${logo}" alt=""><span>${brand}</span></div><div class="copy"><h1>${title}</h1></div><div class="rule"></div><div class="domain">karshvar.ir</div><svg class="grain" width="1200" height="630"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#grain)"/></svg><script>document.fonts.ready.then(() => { const heading = document.querySelector("h1"); const available = document.querySelector(".copy").clientWidth; const width = heading.getBoundingClientRect().width; heading.style.fontSize = Math.min(52, 52 * available / width) + "px"; });</script></body></html>`;
 }
 
 function mainSocialTemplate({ lang, title, globe, rtl, brand }) {

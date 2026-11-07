@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { createHash } from "node:crypto";
 import { countrySetupCopy } from "../public/country-setup.js";
+import { pageCopy } from "../public/navigation.js";
 const origin = "https://karshvar.ir/";
 const walk = (d) =>
   fs
@@ -14,6 +15,16 @@ for (const file of walk("public").filter(
 )) {
   let html = fs.readFileSync(file, "utf8");
   const lang = file.split("/")[1];
+  if (file === `public/${lang}/explore/index.html`) {
+    html = html.replace(
+      /https:\/\/karshvar\.ir\/social\/(?:karshvar|explore)-[a-z]+\.png(?:\?v=[\w-]+)?/g,
+      `${origin}social/explore-${lang}.png`,
+    );
+    html = html.replace(
+      /((?:property="og:image:alt"|name="twitter:image:alt")\s+content=")[^"]+"/g,
+      `$1${pageCopy[lang].explore}"`,
+    );
+  }
   if (file === `public/${lang}/countries/index.html`) {
     const copy = countrySetupCopy[lang];
     const oldTitle = html.match(/<title>(.*?) — Karshvar<\/title>/)?.[1];

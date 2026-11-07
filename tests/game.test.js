@@ -197,7 +197,10 @@ test("all localized pages and assets resolve on the custom domain", () => {
       const image = new URL(
         html.match(/property="og:image"\s+content="([^"]+)"/)[1],
       );
-      assert.equal(image.pathname, `/social/karshvar-${locale}.png`);
+      assert.equal(
+        image.pathname,
+        `/social/${suffix === "explore/" ? "explore" : "karshvar"}-${locale}.png`,
+      );
       assert.match(image.searchParams.get("v"), /^[a-f0-9]{12}$/);
       assert(
         !html.includes("https://cloud.umami.is/script.js"),
