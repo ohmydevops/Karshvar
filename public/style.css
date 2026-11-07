@@ -182,7 +182,7 @@ header {
   z-index: 10;
   border-bottom: 1px solid var(--line);
   width: min(1200px, 100%);
-  padding: 12px 28px;
+  padding: 8px 28px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -873,7 +873,7 @@ dialog p {
 
 @media (max-width: 760px) {
   header {
-    padding: 10px 18px;
+    padding: 6px 18px;
   }
   .brand {
     font-size: 26px;
@@ -1004,7 +1004,7 @@ dialog p {
 }
 @media (max-height: 620px) and (max-width: 599px) {
   header {
-    padding-block: 6px;
+    padding-block: 4px;
   }
   .welcome-art {
     max-height: 29dvh;
@@ -1055,7 +1055,7 @@ dialog p {
 }
 @media (max-height: 580px) and (min-width: 600px) {
   header {
-    padding-block: 6px;
+    padding-block: 4px;
   }
   main {
     margin-block: 0 8px;
@@ -1599,6 +1599,9 @@ html[data-page="explore"] .globe-panel {
   border-inline: 0;
   border-bottom: 0;
   border-radius: 0;
+}
+html[data-page="explore"] body > header {
+  border-bottom: 0;
 }
 html[data-page="explore"] .map-controls {
   bottom: max(12px, env(safe-area-inset-bottom));
