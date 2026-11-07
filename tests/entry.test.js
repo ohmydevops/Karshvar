@@ -59,6 +59,7 @@ for (const page of [
             assert.ok(completed.has("./vendor/d3.min.js"));
             assert.ok(completed.has("./vendor/topojson-client.min.js"));
           }
+          if (path === "./offline.js") assert.ok(completed.has("./app.js"));
           requests.push(path);
           await Promise.resolve();
           completed.add(path);
@@ -68,8 +69,31 @@ for (const page of [
     assert.deepEqual(
       requests,
       ["continents", "play", "results", "explore"].includes(page)
-        ? ["./vendor/d3.min.js", "./vendor/topojson-client.min.js", "./app.js"]
+        ? [
+            "./vendor/d3.min.js",
+            "./vendor/topojson-client.min.js",
+            "./app.js",
+            "./offline.js",
+          ]
         : ["./site.js"],
     );
   });
 }
+
+test("offline installation is still attempted when app startup rejects", async () => {
+  const requests = [];
+  await assert.rejects(
+    vm.runInNewContext(
+      `(async () => { ${source.replaceAll("import(", "load(")} })()`,
+      {
+        document: { documentElement: { dataset: { page: "explore" } } },
+        load: async (path) => {
+          requests.push(path);
+          if (path === "./app.js") throw Error("startup failed");
+        },
+      },
+    ),
+    /startup failed/,
+  );
+  assert.equal(requests.at(-1), "./offline.js");
+});

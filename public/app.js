@@ -7,7 +7,6 @@ import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
 import { modeCopy, modeRecommendation } from "./mode-copy.js";
 import { countrySetupCopy } from "./country-setup.js";
-import "./offline.js";
 import { nearbyOrder, restoreNearbySession } from "./nearby.js";
 import { bindCountrySuggestions } from "./suggestions.js";
 import { countryAliases, localizedCountryAliases } from "./country-aliases.js";
@@ -194,19 +193,33 @@ const copy = {
 };
 const $ = (id) => document.getElementById(id);
 const page = document.documentElement.dataset.page || "home";
-const { mountMarineLabels } =
-  page === "explore" ? await import("./marine-labels.js") : {};
-const { mountGpuCountries } = ["play", "explore"].includes(page)
-  ? await import("./gpu-countries.js")
-  : {};
-const { capitalTime } = page === "explore" ? await import("./clocks.js") : {};
-const { mountSatellite } = ["play", "explore"].includes(page)
-  ? await import("./satellite.js")
-  : {};
-const { populationLabel } =
-  page === "explore" ? await import("./population.js") : {};
-const { mountPopulationLayer } =
-  page === "explore" ? await import("./population-layer.js") : {};
+const mapData = Promise.all(
+  [
+    new URL("./data/countries.json", import.meta.url),
+    new URL("./data/names.json", import.meta.url),
+  ].map(async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) throw Error(response.status);
+    return response.json();
+  }),
+);
+// Startup consumes the error below; don't leave an early network rejection unhandled.
+mapData.catch(() => {});
+const [
+  { mountMarineLabels },
+  { mountGpuCountries },
+  { capitalTime },
+  { mountSatellite },
+  { populationLabel },
+  { mountPopulationLayer },
+] = await Promise.all([
+  page === "explore" ? import("./marine-labels.js") : {},
+  ["play", "explore"].includes(page) ? import("./gpu-countries.js") : {},
+  page === "explore" ? import("./clocks.js") : {},
+  ["play", "explore"].includes(page) ? import("./satellite.js") : {},
+  page === "explore" ? import("./population.js") : {},
+  page === "explore" ? import("./population-layer.js") : {},
+]);
 const selectionPage =
   document.documentElement.dataset.selectionPage || "continents";
 const routeContinent = new URLSearchParams(location.search).get("continent");
@@ -1152,15 +1165,32 @@ const comparisonLimit = () =>
 let comparisonEnabled = false;
 const comparedCountries = new Map();
 let renderComparison = () => {};
-const areaData =
-  page === "explore"
-    ? await fetch(new URL("./data/areas.json", import.meta.url))
-        .then((r) => {
-          if (!r.ok) throw Error("Area data unavailable");
-          return r.json();
-        })
-        .catch(() => ({ countries: {} }))
-    : { countries: {} };
+let areaData = { countries: {} };
+if (page === "explore")
+  fetch(new URL("./data/areas.json", import.meta.url))
+    .then((r) => {
+      if (!r.ok) throw Error("Area data unavailable");
+      return r.json();
+    })
+    .then((data) => {
+      areaData = data;
+      renderComparison();
+    })
+    .catch(() => {});
+let flagFontReady;
+function loadFlagFont() {
+  if (!document.fonts) return;
+  flagFontReady ||= document.fonts
+    .load('12px "Karshvar Flags"', "🇮🇷")
+    .then(() => {
+      labelsNeedMeasurement = true;
+      queueDraw();
+    })
+    .catch(() => {
+      flagFontReady = null;
+      console.warn("Flag font unavailable; using the system emoji font.");
+    });
+}
 function selectComparison(f) {
   if (!f) return;
   const ok = toggleComparison(comparedCountries, f.id, comparisonLimit());
@@ -1417,8 +1447,10 @@ function openExplore(continent = "All") {
     try {
       localStorage.setItem("atlas-show-flags", String(flags.checked));
     } catch {}
+    if (flags.checked) loadFlagFont();
     updateExploreLabels();
   };
+  if (flags.checked) loadFlagFont();
   clock.onchange = () => {
     try {
       localStorage.setItem("atlas-show-clock", String(clock.checked));
@@ -1867,17 +1899,7 @@ if (["continents", "play", "results", "explore"].includes(page)) {
   if (mapLoading) $("mapRetry").href = location.href;
   else $("selectionStatus").textContent = t("loading");
   try {
-    const responses = await Promise.all(
-      [
-        new URL("./data/countries.json", import.meta.url),
-        new URL("./data/names.json", import.meta.url),
-      ].map((url) =>
-        fetch(url).then((r) => {
-          if (!r.ok) throw Error(r.status);
-          return r.json();
-        }),
-      ),
-    );
+    const responses = await mapData;
     names = responses[1];
     features = topojson
       .feature(responses[0], responses[0].objects.countries)
@@ -1945,7 +1967,7 @@ if (["continents", "play", "results", "explore"].includes(page)) {
         );
       else openGame(selected);
     }
-    await satellite.ready;
+    if (page !== "explore") await satellite.ready;
     draw();
     if (mapLoading) {
       mapLoading.hidden = true;
@@ -1973,13 +1995,4 @@ await bindHistory({
   getSessions: () => sessions,
   sessionLabel: (key) => labels[lang][7 + continents.indexOf(key)] || key,
 });
-if (page === "explore" && document.fonts) {
-  try {
-    await document.fonts.load('12px "Karshvar Flags"', "🇮🇷");
-    labelsNeedMeasurement = true;
-    draw();
-  } catch (error) {
-    console.warn("Flag font unavailable; using the system emoji font.", error);
-  }
-}
 await revealPage();
