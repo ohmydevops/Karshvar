@@ -1290,6 +1290,7 @@ function openExplore(continent = "All") {
     comparisonEnabled = compareInput.checked;
     if (comparisonEnabled && matchMedia("(max-width: 760px)").matches) {
       panel.open = false;
+      mobileDialog.close();
       panel.querySelector("summary")?.focus({ preventScroll: true });
       positionComparison();
     }
@@ -1364,6 +1365,69 @@ function openExplore(continent = "All") {
   );
   const panel = $("explorePanel");
   const heading = panel.closest(".explore-heading");
+  const mobileDialog = document.createElement("dialog");
+  mobileDialog.className = "explore-mobile-dialog";
+  const dialogTitle = document.createElement("h2");
+  dialogTitle.id = "exploreDialogTitle";
+  dialogTitle.textContent = {
+    en: "Continents & settings",
+    fa: "قاره‌ها و تنظیمات",
+    ar: "القارات والإعدادات",
+    tr: "Kıtalar ve ayarlar",
+    fr: "Continents et réglages",
+    ru: "Континенты и настройки",
+  }[lang];
+  mobileDialog.setAttribute("aria-labelledby", dialogTitle.id);
+  const closeDialog = document.createElement("button");
+  closeDialog.type = "button";
+  closeDialog.className = "explore-dialog-close";
+  closeDialog.textContent = "×";
+  closeDialog.setAttribute(
+    "aria-label",
+    {
+      en: "Close",
+      fa: "بستن",
+      ar: "إغلاق",
+      tr: "Kapat",
+      fr: "Fermer",
+      ru: "Закрыть",
+    }[lang],
+  );
+  closeDialog.onclick = () => mobileDialog.close();
+  const dialogContent = document.createElement("div");
+  dialogContent.className = "explore-dialog-content";
+  const dialogFooter = document.createElement("div");
+  dialogFooter.className = "explore-dialog-footer";
+  const doneButton = document.createElement("button");
+  doneButton.type = "button";
+  doneButton.className = "primary";
+  doneButton.textContent = closeDialog.getAttribute("aria-label");
+  doneButton.onclick = () => mobileDialog.close();
+  dialogFooter.append(doneButton);
+  mobileDialog.append(dialogTitle, closeDialog, dialogContent, dialogFooter);
+  document.body.append(mobileDialog);
+  const summary = panel.querySelector("summary");
+  const originalSummary = summary.textContent;
+  summary.addEventListener(
+    "click",
+    (event) => {
+      if (!matchMedia("(max-width: 760px)").matches) return;
+      event.preventDefault();
+      mobileDialog.showModal();
+    },
+    { signal: settingsEvents.signal },
+  );
+  mobileDialog.addEventListener("click", (event) => {
+    const r = mobileDialog.getBoundingClientRect();
+    if (
+      event.target === mobileDialog &&
+      (event.clientX < r.left ||
+        event.clientX > r.right ||
+        event.clientY < r.top ||
+        event.clientY > r.bottom)
+    )
+      mobileDialog.close();
+  });
   const arrangeSettings = () => {
     const desktop = matchMedia("(min-width: 761px)").matches;
     while (comparedCountries.size > comparisonLimit())
@@ -1371,6 +1435,10 @@ function openExplore(continent = "All") {
     renderComparison();
     queueDraw();
     if (desktop) {
+      mobileDialog.close();
+      panel.append(...dialogContent.children);
+      summary.textContent = originalSummary;
+      summary.removeAttribute("aria-haspopup");
       heading.after(settings);
       panel
         .querySelectorAll(".population-switch")
@@ -1380,6 +1448,12 @@ function openExplore(continent = "All") {
         .querySelectorAll(".population-switch")
         .forEach((label) => panel.append(label));
       settings.remove();
+      panel.open = false;
+      dialogContent.append(
+        ...Array.from(panel.children).filter((child) => child !== summary),
+      );
+      summary.textContent = dialogTitle.textContent;
+      summary.setAttribute("aria-haspopup", "dialog");
     }
   };
   const positionComparison = () => {
@@ -1468,6 +1542,9 @@ function openExplore(continent = "All") {
     { signal: settingsEvents.signal },
   );
   cleanupExploreSettings = () => {
+    mobileDialog.close();
+    panel.append(...dialogContent.children);
+    mobileDialog.remove();
     settingsEvents.abort();
     compareResize.disconnect();
     clearInterval(clockTimer);
@@ -1608,11 +1685,24 @@ function openExplore(continent = "All") {
         return;
       event.preventDefault();
       if (location.href !== a.href) history.pushState(null, "", a.href);
+      const keepOpen = mobileDialog.open;
+      const scrollTop = dialogContent.scrollTop;
       openExplore(c);
+      if (keepOpen) {
+        const nextDialog = document.querySelector(".explore-mobile-dialog");
+        nextDialog.showModal();
+        nextDialog
+          .querySelector('[aria-current="page"]')
+          ?.focus({ preventScroll: true });
+        nextDialog.querySelector(".explore-dialog-content").scrollTop =
+          scrollTop;
+      }
       panel.open = false;
     });
     nav.append(a);
   });
+  if (matchMedia("(max-width: 760px)").matches)
+    summary.textContent = dialogTitle.textContent;
   draw();
 }
 if (page === "explore")

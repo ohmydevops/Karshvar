@@ -193,9 +193,9 @@ header {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   white-space: nowrap;
-  font-size: 28px;
+  font-size: 24px;
   letter-spacing: -1.2px;
   font-weight: 800;
   text-decoration: none;
@@ -873,10 +873,10 @@ dialog p {
 
 @media (max-width: 760px) {
   header {
-    padding: 6px 18px;
+    padding: 2px 18px;
   }
   .brand {
-    font-size: 26px;
+    font-size: 22px;
   }
   main {
     width: calc(100% - 32px);
@@ -1004,7 +1004,7 @@ dialog p {
 }
 @media (max-height: 620px) and (max-width: 599px) {
   header {
-    padding-block: 4px;
+    padding-block: 2px;
   }
   .welcome-art {
     max-height: 29dvh;
@@ -1055,7 +1055,7 @@ dialog p {
 }
 @media (max-height: 580px) and (min-width: 600px) {
   header {
-    padding-block: 4px;
+    padding-block: 2px;
   }
   main {
     margin-block: 0 8px;
@@ -2451,9 +2451,9 @@ html.keyboard-open .country-suggestions {
 }
 
 .brand-icon {
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
 }
 
 .update-check-status {
@@ -3914,4 +3914,72 @@ html[data-page="play"] .satellite-download {
   .satellite-download::before {
     animation: none;
   }
+}
+.explore-mobile-dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+  color: var(--text);
+}
+.explore-mobile-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.explore-dialog-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.explore-mobile-dialog h2,
+.explore-dialog-footer {
+  flex-shrink: 0;
+}
+.explore-mobile-dialog::backdrop {
+  background: #07122499;
+}
+.explore-mobile-dialog h2 {
+  margin: 0 0 20px;
+  padding-inline-end: 36px;
+  font-size: 20px;
+}
+.explore-dialog-close {
+  position: absolute;
+  inset-inline-end: 12px;
+  top: 12px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 28px;
+}
+.explore-mobile-dialog #exploreContinents {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.explore-mobile-dialog #exploreContinents a {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-decoration: none;
+}
+.explore-mobile-dialog .population-switch {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  margin: 8px 0;
+}
+.explore-dialog-footer {
+  padding: 16px 0 0;
+  background: var(--bg);
+}
+.explore-dialog-footer button {
+  width: 100%;
+  min-height: 44px;
 }
