@@ -12,6 +12,8 @@ export function loadProductionAnalytics(document, location) {
     script.src = "https://cloud.umami.is/script.js";
     script.dataset.websiteId = "8f92d457-8802-4230-8602-1445bc50840c";
     script.dataset.domains = "karshvar.ir";
+    script.dataset.errors = "true";
+    script.dataset.environment = "production";
     document.head.append(script);
     return script;
   } catch {
