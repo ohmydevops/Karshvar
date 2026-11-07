@@ -6,7 +6,7 @@ const source = await readFile(
   new URL("../public/offline.js", import.meta.url),
   "utf8",
 );
-async function setup(controller = true) {
+async function setup(controller = true, register) {
   const nodes = [],
     events = {},
     sent = [];
@@ -28,7 +28,7 @@ async function setup(controller = true) {
   const serviceWorker = {
     controller: controller ? {} : null,
     async register() {
-      return registration;
+      return register ? register(registration) : registration;
     },
     addEventListener(name, handler) {
       events[name] = handler;
@@ -123,6 +123,32 @@ async function setup(controller = true) {
     },
   };
 }
+
+test("update button is visible while service worker registration is still pending", async () => {
+  let finish;
+  const pending = new Promise((resolve) => {
+    finish = resolve;
+  });
+  const app = await setup(true, () => pending);
+  assert.equal(app.menuButton.hidden, false);
+  assert.equal(app.menuButton.disabled, true);
+  finish(app.registration);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(app.menuButton.disabled, false);
+});
+
+test("failed registration leaves a visible button that retries installation", async () => {
+  let calls = 0;
+  const app = await setup(true, (registration) => {
+    if (++calls === 1) throw Error("network");
+    return registration;
+  });
+  assert.equal(app.menuButton.hidden, false);
+  assert.equal(app.menuButton.disabled, false);
+  await app.menuButton.onclick();
+  assert.equal(calls, 2);
+  assert.equal(app.menuButton.disabled, false);
+});
 test("first offline installation does not prompt", async () => {
   const app = await setup(false);
   assert.equal(app.nodes.length, 0);

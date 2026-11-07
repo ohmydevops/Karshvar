@@ -94,20 +94,25 @@ const updateCopy = {
 };
 async function setupOffline() {
   if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
+  const checkButton = document.getElementById?.("checkUpdates");
+  const checkStatus = document.getElementById?.("updateCheckStatus");
+  const messages = checkCopy[document.documentElement.lang] || checkCopy.en;
+  const showCheckStatus = (index) => {
+    if (!checkStatus) return;
+    checkStatus.hidden = false;
+    checkStatus.textContent = messages[index];
+  };
+  if (checkButton) {
+    checkButton.hidden = false;
+    checkButton.disabled = true;
+    checkButton.setAttribute?.("aria-busy", "true");
+  }
   try {
     const registration = await navigator.serviceWorker.register(
       new URL("./sw.js", import.meta.url),
       { updateViaCache: "none" },
     );
-    const checkButton = document.getElementById?.("checkUpdates");
-    const checkStatus = document.getElementById?.("updateCheckStatus");
-    const messages = checkCopy[document.documentElement.lang] || checkCopy.en;
     let manualCheck = false;
-    const showCheckStatus = (index) => {
-      if (!checkStatus) return;
-      checkStatus.hidden = false;
-      checkStatus.textContent = messages[index];
-    };
     let approved = false;
     let reloaded = false;
     let offeredWorker;
@@ -182,7 +187,8 @@ async function setupOffline() {
     watch();
     offerUpdate();
     if (checkButton) {
-      checkButton.hidden = false;
+      checkButton.disabled = false;
+      checkButton.setAttribute?.("aria-busy", "false");
       checkButton.onclick = async () => {
         manualCheck = true;
         if (registration.waiting) {
@@ -234,8 +240,18 @@ async function setupOffline() {
     window.addEventListener("pageshow", checkForUpdate);
     window.setInterval(checkForUpdate, 60_000);
     checkForUpdate();
+    return true;
   } catch (error) {
     console.warn("Offline setup failed", error);
+    if (checkButton) {
+      checkButton.disabled = false;
+      checkButton.setAttribute?.("aria-busy", "false");
+      checkButton.onclick = async () => {
+        showCheckStatus(0);
+        if (await setupOffline()) await checkButton.onclick();
+        else showCheckStatus(4);
+      };
+    }
   }
 }
 // This module runs after HTML parsing; analytics and images must not delay installation.

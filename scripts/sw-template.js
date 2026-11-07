@@ -76,7 +76,7 @@ self.addEventListener("fetch", (event) => {
   const relativePath = url.pathname.slice(
     new URL(self.registration.scope).pathname.length,
   );
-  if (/(?:^|\/)blog(?:\/|$)|^social\/blog-[^/]+$/i.test(relativePath)) return;
+  if (/(?:^|\/)blog(?:\/|$)|^social\//i.test(relativePath)) return;
   if (
     /(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
       relativePath,

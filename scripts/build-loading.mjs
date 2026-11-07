@@ -17,9 +17,9 @@ function skeletonFor(page) {
     case "home":
       return `<div class="page-skeleton-hero"><div>${heading}${line()}${line("medium")}${block("page-skeleton-button")}</div>${globe}</div>`;
     case "modes":
-      return `${globe}${heading}<div class="page-skeleton-cards">${card().repeat(2)}</div>`;
+      return `${heading}${globe}<div class="page-skeleton-cards">${card().repeat(2)}</div>`;
     case "countries":
-      return `${heading}${globe}${form}`;
+      return `${block("page-skeleton-step")}${heading}<div class="page-skeleton-card">${block("page-skeleton-input")}${block("page-skeleton-button")}</div>${line("medium")}`;
     case "continents":
       return `${heading}<div class="page-skeleton-cards continents">${`<div class="page-skeleton-card">${block("page-skeleton-continent-art")}${line("short")}${line("medium")}</div>`.repeat(6)}</div>`;
     case "play":

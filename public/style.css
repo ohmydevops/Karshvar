@@ -2755,7 +2755,7 @@ html[data-page="blog"] #selectionStatus:empty {
 .app-drawer .site-menu .history-open:hover {
   background: var(--surface);
 }
-.app-drawer .site-menu nav > a:has(+ .history-open) {
+.app-drawer .site-menu nav > .history-open {
   border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
 .history-dialog {
@@ -3036,11 +3036,19 @@ html:is([data-selection-page="modes"], [data-selection-page="countries"])
   justify-content: center;
   overflow: hidden;
 }
-.journey-art svg {
+.journey-art img {
   display: block;
   width: min(100%, 520px);
   height: 100%;
   max-height: 340px;
+  object-fit: contain;
+}
+.journey-light,
+html:not([data-theme="dark"]) .journey-dark {
+  display: none !important;
+}
+html:not([data-theme="dark"]) .journey-light {
+  display: block !important;
 }
 .mode-choices {
   gap: 16px;
@@ -3377,7 +3385,7 @@ html[data-loading] .page-skeleton {
   z-index: 6;
   padding: 24px 28px;
   overflow: hidden;
-  background: var(--bg);
+  background: transparent;
   color: var(--muted);
 }
 .page-skeleton-shapes {
@@ -3422,15 +3430,52 @@ html[data-loading] .page-skeleton {
 .page-skeleton-card .page-skeleton-line {
   margin: 0;
 }
-.page-skeleton[data-layout="modes"] .page-skeleton-shapes,
-.page-skeleton[data-layout="countries"] .page-skeleton-shapes {
+.page-skeleton[data-layout="modes"] .page-skeleton-shapes {
   height: 100%;
   min-height: 0;
   grid-template-rows: auto minmax(60px, 1fr) auto;
   gap: 12px;
 }
+html[data-loading] .page-skeleton[data-layout="modes"] {
+  padding: 0;
+}
 .page-skeleton[data-layout="modes"] .page-skeleton-shapes {
-  grid-template-rows: minmax(60px, 1fr) auto auto;
+  max-height: 564px;
+}
+.page-skeleton[data-layout="countries"] .page-skeleton-shapes {
+  width: min(100%, 480px);
+  padding-block: clamp(28px, 7vh, 72px);
+  justify-items: center;
+  gap: 16px;
+}
+html[data-loading] .page-skeleton[data-layout="countries"] {
+  padding: 0;
+}
+.page-skeleton-step {
+  width: 104px;
+  height: 34px;
+  border-radius: 999px;
+}
+.page-skeleton[data-layout="countries"] .page-skeleton-heading {
+  width: 90%;
+  height: 48px;
+  margin: 0;
+}
+.page-skeleton[data-layout="countries"] .page-skeleton-card {
+  width: 100%;
+  margin-top: 12px;
+  padding: clamp(20px, 4vw, 28px);
+  border-radius: 16px;
+  gap: 14px;
+}
+.page-skeleton[data-layout="countries"] .page-skeleton-input {
+  height: 58px;
+  margin: 0;
+}
+.page-skeleton[data-layout="countries"] .page-skeleton-button {
+  width: 100%;
+  height: 52px;
+  margin: 0;
 }
 .page-skeleton[data-layout="play"] .page-skeleton-shapes,
 .page-skeleton[data-layout="explore"] .page-skeleton-shapes {

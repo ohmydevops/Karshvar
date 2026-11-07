@@ -11,7 +11,7 @@ export const historyCopy = {
     "Saved on this device. Restarting or resetting clears the corresponding history.",
   ],
   fa: [
-    "تاریخچه بازی",
+    "تاریخچه بازی‌های شما",
     "هنوز پاسخی ثبت نشده است.",
     "درست",
     "نادرست",
@@ -126,7 +126,10 @@ export function bindHistory({ language, getSessions, sessionLabel }) {
   const button = make("a", copy[0], "history-open");
   button.id = "historyOpen";
   button.href = new URL("./" + language + "/history/", document.baseURI).href;
-  document.querySelector(".site-menu nav").append(button);
+  const menu = document.querySelector(".site-menu nav");
+  const sources = menu.querySelector(".sources-link");
+  menu.append(button);
+  if (sources) menu.append(sources);
   if (document.documentElement.dataset.page === "play") {
     const legend = make("div", undefined, "answer-legend");
     for (const status of ["correct", "wrong", "revealed"])

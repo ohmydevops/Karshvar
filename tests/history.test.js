@@ -18,6 +18,9 @@ test("play page mounts its localized answer legend without interrupting startup"
         },
       });
       const menu = makeNode();
+      const sources = makeNode();
+      menu.querySelector = (selector) =>
+        selector === ".sources-link" ? sources : null;
       const globe = makeNode();
       globalThis.document = {
         baseURI: "https://example.test/Karshvar/",
@@ -31,7 +34,9 @@ test("play page mounts its localized answer legend without interrupting startup"
         getSessions: () => ({}),
         sessionLabel: (key) => key,
       });
-      assert.equal(menu.children.length, 1);
+      assert.equal(menu.children.length, 2);
+      assert.equal(menu.children[0].textContent, copy[0]);
+      assert.equal(menu.children[1], sources);
       assert.deepEqual(
         globe.children[0].children.map((node) => node.textContent),
         copy.slice(2, 5),

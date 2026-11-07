@@ -1,5 +1,4 @@
 import { toggleComparison, compareCopy } from "./compare.js";
-import { mountJourneyArt } from "./journey-art.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
 import { bindHighlightSwitch } from "./explore-settings.js";
@@ -1076,10 +1075,6 @@ function renderContinents() {
     section.after(hint);
   }
 
-  if (selectionPage === "modes") {
-    mountJourneyArt(features, $("modeChoices"));
-    $("modeChoices").before($("chooseTitle"));
-  }
   if (selectionPage !== "continents") return;
   if (!features.length) {
     prepareContinentImages($("continentChoices"));

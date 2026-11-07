@@ -4,7 +4,11 @@ buildTheme();
 await buildLoading();
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
-const root = new URL("../public/", import.meta.url);
+import { pathToFileURL } from "node:url";
+import path from "node:path";
+const root = process.argv[2]
+  ? pathToFileURL(path.resolve(process.argv[2]) + path.sep)
+  : new URL("../public/", import.meta.url);
 async function walk(dir, prefix = "") {
   const entries = await readdir(dir, { withFileTypes: true });
   return (
@@ -23,7 +27,7 @@ const assets = (await walk(root))
     (p) =>
       p !== "sw.js" &&
       p !== "CNAME" &&
-      !/(?:^|\/)blog(?:\/|$)|^social\/blog-[^/]+$/i.test(p) &&
+      !/(?:^|\/)blog(?:\/|$)|^social\//i.test(p) &&
       !/(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
         p,
       ) &&

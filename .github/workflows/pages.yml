@@ -25,18 +25,24 @@ jobs:
           cache: npm
       - name: Install development tools
         run: npm ci
+      - name: Set up image optimization
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install image optimizer
+        run: python -m pip install "Pillow>=12,<14"
       - name: Check formatting
         run: npm run format:check
       - name: Test game and deployment paths
         run: npm test
-      - name: Generate versioned offline assets
-        run: npm run build:offline
+      - name: Build optimized offline site
+        run: npm run build
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:
-          path: public
+          path: output/site
 
   deploy:
     needs: validate

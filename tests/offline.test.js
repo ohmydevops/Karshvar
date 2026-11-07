@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import vm from "node:vm";
 import { readFile } from "node:fs/promises";
 const source = await readFile(
-  new URL("../public/sw.js", import.meta.url),
+  process.env.KARSHVAR_WORKER || new URL("../public/sw.js", import.meta.url),
   "utf8",
 );
 function worker({ fail = false, delayed = false } = {}) {
@@ -231,12 +231,10 @@ test("crawler metadata, verification files and source maps bypass offline cachin
   assert.ok(assets.includes("en/play/index.html"));
 });
 
-test("blog pages and blog-only images are never precached or served by the worker", async () => {
+test("blog pages and social images are never precached or served by the worker", async () => {
   const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
   assert.ok(
-    assets.every(
-      (path) => !/(?:^|\/)blog(?:\/|$)|^social\/blog-[^/]+$/i.test(path),
-    ),
+    assets.every((path) => !/(?:^|\/)blog(?:\/|$)|^social\//i.test(path)),
   );
   const w = worker();
   await w.lifecycle("install");
@@ -247,6 +245,8 @@ test("blog pages and blog-only images are never precached or served by the worke
     "blog/style.css?v=2",
     "social/blog-iran-en.png",
     "social/blog-iran-en.png?v=2",
+    "social/karshvar-en.png",
+    "social/explore-fa.jpg?v=2",
   ];
   for (const locale of ["en", "fa", "ar", "tr", "fr", "ru"])
     paths.push(
