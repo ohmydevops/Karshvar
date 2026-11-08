@@ -114,6 +114,8 @@ test("visible image errors release loading; offscreen and lazy images never bloc
   const originalDocument = globalThis.document;
   const originalWindow = globalThis.window;
   globalThis.document = {
+    documentElement: { hasAttribute: () => true },
+    getElementById: () => null,
     querySelectorAll: () => [
       image,
       { ...image, loading: "lazy" },
@@ -126,7 +128,10 @@ test("visible image errors release loading; offscreen and lazy images never bloc
       ready = true;
     },
   };
-  globalThis.window = { innerHeight: 700 };
+  globalThis.window = {
+    innerHeight: 700,
+    matchMedia: () => ({ matches: false }),
+  };
   try {
     const waiting = revealPage();
     assert.equal(ready, false);
@@ -141,15 +146,19 @@ test("visible image errors release loading; offscreen and lazy images never bloc
 
 test("page skeleton remains until the fonts finish loading", async () => {
   const originalDocument = globalThis.document;
+  const originalWindow = globalThis.window;
   let finishFonts;
   let revealed = false;
   globalThis.document = {
+    documentElement: { hasAttribute: () => true },
+    getElementById: () => null,
     querySelectorAll: () => [],
     fonts: { ready: new Promise((resolve) => (finishFonts = resolve)) },
     dispatchEvent: () => {
       revealed = true;
     },
   };
+  globalThis.window = { matchMedia: () => ({ matches: false }) };
   try {
     const pending = revealPage();
     await Promise.resolve();
@@ -159,5 +168,6 @@ test("page skeleton remains until the fonts finish loading", async () => {
     assert.equal(revealed, true);
   } finally {
     globalThis.document = originalDocument;
+    globalThis.window = originalWindow;
   }
 });
