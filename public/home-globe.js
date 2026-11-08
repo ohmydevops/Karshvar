@@ -9,7 +9,6 @@ export async function mountHomeGlobe(host) {
       antialias: true,
       powerPreference: "low-power",
     });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, compact ? 1 : 1.5));
     const settings = createHomeScene();
     const loader = new THREE.TextureLoader();
     const [texture, nightTexture] = await Promise.all([
@@ -21,6 +20,7 @@ export async function mountHomeGlobe(host) {
     nightTexture.colorSpace = THREE.SRGBColorSpace;
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    nightTexture.anisotropy = texture.anisotropy;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     camera.position.set(0, 0.2, 4.6);
@@ -34,7 +34,7 @@ export async function mountHomeGlobe(host) {
     axialFrame.rotation.set(0, settings.axisHeading, earthAxialTilt);
     system.add(axialFrame);
     const earth = new THREE.Mesh(
-      new THREE.SphereGeometry(1, compact ? 48 : 96, compact ? 32 : 64),
+      new THREE.SphereGeometry(1, compact ? 64 : 96, compact ? 48 : 64),
       new THREE.ShaderMaterial({
         uniforms: {
           dayMap: { value: texture },
@@ -59,17 +59,39 @@ export async function mountHomeGlobe(host) {
     );
     earth.rotation.y = settings.earthRotation;
     axialFrame.add(earth);
+    const atmosphereRadius = 1.11;
     const atmosphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1.025, 48, 32),
+      new THREE.SphereGeometry(atmosphereRadius, 64, 48),
       new THREE.ShaderMaterial({
+        uniforms: { sunDirection: { value: sun.position.clone().normalize() } },
         transparent: true,
         depthWrite: false,
         side: THREE.BackSide,
         blending: THREE.AdditiveBlending,
-        vertexShader:
-          "varying vec3 n; varying vec3 v; void main(){vec4 p=modelViewMatrix*vec4(position,1.0);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}",
-        fragmentShader:
-          "varying vec3 n; varying vec3 v; void main(){float a=pow(1.0-abs(dot(normalize(n),normalize(v))),3.0);gl_FragColor=vec4(0.15,0.42,0.95,a*0.25);}",
+        vertexShader: `
+          varying vec3 viewPosition;
+          varying vec3 viewCenter;
+          varying vec3 worldNormal;
+          void main() {
+            vec4 p = modelViewMatrix * vec4(position, 1.0);
+            viewPosition = p.xyz;
+            viewCenter = (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+            worldNormal = normalize(mat3(modelMatrix) * normal);
+            gl_Position = projectionMatrix * p;
+          }`,
+        fragmentShader: `
+          uniform vec3 sunDirection;
+          varying vec3 viewPosition;
+          varying vec3 viewCenter;
+          varying vec3 worldNormal;
+          void main() {
+            float altitude = length(cross(normalize(viewPosition), viewCenter));
+            float rim = exp(-pow((altitude - 1.012) / 0.058, 2.0));
+            float edge = 1.0 - smoothstep(1.06, 1.11, altitude);
+            float daylight = smoothstep(-0.3, 0.6, dot(normalize(worldNormal), sunDirection));
+            vec3 blue = mix(vec3(0.08, 0.25, 0.8), vec3(0.28, 0.64, 1.0), daylight);
+            gl_FragColor = vec4(blue, rim * edge * mix(0.15, 0.46, daylight));
+          }`,
       }),
     );
     system.add(atmosphere);
@@ -183,35 +205,106 @@ export async function mountHomeGlobe(host) {
           : traffic
       ).append(ship);
     }
-    for (let i = 0; i < 2; i++) {
+    let atmosphereTarget = null;
+    const skyBounds = () => {
+      const width = globalThis.innerWidth || 1440;
+      const height = globalThis.innerHeight || 900;
+      const backdropHeight = Math.max(height, (width * 941) / 1672);
+      return {
+        width,
+        height,
+        bottom: Math.max(0, height - backdropHeight * 0.18),
+      };
+    };
+    const meteorColors = [
+      ["#e34d25", "#ffbb70"],
+      ["#66c97b", "#ccffbe"],
+      ["#569be8", "#d6efff"],
+      ["#cf83dc", "#ffe0ff"],
+      ["#e4b557", "#fff0bf"],
+    ];
+    const spawnMeteor = (origin = null) => {
+      const sky = skyBounds();
+      if (origin && origin.y >= sky.bottom) return;
       const meteor = document.createElement("span");
-      meteor.className = "distant-meteor meteor-" + i;
+      const longTrail = Math.random() < 0.5;
+      const [color, headColor] =
+        meteorColors[Math.floor(Math.random() * meteorColors.length)];
+      let impact = null;
+      meteor.className =
+        "distant-meteor " + (longTrail ? "meteor-0" : "meteor-1");
       const randomizePosition = () => {
-        const angle = Math.random() * 360;
-        const radians = (angle * Math.PI) / 180;
-        const longTrail = Math.random() < 0.4;
-        const width = globalThis.innerWidth || 1440;
-        const height = globalThis.innerHeight || 900;
-        const radius = Math.hypot(width, height) + 160;
-        const centerX = width * (0.3 + Math.random() * 0.4);
-        const centerY = height * (0.3 + Math.random() * 0.4);
-        const dx = Math.cos(radians) * radius;
-        const dy = Math.sin(radians) * radius;
+        const width = sky.width;
+        const padding = Math.min(110, sky.bottom * 0.15);
+        const height = Math.max(1, sky.bottom - padding * 2);
+        const radians = Math.random() * Math.PI * 2;
+        let angle = (radians * 180) / Math.PI;
+        const fraction = longTrail ? 2 / 3 : 1 / 3;
+        const distance =
+          Math.min(
+            width / Math.abs(Math.cos(radians)),
+            height / Math.abs(Math.sin(radians)),
+          ) * fraction;
+        let dx = Math.cos(radians) * distance;
+        let dy = Math.sin(radians) * distance;
+        // Both endpoints stay on screen: meteors burn out before the edge.
+        const startX =
+          origin?.x ??
+          Math.max(0, -dx) + Math.random() * (width - Math.abs(dx));
+        const startY =
+          origin?.y ??
+          padding + Math.max(0, -dy) + Math.random() * (height - Math.abs(dy));
+        if (atmosphereTarget && Math.random() < 0.25) {
+          const { x, y, radius } = atmosphereTarget;
+          const fromX = startX - x;
+          const fromY = startY - y;
+          const fromDistance = Math.hypot(fromX, fromY);
+          if (fromDistance > radius * 1.3 && y + radius < sky.bottom) {
+            impact = {
+              x: x + (fromX / fromDistance) * radius,
+              y: y + (fromY / fromDistance) * radius,
+            };
+            dx = impact.x - startX;
+            dy = impact.y - startY;
+            angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+            meteor.className += " meteor-impact";
+          }
+        }
+        if (origin && !impact) {
+          // Click-launched paths burn out before reaching the lunar foreground.
+          const limit =
+            dy > 0 ? (sky.bottom - 2 - startY) / dy : dy < 0 ? -startY / dy : 1;
+          const scale = Math.max(0, Math.min(1, limit));
+          dx *= scale;
+          dy *= scale;
+        }
         const length = longTrail
           ? 70 + Math.random() * 40
           : 34 + Math.random() * 14;
+        // Screen-space speed stays consistent across display sizes.
+        const pixelsPerSecond = longTrail ? 360 : 240;
+        const duration = Math.max(2.24, Math.hypot(dx, dy) / pixelsPerSecond);
         meteor.setAttribute(
           "style",
-          `left:${centerX - dx}px;top:${centerY - dy}px;` +
-            `--meteor-angle:${angle}deg;--meteor-x:${dx * 2}px;` +
-            `--meteor-y:${dy * 2}px;--meteor-length:${length}px`,
+          `left:${startX}px;top:${startY}px;` +
+            `--meteor-angle:${angle}deg;--meteor-x:${dx}px;` +
+            `--meteor-y:${dy}px;--meteor-length:${length}px;` +
+            `--meteor-duration:${duration}s;` +
+            `--meteor-start-opacity:${origin ? 0.65 : 0};` +
+            `--meteor-color:${color};--meteor-head:${headColor}`,
         );
       };
       randomizePosition();
-      // Iterations restart at zero opacity, so the relocation is never visible.
-      meteor.addEventListener("animationiteration", randomizePosition);
+      meteor.addEventListener("animationend", (event) => {
+        if (
+          event.animationName !== "distant-meteor-pass" &&
+          event.animationName !== "meteor-atmosphere-pass"
+        )
+          return;
+        meteor.remove();
+      });
       traffic.append(meteor);
-    }
+    };
     document.querySelector("main").prepend(traffic);
     document.querySelector("main").prepend(mediumTraffic);
     document.body.append(foregroundTraffic);
@@ -228,6 +321,32 @@ export async function mountHomeGlobe(host) {
     let visible = true;
     let disposed = false;
     let suspended = false;
+    let meteorTimer = null;
+    const scheduleMeteor = () => {
+      if (disposed || suspended || document.hidden || motion.matches) return;
+      meteorTimer = setTimeout(
+        () => {
+          meteorTimer = null;
+          if (disposed || suspended || document.hidden || motion.matches)
+            return;
+          spawnMeteor();
+          scheduleMeteor();
+        },
+        1000 + Math.random() * 2000,
+      );
+    };
+    const launchMeteor = (event) => {
+      if (disposed || suspended || document.hidden || motion.matches) return;
+      if (
+        event.button !== 0 ||
+        event.target.closest(
+          'a, button, input, select, textarea, label, summary, dialog, #appMenu, [role="button"], [role="menu"], [contenteditable], canvas, .welcome-art',
+        )
+      )
+        return;
+      spawnMeteor({ x: event.clientX, y: event.clientY });
+    };
+    document.addEventListener("click", launchMeteor);
     const flights = new Map();
     // The medium/far schedules overlap even when mobile hides the near craft.
     // Route changes happen beyond the viewport, never in the visible scene.
@@ -241,21 +360,30 @@ export async function mountHomeGlobe(host) {
       }
       const direction = Math.random() < 0.5 ? 1 : -1;
       const margin = index === 0 ? 30 : 18;
-      const vertical = Math.random() < 0.4;
-      const entry = 15 + Math.random() * 25;
-      const exit = 60 + Math.random() * 25;
-      const reverseSlope = Math.random() < 0.5;
-      const crossStart = reverseSlope ? exit : entry;
-      const crossEnd = reverseSlope ? entry : exit;
+      const viewportWidth = globalThis.innerWidth || 1440;
+      const viewportHeight = globalThis.innerHeight || 900;
+      // Match the cover-scaled lunar backdrop. Reserve the full rotated
+      // spacecraft silhouette above its highest ridge, not just its center.
+      const backdropHeight = Math.max(
+        viewportHeight,
+        (viewportWidth * 941) / 1672,
+      );
+      const clearance = [168, 84, 42][index] * 0.75 + 24;
+      const minY = Math.min(30, (clearance / viewportHeight) * 100);
+      const maxY = Math.max(
+        minY,
+        ((viewportHeight - backdropHeight * 0.18 - clearance) /
+          viewportHeight) *
+          100,
+      );
       const edgeStart = direction === 1 ? -margin : 100 + margin;
       const edgeEnd = direction === 1 ? 100 + margin : -margin;
-      const startX = vertical ? crossStart : edgeStart;
-      const startY = vertical ? edgeStart : crossStart;
-      const endX = vertical ? crossEnd : edgeEnd;
-      const endY = vertical ? edgeEnd : crossEnd;
+      const startX = edgeStart;
+      const startY = minY + Math.random() * (maxY - minY);
+      const endX = edgeEnd;
+      const endY = minY + Math.random() * (maxY - minY);
       const dx = endX - startX;
       const dy = endY - startY;
-      const curve = Math.random() * 4 - 2;
       const angle =
         (Math.atan2(
           dy * (globalThis.innerHeight || 900),
@@ -265,18 +393,18 @@ export async function mountHomeGlobe(host) {
         Math.PI;
       const keyframes = Array.from({ length: 25 }, (_, i) => {
         const t = i / 24;
-        const bend = curve * Math.sin(Math.PI * t);
-        const x = startX + dx * t + (vertical ? bend : 0);
-        const y = startY + dy * t + (vertical ? 0 : bend);
+        const x = startX + dx * t;
+        const y = startY + dy * t;
         return {
           offset: t,
-          transform: `translate3d(${x}vw, ${y}vh, 0) rotate(${angle}deg)`,
+          transform: `translate3d(${x}vw, ${y}vh, 0) translate(-50%, -50%) rotate(${angle}deg)`,
         };
       });
       const flight = ship.animate(keyframes, {
         duration: [16000, 24000, 48000][index],
+        delay: index === 0 ? 16000 + Math.random() * 24000 : 0,
         easing: "linear",
-        fill: "forwards",
+        fill: "both",
       });
       const previous = flights.get(ship);
       flights.set(ship, flight);
@@ -292,8 +420,19 @@ export async function mountHomeGlobe(host) {
       renderer.render(scene, camera);
     }
     function resize() {
+      const sky = skyBounds();
+      for (const layer of [traffic, mediumTraffic, foregroundTraffic]) {
+        layer.setAttribute(
+          "style",
+          `clip-path:inset(0 0 ${sky.height - sky.bottom}px 0)`,
+        );
+      }
       const r = host.getBoundingClientRect();
       if (!r.width || !r.height) return;
+      // Retina clarity on phones and desktops, with a bounded GPU buffer.
+      renderer.setPixelRatio(
+        Math.min(devicePixelRatio || 1, 2, 1024 / Math.max(r.width, r.height)),
+      );
       renderer.setSize(r.width, r.height, false);
       camera.aspect = r.width / r.height;
       const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov / 2);
@@ -305,6 +444,17 @@ export async function mountHomeGlobe(host) {
       camera.position.set(0, 0, distance);
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
+      // Project the atmospheric limb once on resize, never during a flight.
+      const atmosphericRadius = atmosphereRadius;
+      atmosphereTarget = {
+        x: (r.left || 0) + r.width / 2,
+        y: (r.top || 0) + r.height / 2,
+        radius:
+          ((r.height / 2 / Math.tan(verticalHalfFov)) * atmosphericRadius) /
+          Math.sqrt(
+            distance * distance - atmosphericRadius * atmosphericRadius,
+          ),
+      };
       render();
     }
     const observer = new ResizeObserver(resize);
@@ -333,6 +483,10 @@ export async function mountHomeGlobe(host) {
     }
     function updateAnimation() {
       if (disposed || suspended) return;
+      if (document.hidden || motion.matches) {
+        clearTimeout(meteorTimer);
+        meteorTimer = null;
+      } else if (meteorTimer === null) scheduleMeteor();
       traffic.setAttribute(
         "data-paused",
         String(document.hidden || motion.matches),
@@ -393,6 +547,8 @@ export async function mountHomeGlobe(host) {
       updateAnimation();
     });
     addEventListener("pagehide", (event) => {
+      clearTimeout(meteorTimer);
+      meteorTimer = null;
       if (event?.persisted) {
         suspended = true;
         traffic.setAttribute("data-paused", "true");
@@ -403,6 +559,7 @@ export async function mountHomeGlobe(host) {
         return;
       }
       disposed = true;
+      document.removeEventListener("click", launchMeteor);
       for (const flight of flights.values()) flight.cancel();
       traffic.remove();
       foregroundTraffic.remove();

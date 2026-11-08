@@ -1365,13 +1365,11 @@ html[data-page="home"] main::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(1px 1px at 10% 20%, #9bb8dd 98%, transparent),
-    radial-gradient(1px 1px at 80% 65%, #b1c7e4 98%, transparent),
-    radial-gradient(ellipse at 25% 50%, #10233c, transparent 62%);
-  background-size:
-    310px 250px,
-    470px 390px,
-    100% 100%;
+    linear-gradient(180deg, #060c1810, #060c1826 65%, transparent),
+    url("./art/lunar-vista.webp") center bottom / cover no-repeat;
+}
+html[data-page="home"] .welcome-copy :is(h1, p) {
+  text-shadow: 0 2px 12px #030710;
 }
 .home-canvas {
   display: block;
@@ -1446,33 +1444,100 @@ html[data-page="home"] .welcome-art {
   width: var(--meteor-length, 48px);
   height: 1px;
   border-radius: 50%;
-  background: linear-gradient(90deg, transparent, #90b8d4 80%, #e6f4ff);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--meteor-color, #90b8d4) 80%,
+    var(--meteor-head, #e6f4ff)
+  );
   opacity: 0;
   pointer-events: none;
-  animation: distant-meteor-pass 4s linear infinite;
+  transform-origin: 0 0;
+  animation: distant-meteor-pass var(--meteor-duration, 3s) linear forwards;
 }
-.meteor-0 {
-  animation-delay: 0s;
+.distant-meteor::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--meteor-color, #e34d25) 70%,
+    var(--meteor-head, #ffbb70)
+  );
+  animation: meteor-fire-fade var(--meteor-duration, 3s) linear forwards;
+  animation-delay: inherit;
+  animation-play-state: inherit;
 }
-.meteor-1 {
-  animation-delay: 2s;
+@keyframes meteor-fire-fade {
+  0%,
+  28% {
+    opacity: 1;
+  }
+  72%,
+  100% {
+    opacity: 0;
+  }
 }
 .space-traffic[data-paused="true"] .distant-meteor {
   animation-play-state: paused;
 }
 @keyframes distant-meteor-pass {
   0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle, 25deg));
+    opacity: var(--meteor-start-opacity, 0);
+    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle, 25deg))
+      translate(-100%, -50%);
   }
-  8% {
+  28% {
     opacity: 0.65;
   }
-  28%,
   100% {
     opacity: 0;
     transform: translate3d(var(--meteor-x, 16vmin), var(--meteor-y, 7.5vmin), 0)
-      rotate(var(--meteor-angle, 25deg));
+      rotate(var(--meteor-angle, 25deg)) translate(-100%, -50%);
+  }
+}
+.meteor-impact {
+  animation-name: meteor-atmosphere-pass;
+}
+
+.meteor-impact::before {
+  background: linear-gradient(90deg, transparent, #e53520 70%, #ff8b45);
+  animation-name: meteor-entry-fire;
+}
+@keyframes meteor-entry-fire {
+  0%,
+  58% {
+    opacity: 0;
+  }
+  78%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes meteor-atmosphere-pass {
+  0% {
+    opacity: var(--meteor-start-opacity, 0);
+    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle)) scaleX(1)
+      translate(-100%, -50%);
+  }
+  28% {
+    opacity: 0.65;
+  }
+  72% {
+    opacity: 0.85;
+    transform: translate3d(
+        calc(var(--meteor-x) * 0.72),
+        calc(var(--meteor-y) * 0.72),
+        0
+      )
+      rotate(var(--meteor-angle)) scaleX(1) translate(-100%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--meteor-x), var(--meteor-y), 0)
+      rotate(var(--meteor-angle)) scaleX(0.08) translate(-100%, -50%);
   }
 }
 .passing-ship {
@@ -1490,12 +1555,12 @@ html[data-page="home"] .welcome-art {
   z-index: 2;
 }
 .passing-ship.depth-medium {
-  width: clamp(48px, 5vw, 84px);
+  width: clamp(14px, 1.6vw, 28px);
   z-index: 1;
   filter: brightness(0.8) drop-shadow(0 3px 5px #0005);
 }
 .passing-ship.depth-far {
-  width: clamp(24px, 2.5vw, 42px);
+  width: clamp(5px, 0.6vw, 11px);
   z-index: 0;
   filter: brightness(0.75);
 }
@@ -1852,6 +1917,16 @@ footer.simple-footer {
   min-height: 24px;
   font-size: 10px;
 }
+html[data-page="home"] footer.simple-footer {
+  border-top: 0;
+  min-height: 40px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, #03060b99);
+  color: #d6dce5;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-shadow: 0 1px 4px #000;
+}
 html[data-page="sources"] main {
   overflow-y: auto;
 }
@@ -1868,20 +1943,22 @@ html[data-page="sources"] main {
   html[data-page="home"] main {
     width: calc(100% - 40px);
     margin: 0 auto;
-    overflow-y: auto;
+    min-height: 0;
+    overflow: hidden;
   }
   html[data-page="home"] .welcome {
-    flex: 0 0 auto;
+    flex: 1 1 0;
+    min-height: 0;
     width: 100%;
     margin-block: auto;
-    padding-block: 20px;
+    padding-block: 8px;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    gap: 16px;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 8px;
     align-content: center;
   }
   html[data-page="home"] .welcome-art {
-    width: min(100%, 320px, 38dvh);
+    width: min(100%, 300px, 40dvh, calc(100dvh - 330px));
     height: auto;
     max-height: none;
     aspect-ratio: 1;
@@ -1892,13 +1969,15 @@ html[data-page="sources"] main {
     padding: 0;
   }
   html[data-page="home"] .welcome-copy h1 {
-    font-size: clamp(26px, 7.4vw, 36px);
+    font-size: clamp(16px, 5.3vw, 28px);
+    white-space: nowrap;
+    letter-spacing: -0.5px;
     line-height: 1.35;
-    margin: 0 0 12px;
+    margin: 0 0 10px;
   }
   html[data-page="home"] .welcome-copy p {
-    line-height: 1.8;
-    margin: 0 auto 22px;
+    line-height: 1.6;
+    margin: 0 auto 14px;
   }
   html[data-page="home"] .welcome-copy .primary {
     width: 100%;

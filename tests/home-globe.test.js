@@ -5,11 +5,22 @@ import vm from "node:vm";
 import * as THREE from "../public/vendor/three.module.min.js";
 import { createHomeScene, earthAxialTilt } from "../public/home-scene.js";
 
-async function fixture({ compact = false, reduced = false } = {}) {
+async function fixture({
+  compact = false,
+  reduced = false,
+  pixelRatio = 3,
+  hostSize = 360,
+  width = 1440,
+  height = 900,
+  random = Math.random,
+} = {}) {
   const pending = new Map();
   const events = {};
   const canvasEvents = {};
   const flights = [];
+  const timers = new Map();
+  const meteors = [];
+  const layers = [];
   let next = 0,
     draws = 0,
     ratio,
@@ -28,10 +39,24 @@ async function fixture({ compact = false, reduced = false } = {}) {
     hidden: false,
     body: { append() {} },
     createElement: () => ({
-      setAttribute() {},
-      addEventListener() {},
-      append() {},
-      remove() {},
+      setAttribute(name, value) {
+        this[name] = value;
+        if (
+          name === "style" &&
+          this.className?.startsWith("space-traffic") &&
+          !layers.includes(this)
+        )
+          layers.push(this);
+      },
+      addEventListener(name, fn) {
+        (this.listeners ||= {})[name] = fn;
+      },
+      append(child) {
+        if (child.className?.startsWith("distant-meteor")) meteors.push(child);
+      },
+      remove() {
+        this.removed = true;
+      },
       animate(keyframes, options) {
         const flight = {
           keyframes,
@@ -60,7 +85,7 @@ async function fixture({ compact = false, reduced = false } = {}) {
     },
   };
   const host = {
-    getBoundingClientRect: () => ({ width: 360, height: 360 }),
+    getBoundingClientRect: () => ({ width: hostSize, height: hostSize }),
     replaceChildren() {},
     classList: { add() {} },
   };
@@ -70,6 +95,7 @@ async function fixture({ compact = false, reduced = false } = {}) {
     .replace("export async function", "async function")
     .replaceAll("import.meta.url", '"https://example.test/home-globe.js"');
   const context = vm.createContext({
+    Math: Object.assign(Object.create(Math), { random }),
     THREE: {
       ...THREE,
       WebGLRenderer: class {
@@ -102,7 +128,9 @@ async function fixture({ compact = false, reduced = false } = {}) {
     document,
     URL,
     console,
-    devicePixelRatio: 3,
+    devicePixelRatio: pixelRatio,
+    innerWidth: width,
+    innerHeight: height,
     matchMedia: (query) =>
       query.includes("reduced-motion") ? motion : { matches: compact },
     requestAnimationFrame: (fn) => {
@@ -110,6 +138,11 @@ async function fixture({ compact = false, reduced = false } = {}) {
       return next;
     },
     cancelAnimationFrame: (id) => pending.delete(id),
+    setTimeout: (fn, delay) => {
+      timers.set(++next, { fn, delay });
+      return next;
+    },
+    clearTimeout: (id) => timers.delete(id),
     ResizeObserver: class {
       observe() {}
       disconnect() {}
@@ -129,6 +162,9 @@ async function fixture({ compact = false, reduced = false } = {}) {
   await context.mountHomeGlobe(host);
   return {
     flights,
+    timers,
+    meteors,
+    layers,
     pending,
     events,
     motion,
@@ -146,9 +182,137 @@ async function fixture({ compact = false, reduced = false } = {}) {
   };
 }
 
+test("Earth-bound meteors burn out at the atmospheric limb and are removed", async () => {
+  const f = await fixture({ random: () => 0.1 });
+  f.events.click({
+    button: 0,
+    clientX: 800,
+    clientY: 200,
+    target: { closest: () => null },
+  });
+  const meteor = f.meteors[0];
+  assert.match(meteor.className, /meteor-impact/);
+  const values = Object.fromEntries(
+    meteor.style.split(";").map((pair) => pair.split(":")),
+  );
+  const x = parseFloat(values.left) + parseFloat(values["--meteor-x"]);
+  const y = parseFloat(values.top) + parseFloat(values["--meteor-y"]);
+  const distance = 1.62 / Math.sin(THREE.MathUtils.degToRad(19));
+  const radius =
+    ((180 / Math.tan(THREE.MathUtils.degToRad(19))) * 1.11) /
+    Math.sqrt(distance ** 2 - 1.11 ** 2);
+  assert.ok(Math.abs(Math.hypot(x - 180, y - 180) - radius) < 0.001);
+  meteor.listeners.animationend({ animationName: "meteor-atmosphere-pass" });
+  assert.equal(meteor.removed, true);
+  f.events.pagehide();
+});
+
+test("meteors spawn singly every 1–3 seconds and clicks respect interactive controls", async () => {
+  const f = await fixture();
+  assert.equal(f.meteors.length, 0);
+  for (let i = 0; i < 12; i++) {
+    assert.equal(f.timers.size, 1);
+    const [id, timer] = [...f.timers][0];
+    assert.ok(timer.delay >= 1000 && timer.delay <= 3000);
+    f.timers.delete(id);
+    timer.fn();
+    assert.equal(f.meteors.length, i + 1);
+  }
+  f.events.click({
+    button: 0,
+    clientX: 123,
+    clientY: 234,
+    target: { closest: () => null },
+  });
+  assert.equal(f.meteors.length, 13);
+  f.events.click({
+    button: 0,
+    clientX: 500,
+    clientY: 890,
+    target: { closest: () => null },
+  });
+  assert.equal(f.meteors.length, 13);
+  assert.match(f.meteors.at(-1).style, /^left:123px;top:234px;/);
+  f.events.click({ button: 0, target: { closest: () => ({}) } });
+  assert.equal(f.meteors.length, 13);
+  f.document.hidden = true;
+  f.events.visibilitychange();
+  assert.equal(f.timers.size, 0);
+  f.document.hidden = false;
+  f.events.visibilitychange();
+  assert.equal(f.timers.size, 1);
+  f.events.pagehide();
+  assert.equal(f.timers.size, 0);
+  assert.equal(f.events.click, undefined);
+});
+
+test("all traffic layers exclude the Moon and random meteor paths stay in the sky", async () => {
+  for (const [width, height] of [
+    [390, 844],
+    [1920, 1080],
+    [2560, 720],
+  ]) {
+    let seed = 1234;
+    const random = () =>
+      (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+    const f = await fixture({ width, height, random });
+    const ground = Math.max(height, (width * 941) / 1672) * 0.18;
+    const bottom = height - ground;
+    assert.equal(f.layers.length, 3);
+    for (const layer of f.layers)
+      assert.equal(layer.style, `clip-path:inset(0 0 ${height - bottom}px 0)`);
+    for (let i = 0; i < 40; i++) {
+      const [id, timer] = [...f.timers][0];
+      f.timers.delete(id);
+      timer.fn();
+      const values = Object.fromEntries(
+        f.meteors
+          .at(-1)
+          .style.split(";")
+          .map((pair) => pair.split(":")),
+      );
+      const y = parseFloat(values.top);
+      const endY = y + parseFloat(values["--meteor-y"]);
+      assert.ok(y >= 0 && y < bottom);
+      assert.ok(endY >= -0.001 && endY < bottom);
+    }
+    f.events.pagehide();
+  }
+});
+
+test("spacecraft silhouettes remain above the lunar horizon across screen shapes", async () => {
+  for (const [width, height] of [
+    [390, 844],
+    [1920, 1080],
+    [2560, 720],
+  ]) {
+    const f = await fixture({ width, height, random: () => 0.9999 });
+    const horizon = height - Math.max(height, (width * 941) / 1672) * 0.18;
+    for (const [index, flight] of f.flights.entries()) {
+      const silhouette = [168, 84, 42][index] * 0.75;
+      for (const frame of flight.keyframes) {
+        const y =
+          (parseFloat(frame.transform.match(/, ([\d.-]+)vh/)[1]) / 100) *
+          height;
+        assert.ok(
+          y + silhouette < horizon,
+          `${width}x${height}: spacecraft ${index}`,
+        );
+      }
+    }
+    f.events.pagehide();
+  }
+});
+
 test("spacecraft keep moving through successive routes and resume after tab visibility changes", async () => {
   const f = await fixture();
   assert.equal(f.flights.length, 3);
+  assert.ok(
+    f.flights[0].options.delay >= 16000 && f.flights[0].options.delay <= 40000,
+  );
+  assert.equal(f.flights[0].options.fill, "both");
+  assert.equal(f.flights[1].options.delay, 0);
+  assert.equal(f.flights[2].options.delay, 0);
   assert.deepEqual(
     f.flights.map((flight) => flight.options.duration),
     [16000, 24000, 48000],
@@ -238,14 +402,18 @@ test("reduced motion renders a still globe that remains draggable", async () => 
 
 test("mobile rendering caps pixel density and preserves the original frame interval", async () => {
   const f = await fixture({ compact: true });
-  assert.equal(f.ratio(), 1);
+  assert.equal(f.ratio(), 2);
   f.step(100);
   f.step(131);
   assert.equal(f.draws(), 2);
   f.step(132);
   assert.equal(f.draws(), 3);
   const desktop = await fixture();
-  assert.equal(desktop.ratio(), 1.5);
+  assert.equal(desktop.ratio(), 2);
+  const standardDisplay = await fixture({ pixelRatio: 1 });
+  assert.equal(standardDisplay.ratio(), 1);
+  const largeGlobe = await fixture({ hostSize: 800 });
+  assert.equal(largeGlobe.ratio() * 800, 1024);
 });
 
 test("satellites keep orbiting while the globe is dragged", async () => {
