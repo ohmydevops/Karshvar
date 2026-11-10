@@ -6,6 +6,12 @@ const source = await readFile(
   new URL("../public/offline.js", import.meta.url),
   "utf8",
 );
+const timeoutSource = (
+  await readFile(
+    new URL("../public/update-loading.js", import.meta.url),
+    "utf8",
+  )
+).replaceAll("export ", "");
 async function setup(controller = true, register, hostname = "example.test") {
   const nodes = [],
     events = {},
@@ -90,12 +96,14 @@ async function setup(controller = true, register, hostname = "example.test") {
     },
   };
   vm.runInNewContext(
-    source
-      .replace("export const offlineReady", "const offlineReady")
-      .replaceAll(
-        "import.meta.url",
-        JSON.stringify("https://example.test/offline.js"),
-      ),
+    timeoutSource +
+      source
+        .replace(/^import .*withUpdateTimeout.*\n/, "")
+        .replace("export const offlineReady", "const offlineReady")
+        .replaceAll(
+          "import.meta.url",
+          JSON.stringify("https://example.test/offline.js"),
+        ),
     {
       document,
       navigator: { serviceWorker },
@@ -286,4 +294,58 @@ test("failed manual checks show feedback and restore the button", async () => {
   await app.menuButton.onclick();
   assert.equal(app.menuStatus.textContent, "Couldn’t check. Try again.");
   assert.equal(app.menuButton.disabled, false);
+});
+
+test("stalled registration restores retry and ignores a late result", async () => {
+  let finish,
+    calls = 0;
+  const pending = new Promise((resolve) => {
+    finish = resolve;
+  });
+  const app = await setup(true, (registration) =>
+    ++calls === 1 ? pending : registration,
+  );
+  app.expireTimers();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(app.menuButton.disabled, false);
+  assert.equal(app.menuStatus.textContent, "Couldn’t check. Try again.");
+  finish(app.registration);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(app.nodes.length, 0);
+  await app.menuButton.onclick();
+  assert.equal(calls, 2);
+  assert.equal(app.menuButton.disabled, false);
+});
+
+test("stalled manual update restores retry without reporting success", async () => {
+  const app = await setup();
+  app.registration.waiting = null;
+  app.registration.update = () => new Promise(() => {});
+  const checking = app.menuButton.onclick();
+  assert.equal(app.menuButton.disabled, true);
+  app.expireTimers();
+  await checking;
+  assert.equal(app.menuButton.disabled, false);
+  assert.equal(app.menuStatus.textContent, "Couldn’t check. Try again.");
+});
+
+test("manual and automatic checks share one in-flight update request", async () => {
+  const app = await setup();
+  app.registration.waiting = null;
+  let finish,
+    calls = 0;
+  app.registration.update = () => {
+    calls++;
+    return new Promise((resolve) => {
+      finish = resolve;
+    });
+  };
+  app.advance();
+  const automatic = app.events.online();
+  const manual = app.menuButton.onclick();
+  assert.equal(calls, 1);
+  finish();
+  await Promise.all([automatic, manual]);
+  assert.equal(app.menuButton.disabled, false);
+  assert.equal(app.menuStatus.textContent, "You’re up to date.");
 });

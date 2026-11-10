@@ -11,17 +11,24 @@ self.addEventListener("install", (event) =>
         const download = async () => {
           while (!failed && next < ASSETS.length) {
             const asset = ASSETS[next++];
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 20000);
             try {
               const url = new URL(asset, self.registration.scope);
               const requestUrl = new URL(url);
               if (url.pathname.endsWith(".css")) requestUrl.search = "?direct";
-              const response = await fetch(requestUrl, { cache: "reload" });
+              const response = await fetch(requestUrl, {
+                cache: "reload",
+                signal: controller.signal,
+              });
               if (!response.ok)
                 throw new Error("Offline download failed: " + asset);
               await cache.put(url, response);
             } catch (error) {
               failed = true;
               throw error;
+            } finally {
+              clearTimeout(timer);
             }
           }
         };

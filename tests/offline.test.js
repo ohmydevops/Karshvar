@@ -6,13 +6,15 @@ const source = await readFile(
   process.env.KARSHVAR_WORKER || new URL("../public/sw.js", import.meta.url),
   "utf8",
 );
-function worker({ fail = false, delayed = false } = {}) {
+function worker({ fail = false, delayed = false, stalled = false } = {}) {
   const events = {},
     stores = new Map();
   let online = true,
     claimed = false;
   let active = 0,
     peak = 0;
+  const timers = new Map();
+  let timerId = 0;
   const caches = {
     async open(name) {
       if (!stores.has(name)) stores.set(name, new Map());
@@ -36,6 +38,15 @@ function worker({ fail = false, delayed = false } = {}) {
   vm.runInNewContext(source, {
     URL,
     Response,
+    AbortController,
+    setTimeout(handler) {
+      const id = ++timerId;
+      timers.set(id, handler);
+      return id;
+    },
+    clearTimeout(id) {
+      timers.delete(id);
+    },
     caches,
     self: {
       registration: { scope: "https://example.test/game/" },
@@ -49,9 +60,21 @@ function worker({ fail = false, delayed = false } = {}) {
         events[name] = fn;
       },
     },
-    fetch: async (url) => {
+    fetch: async (url, options) => {
       active++;
       peak = Math.max(peak, active);
+      if (stalled) {
+        await new Promise((_, reject) =>
+          options.signal.addEventListener(
+            "abort",
+            () => {
+              active--;
+              reject(Error("timeout"));
+            },
+            { once: true },
+          ),
+        );
+      }
       if (delayed) await new Promise((resolve) => setImmediate(resolve));
       active--;
       if (!online) throw Error("offline");
@@ -67,6 +90,9 @@ function worker({ fail = false, delayed = false } = {}) {
     },
   });
   return {
+    expireTimers() {
+      for (const handler of [...timers.values()]) handler();
+    },
     get peak() {
       return peak;
     },
@@ -118,6 +144,20 @@ test("failed parallel installation settles requests before cleaning its cache", 
   await assert.rejects(w.lifecycle("install"));
   assert.equal(w.active, 0);
   assert.equal(w.stores.size, 0);
+});
+
+test("stalled offline downloads abort and discard only the incomplete update", async () => {
+  const w = worker({ stalled: true });
+  w.stores.set("existing-offline-version", new Map());
+  const installing = w.lifecycle("install");
+  const rejected = assert.rejects(installing, /timeout/);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(w.active, 6);
+  w.expireTimers();
+  await rejected;
+  assert.equal(w.active, 0);
+  assert.equal(w.stores.size, 1);
+  assert(w.stores.has("existing-offline-version"));
 });
 test("installed worker serves all game routes and assets without network", async () => {
   const w = worker();

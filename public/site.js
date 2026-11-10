@@ -1,6 +1,6 @@
 import { pagePath } from "./navigation.js";
 import "./footer-version.js";
-import { setUpdateLoading } from "./update-loading.js";
+import { setUpdateLoading, withUpdateTimeout } from "./update-loading.js";
 import { resetCopy } from "./reset.js";
 import { bindHistory } from "./history.js";
 import { revealPage } from "./page-ready.js";
@@ -194,11 +194,22 @@ if (updateButton && "serviceWorker" in navigator && window.isSecureContext) {
   const startOffline = async () => {
     setUpdateLoading(updateButton, true);
     try {
-      const { offlineReady } = await import("./offline.js");
-      await offlineReady;
-      if (updateButton.onclick !== startOffline) await updateButton.onclick();
+      const { offlineReady } = await withUpdateTimeout(import("./offline.js"));
+      if ((await offlineReady) && updateButton.onclick !== startOffline)
+        await updateButton.onclick();
     } catch (error) {
       console.warn("Offline setup unavailable", error);
+      const status = $("updateCheckStatus");
+      status.hidden = false;
+      status.textContent =
+        {
+          en: "Couldn’t check. Try again.",
+          fa: "بررسی انجام نشد. دوباره تلاش کنید.",
+          ar: "تعذّر التحقق. حاول مجددًا.",
+          tr: "Kontrol edilemedi. Tekrar dene.",
+          fr: "Échec de la vérification. Réessayez.",
+          ru: "Не удалось проверить. Попробуйте снова.",
+        }[lang] || "Couldn’t check. Try again.";
     } finally {
       setUpdateLoading(updateButton, false);
     }

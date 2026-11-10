@@ -1,3 +1,5 @@
+import { withUpdateTimeout } from "./update-loading.js";
+
 const checkCopy = {
   en: [
     "Checking…",
@@ -108,10 +110,19 @@ async function setupOffline() {
     checkButton.setAttribute?.("aria-busy", "true");
   }
   try {
-    const registration = await navigator.serviceWorker.register(
-      new URL("./sw.js", import.meta.url),
-      { updateViaCache: "none" },
+    const registration = await withUpdateTimeout(
+      navigator.serviceWorker.register(new URL("./sw.js", import.meta.url), {
+        updateViaCache: "none",
+      }),
     );
+    let updating;
+    const updateRegistration = () => {
+      if (!updating)
+        updating = withUpdateTimeout(registration.update()).finally(() => {
+          updating = null;
+        });
+      return updating;
+    };
     let manualCheck = false;
     let approved = false;
     let reloaded = false;
@@ -224,7 +235,7 @@ async function setupOffline() {
             registration.waiting !== worker &&
             worker.state !== "activating"
           ) {
-            await registration.update();
+            await updateRegistration();
             if (!approved) return;
             if (!registration.waiting) {
               if (registration.active?.state === "activated")
@@ -249,6 +260,7 @@ async function setupOffline() {
     };
     const watch = () => {
       const worker = registration.installing;
+      if (worker && manualCheck) showCheckStatus(2);
       worker?.addEventListener("statechange", () => {
         if (worker.state === "installed") {
           if (manualCheck) showCheckStatus(5);
@@ -276,7 +288,7 @@ async function setupOffline() {
         checkButton.setAttribute?.("aria-busy", "true");
         showCheckStatus(0);
         try {
-          await registration.update();
+          await updateRegistration();
           if (registration.waiting) {
             offeredWorker = undefined;
             showCheckStatus(5);
@@ -300,7 +312,7 @@ async function setupOffline() {
       checking = true;
       lastCheck = Date.now();
       try {
-        await registration.update();
+        await updateRegistration();
         offerUpdate();
       } catch {
         // A failed connection must not interrupt offline play or delay a retry.
@@ -317,6 +329,7 @@ async function setupOffline() {
     return true;
   } catch (error) {
     console.warn("Offline setup failed", error);
+    showCheckStatus(4);
     if (checkButton) {
       checkButton.disabled = false;
       checkButton.setAttribute?.("aria-busy", "false");
