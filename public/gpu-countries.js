@@ -1,6 +1,8 @@
-// Country shapes are rasterized once into an ID atlas. Rotation and coloring run on the GPU.
+// Country fills and borders use spherical vector meshes built off the main
+// thread. The low-resolution atlas is only used for the translucent interior
+// view or as a compatibility fallback when workers cannot run.
 import * as THREE from "./vendor/three.module.min.js";
-export function mountGpuCountries(svg, projection) {
+export function mountGpuCountries(svg, projection, redraw = () => {}) {
   // WebKit can composite accelerated foreignObject children outside the SVG
   // transform and paint order. Keep GPU rendering, but present its frame as an
   // SVG image there so the SVG owns positioning, scaling and stacking.
@@ -45,6 +47,8 @@ export function mountGpuCountries(svg, projection) {
     border: { value: new THREE.Color() },
     alpha: { value: 1 },
     interior: { value: 0 },
+    satellite: { value: 0 },
+    viewport: { value: new THREE.Vector2(1, 1) },
   };
   const material = new THREE.ShaderMaterial({
     uniforms,
@@ -79,22 +83,123 @@ export function mountGpuCountries(svg, projection) {
       if(color.a<.001)discard;gl_FragColor=color;}`,
   });
   const scene = new THREE.Scene();
-  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+  const fillPlane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+  scene.add(fillPlane);
   const camera = new THREE.Camera();
   const lineMaterial = new THREE.ShaderMaterial({
     uniforms,
     transparent: true,
     depthTest: false,
     depthWrite: false,
-    vertexShader: `uniform vec4 bounds; uniform vec3 globe; uniform mat3 basis; varying float front;
-      void main(){vec3 v=vec3(dot(position,basis[0]),dot(position,basis[1]),dot(position,basis[2]));front=v.z;
-      vec2 p=globe.xy+vec2(v.x,-v.y)*globe.z;vec2 uv=(p-bounds.xy)/(bounds.zw-bounds.xy);gl_Position=vec4(uv.x*2.-1.,1.-uv.y*2.,0.,1.);}`,
-    fragmentShader: `precision highp float; uniform vec3 border; uniform float interior; varying float front; void main(){if(interior>.5){gl_FragColor=vec4(border,front<0.?.10:.28);return;}if(front<0.)discard;gl_FragColor=vec4(border,.85);}`,
+    side: THREE.DoubleSide,
+    vertexShader: `uniform vec4 bounds; uniform vec3 globe; uniform mat3 basis; uniform vec2 viewport; uniform float satellite;
+      attribute vec3 endpoint; attribute vec2 corner; varying float front; varying float edge;
+      vec3 rotate(vec3 p){return vec3(dot(p,basis[0]),dot(p,basis[1]),dot(p,basis[2]));}
+      vec2 project(vec3 p){vec2 uv=(globe.xy+vec2(p.x,-p.y)*globe.z-bounds.xy)/(bounds.zw-bounds.xy); return vec2(uv.x*2.-1.,1.-uv.y*2.);}
+      void main(){vec3 a=rotate(position), b=rotate(endpoint); vec2 pa=project(a), pb=project(b);
+        vec2 delta=(pb-pa)*viewport; float len=length(delta); vec2 normal=len>.00001?vec2(-delta.y,delta.x)/len:vec2(0.);
+        float width=mix(.65,1.8,satellite); vec2 offset=normal*corner.y*width*2./viewport;
+        front=mix(a.z,b.z,corner.x);edge=corner.y;
+        gl_Position=vec4(mix(pa,pb,corner.x)+offset,0.,1.);}`,
+    fragmentShader: `precision highp float; uniform vec3 border; uniform float interior; uniform float satellite; varying float front; varying float edge;
+      void main(){if(interior<.5 && front<0.)discard;
+        float coverage=1.-smoothstep(.72,1.,abs(edge));
+        vec3 color=mix(border,mix(vec3(.035,.07,.12),vec3(.92,.96,1.),1.-smoothstep(.30,.55,abs(edge))),satellite);
+        float alpha=interior>.5?(front<0.?.10:.28):.95;
+        gl_FragColor=vec4(color,alpha*coverage);}`,
   });
-  let lines;
-  let previous = [],
-    texture;
+  let lines,
+    fillMesh,
+    texture,
+    previous = [],
+    job = 0,
+    ready = Promise.resolve();
+  let atlasFeatures = null;
+  const vectorMaterial = new THREE.ShaderMaterial({
+    uniforms,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    vertexShader: `uniform vec4 bounds; uniform vec3 globe; uniform mat3 basis; attribute float countryId; varying float front; varying float id;
+      void main(){vec3 v=vec3(dot(position,basis[0]),dot(position,basis[1]),dot(position,basis[2])); front=v.z; id=countryId;
+      vec2 p=globe.xy+vec2(v.x,-v.y)*globe.z; vec2 uv=(p-bounds.xy)/(bounds.zw-bounds.xy); gl_Position=vec4(uv.x*2.-1.,1.-uv.y*2.,0.,1.);}`,
+    fragmentShader: `precision highp float; uniform sampler2D palette; varying float front; varying float id;
+      void main(){if(front<0.)discard; vec4 color=texture2D(palette,vec2((id+.5)/256.,.5)); if(color.a<.001)discard; gl_FragColor=color;}`,
+  });
+  let worker,
+    failed = false;
+  try {
+    worker = new Worker(new URL("./country-mesh-worker.js", import.meta.url), {
+      type: "module",
+    });
+  } catch {
+    failed = true;
+  }
+  let resolveReady;
+  if (worker)
+    worker.onmessage = ({ data }) => {
+      if (data.job !== job) return;
+      if (data.error) {
+        console.error(data.error);
+        failed = true;
+        resolveReady?.();
+        redraw();
+        return;
+      }
+      for (const mesh of [fillMesh, lines])
+        if (mesh) {
+          scene.remove(mesh);
+          mesh.geometry.dispose();
+        }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(data.positions, 3),
+      );
+      geometry.setAttribute(
+        "countryId",
+        new THREE.BufferAttribute(data.ids, 1),
+      );
+      fillMesh = new THREE.Mesh(geometry, vectorMaterial);
+      fillMesh.frustumCulled = false;
+      scene.add(fillMesh);
+      const lineGeometry = new THREE.BufferGeometry();
+      lineGeometry.setAttribute(
+        "position",
+        new THREE.BufferAttribute(data.strokeStarts, 3),
+      );
+      lineGeometry.setAttribute(
+        "endpoint",
+        new THREE.BufferAttribute(data.strokeEnds, 3),
+      );
+      lineGeometry.setAttribute(
+        "corner",
+        new THREE.BufferAttribute(data.strokeCorners, 2),
+      );
+      lines = new THREE.Mesh(lineGeometry, lineMaterial);
+      lines.frustumCulled = false;
+      lines.renderOrder = 1;
+      scene.add(lines);
+      resolveReady?.();
+      redraw();
+    };
+  if (worker)
+    worker.onerror = (error) => {
+      console.error(error);
+      failed = true;
+      resolveReady?.();
+      redraw();
+    };
   function build(features) {
+    if (failed) return;
+    resolveReady?.();
+    ready = new Promise((resolve) => {
+      resolveReady = resolve;
+    });
+    worker.postMessage({ features, job: ++job });
+  }
+  function buildInteriorAtlas(features) {
     const source = document.createElement("canvas");
     source.width = 4096;
     source.height = 2048;
@@ -106,53 +211,12 @@ export function mountGpuCountries(svg, projection) {
         .translate([2048, 1024]),
       ctx,
     );
-    const vertices = [];
-    const vector = (p) => {
-      const lon = (p[0] * Math.PI) / 180,
-        lat = (p[1] * Math.PI) / 180;
-      return [
-        Math.cos(lat) * Math.cos(lon),
-        Math.cos(lat) * Math.sin(lon),
-        Math.sin(lat),
-      ];
-    };
     features.forEach((f, i) => {
-      const polygons =
-        f.geometry.type === "Polygon"
-          ? [f.geometry.coordinates]
-          : f.geometry.coordinates;
-      for (const polygon of polygons)
-        for (const ring of polygon)
-          for (let j = 1; j < ring.length; j++) {
-            const start = ring[j - 1],
-              end = ring[j],
-              distance = globalThis.d3.geoDistance(start, end);
-            const steps = Math.max(1, Math.ceil(distance / (Math.PI / 360)));
-            const interpolate = globalThis.d3.geoInterpolate(start, end);
-            for (let k = 0; k < steps; k++)
-              vertices.push(
-                ...vector(interpolate(k / steps)),
-                ...vector(interpolate((k + 1) / steps)),
-              );
-          }
       ctx.beginPath();
       geo(f);
       ctx.fillStyle = "rgb(" + (i + 1) + ",0,0)";
       ctx.fill();
     });
-    if (lines) {
-      scene.remove(lines);
-      lines.geometry.dispose();
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(vertices, 3),
-    );
-    lines = new THREE.LineSegments(geometry, lineMaterial);
-    lines.frustumCulled = false;
-    lines.renderOrder = 1;
-    scene.add(lines);
     texture?.dispose();
     texture = new THREE.CanvasTexture(source);
     texture.minFilter = THREE.NearestFilter;
@@ -161,8 +225,17 @@ export function mountGpuCountries(svg, projection) {
     uniforms.atlas.value = texture;
   }
   return {
-    draw(features, color, opacity, bounds, interior = false) {
+    whenReady: () => ready,
+    draw(
+      features,
+      color,
+      opacity,
+      bounds,
+      interior = false,
+      satellite = false,
+    ) {
       uniforms.interior.value = interior ? 1 : 0;
+      uniforms.satellite.value = satellite && !interior ? 1 : 0;
       if (
         features.length !== previous.length ||
         features.some((f, i) => f !== previous[i])
@@ -171,6 +244,12 @@ export function mountGpuCountries(svg, projection) {
         build(features);
       }
       if (!features.length) return;
+      fillPlane.visible = !!interior || failed;
+      if (fillMesh) fillMesh.visible = !interior && !failed;
+      if ((interior || failed) && atlasFeatures !== previous) {
+        buildInteriorAtlas(features);
+        atlasFeatures = previous;
+      }
       const styles = getComputedStyle(document.body),
         resolve = (value) =>
           value.startsWith("var(")
@@ -190,7 +269,9 @@ export function mountGpuCountries(svg, projection) {
       });
       paletteTexture.needsUpdate = true;
       uniforms.border.value.set(
-        styles.getPropertyValue("--ocean").trim() || "#203a52",
+        satellite
+          ? "#e9f3ff"
+          : styles.getPropertyValue("--ocean").trim() || "#203a52",
       );
       uniforms.bounds.value.fromArray(bounds);
       uniforms.globe.value.set(...projection.translate(), projection.scale());
@@ -217,6 +298,7 @@ export function mountGpuCountries(svg, projection) {
       const rect = (svgFrame ? layer.node() : canvas).getBoundingClientRect(),
         w = Math.max(1, Math.round(rect.width)),
         h = Math.max(1, Math.round(rect.height));
+      uniforms.viewport.value.set(w, h);
       const size = renderer.getSize(new THREE.Vector2());
       if (size.x !== w || size.y !== h) renderer.setSize(w, h, false);
       renderer.render(scene, camera);

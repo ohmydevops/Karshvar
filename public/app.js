@@ -442,7 +442,7 @@ const grid = svg
   .attr("stroke-opacity", 0.08)
   .attr("stroke-width", 0.6);
 const gpuCountries = ["play", "explore"].includes(page)
-  ? mountGpuCountries(svg, projection)
+  ? mountGpuCountries(svg, projection, queueDraw)
   : null;
 const land = svg.append("g");
 const shadow = svg
@@ -647,6 +647,7 @@ function draw(animating = false) {
         : 1,
     [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
     antipodeMode?.active,
+    satellite.active,
   );
   const geometryKey = JSON.stringify([
     rotation,
@@ -2320,6 +2321,7 @@ if (["continents", "play", "results", "explore"].includes(page)) {
     await document.fonts?.ready;
     labelsNeedMeasurement = true;
     draw();
+    await gpuCountries?.whenReady();
     await drawMarineLabels?.whenSettled();
     draw();
     if (mapLoading) {
