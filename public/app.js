@@ -1,4 +1,5 @@
 import { toggleComparison, compareCopy } from "./compare.js";
+import { brandName } from "./brand.js";
 import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
 import { interiorLabelPoint } from "./label-anchor.js";
@@ -9,7 +10,7 @@ import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
 import { modeCopy, modeRecommendation } from "./mode-copy.js";
-import { countrySetupCopy } from "./country-setup.js";
+import { bindStartingCountry, countrySetupCopy } from "./country-setup.js";
 import { nearbyOrder, restoreNearbySession } from "./nearby.js";
 import { bindCountrySuggestions } from "./suggestions.js";
 import { countryAliases, localizedCountryAliases } from "./country-aliases.js";
@@ -1064,8 +1065,7 @@ function localize() {
         ? seoCopy[lang][0]
         : `${page === "about" ? aboutCopy[lang][0] : pageCopy[lang][page]} — Karshvar`;
   document.querySelector(".brand").href = pagePath(lang);
-  document.querySelector(".brand-name").textContent =
-    lang === "fa" ? "کَرشوَر" : "Karshvar";
+  document.querySelector(".brand-name").textContent = brandName(lang);
   $("startGame").textContent = pageCopy[lang].start;
   $("startGame").href = pagePath(lang, "modes");
   $("welcomeTitle").textContent = pageCopy[lang].homeTitle;
@@ -1230,12 +1230,6 @@ function renderContinents() {
     button.className = "primary";
     button.textContent = pageCopy[lang].start;
     button.disabled = true;
-    let selectedCountry = null;
-    input.addEventListener("input", () => {
-      selectedCountry = null;
-      button.disabled = true;
-      button.textContent = pageCopy[lang].start;
-    });
     const candidates = features.map((f) => ({
       id: f.id,
       label: name(f),
@@ -1244,22 +1238,19 @@ function renderContinents() {
         lang,
       ),
     }));
-    bindCountrySuggestions(
+    bindStartingCountry({
       input,
       list,
-      () => candidates,
-      () => lang,
-      (country) => {
-        selectedCountry = country.id;
-        button.disabled = false;
-        button.textContent = copy.start.replace("{country}", country.label);
+      button,
+      candidates,
+      language: lang,
+      copy,
+      startLabel: pageCopy[lang].start,
+      onStart: (id) => {
+        track("country-select", { mode: "country", country: id });
+        navigate("play", "country:" + id);
       },
-    );
-    button.onclick = () => {
-      if (!selectedCountry) return;
-      track("country-select", { mode: "country", country: selectedCountry });
-      navigate("play", "country:" + selectedCountry);
-    };
+    });
     entry.append(input, list);
     const hint = document.createElement("p");
     hint.className = "setup-hint";

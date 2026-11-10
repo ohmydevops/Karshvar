@@ -1,8 +1,18 @@
 // The build writes the same version into the online and offline asset packs.
+import { brandName } from "./brand.js";
+
+const menuFooter = document.querySelector("#appMenu .drawer-footer");
+if (menuFooter) {
+  const name = document.createElement("span");
+  name.lang = document.documentElement.lang;
+  name.dir = name.lang === "fa" ? "rtl" : "ltr";
+  name.textContent = brandName(name.lang);
+  menuFooter.replaceChildren(name);
+}
 fetch(new URL("./build-info.json", import.meta.url))
   .then((response) => (response.ok ? response.json() : null))
   .then((info) => {
-    const footer = document.querySelector("body > footer");
+    const footer = document.querySelector("#appMenu .drawer-footer");
     if (!footer || !info?.version || footer.querySelector(".build-version"))
       return;
     const version = document.createElement("span");

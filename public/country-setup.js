@@ -1,9 +1,69 @@
+import { matches } from "./logic.js";
+import { bindCountrySuggestions } from "./suggestions.js";
+
+export function bindStartingCountry({
+  input,
+  list,
+  button,
+  candidates,
+  language,
+  copy,
+  startLabel,
+  onStart,
+}) {
+  let selected = null;
+  let composing = false;
+  function resolve() {
+    if (composing) return null;
+    const accepts = (country) =>
+      matches(input.value, [country.label, ...country.aliases]);
+    if (selected && candidates.includes(selected) && accepts(selected))
+      return selected;
+    const exact = candidates.filter(accepts);
+    return exact.length === 1 ? exact[0] : null;
+  }
+  function sync() {
+    selected = resolve();
+    button.disabled = !selected;
+    button.textContent = selected
+      ? copy.start.replace("{country}", selected.label)
+      : startLabel;
+    return selected;
+  }
+  input.addEventListener("compositionstart", () => {
+    composing = true;
+    sync();
+  });
+  input.addEventListener("compositionend", () => {
+    composing = false;
+    sync();
+  });
+  input.addEventListener("input", sync);
+  input.addEventListener("change", sync);
+  bindCountrySuggestions(
+    input,
+    list,
+    () => candidates,
+    () => language,
+    (country) => {
+      composing = false;
+      selected = country;
+      sync();
+    },
+  );
+  button.onclick = () => {
+    const country = sync();
+    if (country) onStart(country.id);
+  };
+  sync();
+}
+
 export const countrySetupCopy = {
   fa: {
     step: "آماده‌سازی بازی",
     title: "کشور خودت را برای شروع انتخاب کن",
     label: "کشور",
-    placeholder: "مثلاً ایران…",
+    placeholder: "به فارسی بنویس، مثلاً ایران…",
     hint: "از همسایه‌ها شروع می‌کنی و به کشورهای دورتر می‌رسی.",
     start: "شروع بازی از {country}",
   },

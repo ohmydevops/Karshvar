@@ -36,7 +36,8 @@ export function bindCountrySuggestions(
   onSelect,
 ) {
   let active = -1,
-    results = [];
+    results = [],
+    touching = false;
   function close() {
     list.hidden = true;
     list.replaceChildren();
@@ -45,8 +46,7 @@ export function bindCountrySuggestions(
     active = -1;
     results = [];
   }
-  function choose(index) {
-    const result = results[index];
+  function choose(result) {
     if (!result) return;
     input.value = result.label;
     close();
@@ -75,8 +75,46 @@ export function bindCountrySuggestions(
       option.setAttribute("role", "option");
       option.setAttribute("aria-selected", "false");
       option.textContent = result.label;
-      option.addEventListener("pointerdown", (e) => e.preventDefault());
-      option.addEventListener("click", () => choose(index));
+      let consumed = false,
+        start = null;
+      const select = () => {
+        if (consumed) return;
+        consumed = true;
+        touching = false;
+        choose(result);
+      };
+      option.addEventListener("pointerdown", (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        e.preventDefault();
+        if (e.pointerType === "touch" || e.pointerType === "pen") {
+          touching = true;
+          start = [e.clientX, e.clientY];
+          option.setPointerCapture?.(e.pointerId);
+        }
+      });
+      option.addEventListener("pointermove", (e) => {
+        if (
+          start &&
+          Math.hypot(e.clientX - start[0], e.clientY - start[1]) > 10
+        ) {
+          start = null;
+          consumed = true;
+        }
+      });
+      option.addEventListener("pointerup", () => {
+        if (start) select();
+        else if (touching) {
+          touching = false;
+          close();
+        }
+      });
+      option.addEventListener("pointercancel", () => {
+        consumed = true;
+        start = null;
+        touching = false;
+        close();
+      });
+      option.addEventListener("click", select);
       list.append(option);
     });
     list.hidden = !results.length;
@@ -87,8 +125,11 @@ export function bindCountrySuggestions(
   });
   input.addEventListener("compositionend", update);
   input.addEventListener("focus", update);
-  input.addEventListener("blur", close);
+  input.addEventListener("blur", () => {
+    if (!touching) close();
+  });
   input.addEventListener("keydown", (event) => {
+    if (event.isComposing || event.keyCode === 229) return;
     if (list.hidden) return;
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
@@ -101,7 +142,7 @@ export function bindCountrySuggestions(
       );
     } else if (event.key === "Enter" && active >= 0) {
       event.preventDefault();
-      choose(active);
+      choose(results[active]);
     } else if (event.key === "Escape") {
       event.preventDefault();
       close();

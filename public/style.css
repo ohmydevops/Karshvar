@@ -2040,6 +2040,15 @@ footer.simple-footer {
     monospace;
   letter-spacing: 0;
 }
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.drawer-footer .build-version {
+  margin-inline-start: 0;
+}
 html[data-page="home"] footer.simple-footer {
   border-top: 0;
   min-height: 40px;
@@ -2153,8 +2162,8 @@ html[data-page="sources"] main {
   max-height: min(240px, 35dvh);
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--bg);
-  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line));
   border-radius: var(--radius);
   box-shadow: 0 8px 24px #0003;
   padding: 4px;

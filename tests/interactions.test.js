@@ -292,6 +292,110 @@ class SuggestionElement extends EventTarget {
     return event;
   }
 }
+import {
+  bindStartingCountry,
+  countrySetupCopy,
+} from "../public/country-setup.js";
+function setupFixture(
+  candidates = [{ id: "364", label: "ایران", aliases: ["Iran"] }],
+) {
+  const input = new SuggestionElement(),
+    list = new SuggestionElement(),
+    button = new SuggestionElement();
+  input.ownerDocument = { createElement: () => new SuggestionElement() };
+  const starts = [];
+  bindStartingCountry({
+    input,
+    list,
+    button,
+    candidates,
+    language: "fa",
+    copy: countrySetupCopy.fa,
+    startLabel: "شروع بازی",
+    onStart: (id) => starts.push(id),
+  });
+  return { input, list, button, starts };
+}
+test("exact country names and aliases enable start, edits and empty text invalidate it", () => {
+  const f = setupFixture();
+  for (const value of ["ایران", "ايران", " Iran "]) {
+    f.input.value = value;
+    f.input.send("input");
+    assert.equal(f.button.disabled, false);
+    f.button.onclick();
+    assert.equal(f.starts.at(-1), "364");
+  }
+  for (const value of ["ای", "", "unknown"]) {
+    f.input.value = value;
+    f.input.send("input");
+    assert.equal(f.button.disabled, true);
+  }
+});
+test("selected country survives duplicate input and start revalidates current value", () => {
+  const f = setupFixture();
+  f.input.value = "ای";
+  f.input.send("input");
+  f.list.children[0].send("click");
+  f.input.send("input");
+  assert.equal(f.button.disabled, false);
+  f.button.onclick();
+  assert.deepEqual(f.starts, ["364"]);
+  f.input.value = "invalid";
+  f.button.onclick();
+  assert.deepEqual(f.starts, ["364"]);
+  assert.equal(f.button.disabled, true);
+});
+test("composition waits for committed text; ambiguous aliases never auto-select", () => {
+  const f = setupFixture();
+  f.input.send("compositionstart");
+  f.input.value = "ایران";
+  f.input.send("input", { isComposing: true });
+  assert.equal(f.button.disabled, true);
+  f.input.send("compositionend");
+  assert.equal(f.button.disabled, false);
+  const ambiguous = setupFixture([
+    { id: "1", label: "A", aliases: ["same"] },
+    { id: "2", label: "B", aliases: ["same"] },
+  ]);
+  ambiguous.input.value = "same";
+  ambiguous.input.send("input");
+  assert.equal(ambiguous.button.disabled, true);
+});
+test("touch selection survives blur and a following click selects only once", () => {
+  const f = setupFixture();
+  f.input.value = "ای";
+  f.input.send("input");
+  const option = f.list.children[0];
+  option.send("pointerdown", {
+    pointerType: "touch",
+    clientX: 10,
+    clientY: 10,
+  });
+  f.input.send("blur");
+  option.send("pointerup");
+  assert.equal(f.input.value, "ایران");
+  assert.equal(f.button.disabled, false);
+  f.input.value = "";
+  option.send("click");
+  assert.equal(f.input.value, "");
+});
+for (const cancel of ["pointermove", "pointercancel"])
+  test("touch scroll/cancel never selects: " + cancel, () => {
+    const f = setupFixture();
+    f.input.value = "ای";
+    f.input.send("input");
+    const option = f.list.children[0];
+    option.send("pointerdown", {
+      pointerType: "touch",
+      clientX: 10,
+      clientY: 10,
+    });
+    option.send(cancel, { clientX: 10, clientY: 60 });
+    option.send("pointerup");
+    option.send("click");
+    assert.equal(f.input.value, "ای");
+    assert.equal(f.button.disabled, true);
+  });
 for (const method of ["pointer", "keyboard"])
   test("suggestion selection submits exactly once by " + method, () => {
     const input = new SuggestionElement(),
