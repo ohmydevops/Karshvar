@@ -14,9 +14,9 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Guess the country on the map. Discover a new corner of the world with every turn."
+      content="Discover countries and geography. Find countries on the map. Natural history. Human history."
     />
-    <title>Karshvar — Country guessing game</title>
+    <title>Karshvar, For the curious about the world</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <script>
       // Apply the saved theme before styles or page content can paint.
@@ -103,10 +103,13 @@
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Karshvar" />
-    <meta property="og:title" content="Karshvar — Country guessing game" />
+    <meta
+      property="og:title"
+      content="Karshvar, For the curious about the world"
+    />
     <meta
       property="og:description"
-      content="Guess the country on the map. Discover a new corner of the world with every turn."
+      content="Discover countries and geography. Find countries on the map. Natural history. Human history."
     />
     <meta property="og:locale" content="en_US" />
     <meta
@@ -124,10 +127,13 @@
       content="Get to know the world through a simple game."
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Karshvar — Country guessing game" />
+    <meta
+      name="twitter:title"
+      content="Karshvar, For the curious about the world"
+    />
     <meta
       name="twitter:description"
-      content="Guess the country on the map. Discover a new corner of the world with every turn."
+      content="Discover countries and geography. Find countries on the map. Natural history. Human history."
     />
     <meta
       name="twitter:image"
@@ -137,11 +143,11 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Karshvar — Country guessing game",
-        "description": "Guess the country on the map. Discover a new corner of the world with every turn.",
+        "name": "Karshvar, For the curious about the world",
+        "description": "Discover countries and geography. Find countries on the map. Natural history. Human history.",
         "url": "https://karshvar.ir/en/",
         "inLanguage": "en",
-        "applicationCategory": "GameApplication",
+        "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any",
         "isAccessibleForFree": true
       }
@@ -292,15 +298,7 @@
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
         <div class="welcome-copy">
-          <h1 id="welcomeTitle">How well do you know the world?</h1>
-          <p id="welcomeDescription">
-            Guess the country on the map. Discover a new corner of the world
-            with every turn.
-          </p>
-          <div class="welcome-actions">
-            <a id="startGame" class="primary" href="./en/modes/">Start game</a
-            ><a class="home-explore" href="./en/explore/">Explore the map</a>
-          </div>
+          <h1 id="welcomeTitle">Karshvar, For the curious about the world</h1>
         </div>
         <div class="welcome-art" aria-hidden="true">
           <img
@@ -311,7 +309,87 @@
             loading="lazy"
           />
         </div>
+        <a class="discovery-scroll" href="./en/#discover"
+          >Discover more<span aria-hidden="true">⌄</span></a
+        >
       </section>
+      <div id="discover" class="home-discover">
+        <section class="discovery-row" aria-labelledby="atlas-title">
+          <div class="discovery-copy">
+            <h2 id="atlas-title">World atlas</h2>
+            <p>Discover countries and geography</p>
+            <a class="discovery-action home-explore" href="./en/explore/"
+              >Explore the atlas</a
+            >
+          </div>
+          <figure class="discovery-visual atlas">
+            <img
+              src="./art/home-atlas.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="geography-title">
+          <div class="discovery-copy">
+            <h2 id="geography-title">Geography game</h2>
+            <p>Find countries on the map</p>
+            <a id="startGame" class="discovery-action" href="./en/modes/"
+              >Start game</a
+            >
+          </div>
+          <figure class="discovery-visual geography">
+            <img
+              src="./art/home-game.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="natural-history-title">
+          <div class="discovery-copy">
+            <h2 id="natural-history-title">Natural history</h2>
+            <p>Discover the natural history of Earth</p>
+            <button class="discovery-action" disabled>Coming soon</button>
+          </div>
+          <figure class="discovery-visual natural-history">
+            <img
+              src="./art/home-natural-history.webp"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="human-history-title">
+          <div class="discovery-copy">
+            <h2 id="human-history-title">Human history</h2>
+            <p>Explore the events and stories of humanity</p>
+            <button class="discovery-action" disabled>Coming soon</button>
+          </div>
+          <figure class="discovery-visual human-history">
+            <img
+              src="./art/home-human-history.webp"
+              alt="Drawings from the Shahr-e Sukhteh vessel"
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+      </div>
       <section class="intro" hidden>
         <h1>Where would you like to play?</h1>
         <p>Choose a continent, then guess its highlighted countries.</p>

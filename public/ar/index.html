@@ -14,9 +14,9 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة."
+      content="تعرّف على البلدان والجغرافيا. اعثر على البلدان على الخريطة. التاريخ الطبيعي. تاريخ الشعوب."
     />
-    <title>Karshvar — لعبة تخمين البلدان</title>
+    <title>Karshvar، للفضول حول العالم</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <script>
       // Apply the saved theme before styles or page content can paint.
@@ -103,10 +103,10 @@
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Karshvar" />
-    <meta property="og:title" content="Karshvar — لعبة تخمين البلدان" />
+    <meta property="og:title" content="Karshvar، للفضول حول العالم" />
     <meta
       property="og:description"
-      content="خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة."
+      content="تعرّف على البلدان والجغرافيا. اعثر على البلدان على الخريطة. التاريخ الطبيعي. تاريخ الشعوب."
     />
     <meta property="og:locale" content="ar_SA" />
     <meta
@@ -124,10 +124,10 @@
       content="تعرّف على العالم من خلال لعبة بسيطة."
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Karshvar — لعبة تخمين البلدان" />
+    <meta name="twitter:title" content="Karshvar، للفضول حول العالم" />
     <meta
       name="twitter:description"
-      content="خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة."
+      content="تعرّف على البلدان والجغرافيا. اعثر على البلدان على الخريطة. التاريخ الطبيعي. تاريخ الشعوب."
     />
     <meta
       name="twitter:image"
@@ -137,11 +137,11 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Karshvar — لعبة تخمين البلدان",
-        "description": "خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة.",
+        "name": "Karshvar، للفضول حول العالم",
+        "description": "تعرّف على البلدان والجغرافيا. اعثر على البلدان على الخريطة. التاريخ الطبيعي. تاريخ الشعوب.",
         "url": "https://karshvar.ir/ar/",
         "inLanguage": "ar",
-        "applicationCategory": "GameApplication",
+        "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any",
         "isAccessibleForFree": true
       }
@@ -292,14 +292,7 @@
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
         <div class="welcome-copy">
-          <h1 id="welcomeTitle">كم تعرف عن العالم؟</h1>
-          <p id="welcomeDescription">
-            خمّن البلد على الخريطة، واكتشف ركنًا جديدًا من العالم في كل مرة.
-          </p>
-          <div class="welcome-actions">
-            <a id="startGame" class="primary" href="./ar/modes/">ابدأ اللعب</a
-            ><a class="home-explore" href="./ar/explore/">استكشف الخريطة</a>
-          </div>
+          <h1 id="welcomeTitle">Karshvar، للفضول حول العالم</h1>
         </div>
         <div class="welcome-art" aria-hidden="true">
           <img
@@ -310,7 +303,87 @@
             loading="lazy"
           />
         </div>
+        <a class="discovery-scroll" href="./ar/#discover"
+          >اكتشف المزيد<span aria-hidden="true">⌄</span></a
+        >
       </section>
+      <div id="discover" class="home-discover">
+        <section class="discovery-row" aria-labelledby="atlas-title">
+          <div class="discovery-copy">
+            <h2 id="atlas-title">أطلس العالم</h2>
+            <p>تعرّف على البلدان والجغرافيا</p>
+            <a class="discovery-action home-explore" href="./ar/explore/"
+              >استكشف الأطلس</a
+            >
+          </div>
+          <figure class="discovery-visual atlas">
+            <img
+              src="./art/home-atlas.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="geography-title">
+          <div class="discovery-copy">
+            <h2 id="geography-title">لعبة الجغرافيا</h2>
+            <p>اعثر على البلدان على الخريطة</p>
+            <a id="startGame" class="discovery-action" href="./ar/modes/"
+              >ابدأ اللعب</a
+            >
+          </div>
+          <figure class="discovery-visual geography">
+            <img
+              src="./art/home-game.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="natural-history-title">
+          <div class="discovery-copy">
+            <h2 id="natural-history-title">التاريخ الطبيعي</h2>
+            <p>تعرّف على التاريخ الطبيعي للأرض</p>
+            <button class="discovery-action" disabled>قريبًا</button>
+          </div>
+          <figure class="discovery-visual natural-history">
+            <img
+              src="./art/home-natural-history.webp"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="human-history-title">
+          <div class="discovery-copy">
+            <h2 id="human-history-title">تاريخ الشعوب</h2>
+            <p>تعرّف على أحداث البشر وقصصهم</p>
+            <button class="discovery-action" disabled>قريبًا</button>
+          </div>
+          <figure class="discovery-visual human-history">
+            <img
+              src="./art/home-human-history.webp"
+              alt="رسوم إناء شهر سوخته"
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+      </div>
       <section class="intro" hidden>
         <h1>أين تود أن تلعب؟</h1>
         <p>اختر قارة، ثم خمن أسماء البلدان المميزة فيها.</p>

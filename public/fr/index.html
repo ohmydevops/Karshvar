@@ -14,9 +14,9 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Devinez le pays sur la carte. À chaque tour, découvrez un nouveau coin du monde."
+      content="Découvrez les pays et la géographie. Retrouvez les pays sur la carte. Histoire naturelle. Histoire des peuples."
     />
-    <title>Karshvar — Devinez les pays</title>
+    <title>Karshvar, Pour les curieux du monde</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <script>
       // Apply the saved theme before styles or page content can paint.
@@ -103,10 +103,10 @@
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Karshvar" />
-    <meta property="og:title" content="Karshvar — Devinez les pays" />
+    <meta property="og:title" content="Karshvar, Pour les curieux du monde" />
     <meta
       property="og:description"
-      content="Devinez le pays sur la carte. À chaque tour, découvrez un nouveau coin du monde."
+      content="Découvrez les pays et la géographie. Retrouvez les pays sur la carte. Histoire naturelle. Histoire des peuples."
     />
     <meta property="og:locale" content="fr_FR" />
     <meta
@@ -124,10 +124,10 @@
       content="Découvrez le monde avec un jeu simple."
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Karshvar — Devinez les pays" />
+    <meta name="twitter:title" content="Karshvar, Pour les curieux du monde" />
     <meta
       name="twitter:description"
-      content="Devinez le pays sur la carte. À chaque tour, découvrez un nouveau coin du monde."
+      content="Découvrez les pays et la géographie. Retrouvez les pays sur la carte. Histoire naturelle. Histoire des peuples."
     />
     <meta
       name="twitter:image"
@@ -137,11 +137,11 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Karshvar — Devinez les pays",
-        "description": "Devinez le pays sur la carte. À chaque tour, découvrez un nouveau coin du monde.",
+        "name": "Karshvar, Pour les curieux du monde",
+        "description": "Découvrez les pays et la géographie. Retrouvez les pays sur la carte. Histoire naturelle. Histoire des peuples.",
         "url": "https://karshvar.ir/fr/",
         "inLanguage": "fr",
-        "applicationCategory": "GameApplication",
+        "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any",
         "isAccessibleForFree": true
       }
@@ -293,15 +293,7 @@
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
         <div class="welcome-copy">
-          <h1 id="welcomeTitle">Connaissez-vous bien le monde ?</h1>
-          <p id="welcomeDescription">
-            Devinez le pays sur la carte. À chaque tour, découvrez un nouveau
-            coin du monde.
-          </p>
-          <div class="welcome-actions">
-            <a id="startGame" class="primary" href="./fr/modes/">Jouer</a
-            ><a class="home-explore" href="./fr/explore/">Explorer la carte</a>
-          </div>
+          <h1 id="welcomeTitle">Karshvar, Pour les curieux du monde</h1>
         </div>
         <div class="welcome-art" aria-hidden="true">
           <img
@@ -312,7 +304,87 @@
             loading="lazy"
           />
         </div>
+        <a class="discovery-scroll" href="./fr/#discover"
+          >En découvrir plus<span aria-hidden="true">⌄</span></a
+        >
       </section>
+      <div id="discover" class="home-discover">
+        <section class="discovery-row" aria-labelledby="atlas-title">
+          <div class="discovery-copy">
+            <h2 id="atlas-title">Atlas du monde</h2>
+            <p>Découvrez les pays et la géographie</p>
+            <a class="discovery-action home-explore" href="./fr/explore/"
+              >Explorer l’atlas</a
+            >
+          </div>
+          <figure class="discovery-visual atlas">
+            <img
+              src="./art/home-atlas.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="geography-title">
+          <div class="discovery-copy">
+            <h2 id="geography-title">Jeu de géographie</h2>
+            <p>Retrouvez les pays sur la carte</p>
+            <a id="startGame" class="discovery-action" href="./fr/modes/"
+              >Jouer</a
+            >
+          </div>
+          <figure class="discovery-visual geography">
+            <img
+              src="./art/home-game.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="natural-history-title">
+          <div class="discovery-copy">
+            <h2 id="natural-history-title">Histoire naturelle</h2>
+            <p>Découvrez l’histoire naturelle de la Terre</p>
+            <button class="discovery-action" disabled>Bientôt</button>
+          </div>
+          <figure class="discovery-visual natural-history">
+            <img
+              src="./art/home-natural-history.webp"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="human-history-title">
+          <div class="discovery-copy">
+            <h2 id="human-history-title">Histoire des peuples</h2>
+            <p>Découvrez les événements et les récits de l’humanité</p>
+            <button class="discovery-action" disabled>Bientôt</button>
+          </div>
+          <figure class="discovery-visual human-history">
+            <img
+              src="./art/home-human-history.webp"
+              alt="Dessins du vase de Shahr-e Sukhteh"
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+      </div>
       <section class="intro" hidden>
         <h1>Où voulez-vous jouer ?</h1>
         <p>Choisissez un continent, puis devinez ses pays en surbrillance.</p>

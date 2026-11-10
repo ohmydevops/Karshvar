@@ -323,11 +323,24 @@ export async function mountHomeGlobe(host) {
     let suspended = false;
     let meteorTimer = null;
     const scheduleMeteor = () => {
-      if (disposed || suspended || document.hidden || motion.matches) return;
+      if (
+        disposed ||
+        suspended ||
+        !visible ||
+        document.hidden ||
+        motion.matches
+      )
+        return;
       meteorTimer = setTimeout(
         () => {
           meteorTimer = null;
-          if (disposed || suspended || document.hidden || motion.matches)
+          if (
+            disposed ||
+            suspended ||
+            !visible ||
+            document.hidden ||
+            motion.matches
+          )
             return;
           spawnMeteor();
           scheduleMeteor();
@@ -336,7 +349,14 @@ export async function mountHomeGlobe(host) {
       );
     };
     const launchMeteor = (event) => {
-      if (disposed || suspended || document.hidden || motion.matches) return;
+      if (
+        disposed ||
+        suspended ||
+        !visible ||
+        document.hidden ||
+        motion.matches
+      )
+        return;
       if (
         event.button !== 0 ||
         event.target.closest(
@@ -412,7 +432,7 @@ export async function mountHomeGlobe(host) {
       // Every flight starts outside the viewport, including the first visit.
       flight.currentTime = 0;
       flight.onfinish = () => fly(ship, index);
-      if (document.hidden || motion.matches) flight.pause();
+      if (!visible || document.hidden || motion.matches) flight.pause();
     };
     ships.forEach((ship, index) => fly(ship, index, true));
     const frameInterval = 32;
@@ -483,16 +503,16 @@ export async function mountHomeGlobe(host) {
     }
     function updateAnimation() {
       if (disposed || suspended) return;
-      if (document.hidden || motion.matches) {
+      if (!visible || document.hidden || motion.matches) {
         clearTimeout(meteorTimer);
         meteorTimer = null;
       } else if (meteorTimer === null) scheduleMeteor();
       traffic.setAttribute(
         "data-paused",
-        String(document.hidden || motion.matches),
+        String(!visible || document.hidden || motion.matches),
       );
       for (const flight of flights.values()) {
-        if (document.hidden || motion.matches) flight.pause();
+        if (!visible || document.hidden || motion.matches) flight.pause();
         else flight.play();
       }
       cancelAnimationFrame(frame);
@@ -505,7 +525,7 @@ export async function mountHomeGlobe(host) {
       visible = entry.isIntersecting;
       updateAnimation();
     });
-    visibilityObserver.observe(host);
+    visibilityObserver.observe(host.closest?.(".welcome") || host);
     document.addEventListener("visibilitychange", updateAnimation);
     motion.addEventListener("change", updateAnimation);
     const dragSensitivity = 0.009;

@@ -14,9 +14,9 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="Угадай страну на карте. Каждый ход — новый уголок мира."
+      content="Знакомьтесь со странами и географией. Находите страны на карте. Естественная история. История народов."
     />
-    <title>Karshvar — Угадайте страну</title>
+    <title>Karshvar, Для тех, кому интересен мир</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <script>
       // Apply the saved theme before styles or page content can paint.
@@ -103,10 +103,10 @@
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Karshvar" />
-    <meta property="og:title" content="Karshvar — Угадайте страну" />
+    <meta property="og:title" content="Karshvar, Для тех, кому интересен мир" />
     <meta
       property="og:description"
-      content="Угадай страну на карте. Каждый ход — новый уголок мира."
+      content="Знакомьтесь со странами и географией. Находите страны на карте. Естественная история. История народов."
     />
     <meta property="og:locale" content="ru_RU" />
     <meta
@@ -124,10 +124,13 @@
       content="Узнавайте мир с помощью простой игры."
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Karshvar — Угадайте страну" />
+    <meta
+      name="twitter:title"
+      content="Karshvar, Для тех, кому интересен мир"
+    />
     <meta
       name="twitter:description"
-      content="Угадай страну на карте. Каждый ход — новый уголок мира."
+      content="Знакомьтесь со странами и географией. Находите страны на карте. Естественная история. История народов."
     />
     <meta
       name="twitter:image"
@@ -137,11 +140,11 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Karshvar — Угадайте страну",
-        "description": "Угадай страну на карте. Каждый ход — новый уголок мира.",
+        "name": "Karshvar, Для тех, кому интересен мир",
+        "description": "Знакомьтесь со странами и географией. Находите страны на карте. Естественная история. История народов.",
         "url": "https://karshvar.ir/ru/",
         "inLanguage": "ru",
-        "applicationCategory": "GameApplication",
+        "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any",
         "isAccessibleForFree": true
       }
@@ -293,14 +296,7 @@
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
         <div class="welcome-copy">
-          <h1 id="welcomeTitle">Как хорошо ты знаешь мир?</h1>
-          <p id="welcomeDescription">
-            Угадай страну на карте. Каждый ход — новый уголок мира.
-          </p>
-          <div class="welcome-actions">
-            <a id="startGame" class="primary" href="./ru/modes/">Начать игру</a
-            ><a class="home-explore" href="./ru/explore/">Исследовать карту</a>
-          </div>
+          <h1 id="welcomeTitle">Karshvar, Для тех, кому интересен мир</h1>
         </div>
         <div class="welcome-art" aria-hidden="true">
           <img
@@ -311,7 +307,87 @@
             loading="lazy"
           />
         </div>
+        <a class="discovery-scroll" href="./ru/#discover"
+          >Узнать больше<span aria-hidden="true">⌄</span></a
+        >
       </section>
+      <div id="discover" class="home-discover">
+        <section class="discovery-row" aria-labelledby="atlas-title">
+          <div class="discovery-copy">
+            <h2 id="atlas-title">Атлас мира</h2>
+            <p>Знакомьтесь со странами и географией</p>
+            <a class="discovery-action home-explore" href="./ru/explore/"
+              >Открыть атлас</a
+            >
+          </div>
+          <figure class="discovery-visual atlas">
+            <img
+              src="./art/home-atlas.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="geography-title">
+          <div class="discovery-copy">
+            <h2 id="geography-title">Географическая игра</h2>
+            <p>Находите страны на карте</p>
+            <a id="startGame" class="discovery-action" href="./ru/modes/"
+              >Начать игру</a
+            >
+          </div>
+          <figure class="discovery-visual geography">
+            <img
+              src="./art/home-game.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="natural-history-title">
+          <div class="discovery-copy">
+            <h2 id="natural-history-title">Естественная история</h2>
+            <p>Изучайте природную историю Земли</p>
+            <button class="discovery-action" disabled>Скоро</button>
+          </div>
+          <figure class="discovery-visual natural-history">
+            <img
+              src="./art/home-natural-history.webp"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="human-history-title">
+          <div class="discovery-copy">
+            <h2 id="human-history-title">История народов</h2>
+            <p>Знакомьтесь с событиями и судьбами людей</p>
+            <button class="discovery-action" disabled>Скоро</button>
+          </div>
+          <figure class="discovery-visual human-history">
+            <img
+              src="./art/home-human-history.webp"
+              alt="Рисунки на сосуде из Шахри-Сухте"
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+      </div>
       <section class="intro" hidden>
         <h1>Где хотите сыграть?</h1>
         <p>Выберите континент и угадывайте выделенные страны в нём.</p>

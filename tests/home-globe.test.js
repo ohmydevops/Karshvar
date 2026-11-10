@@ -353,8 +353,10 @@ test("home globe stops offscreen, in hidden tabs, and after disposal", async () 
   assert.equal(f.draws(), 2);
   f.visible(false);
   assert.equal(f.pending.size, 0);
+  assert.ok(f.flights.every((flight) => flight.state === "paused"));
   f.visible(true);
   assert.equal(f.pending.size, 1);
+  assert.ok(f.flights.every((flight) => flight.state === "running"));
   f.document.hidden = true;
   f.events.visibilitychange();
   assert.equal(f.pending.size, 0);

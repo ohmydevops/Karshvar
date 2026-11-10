@@ -14,9 +14,9 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن."
+      content="آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل."
     />
-    <title>کَرشوَر — بازی حدس کشور</title>
+    <title>کَرشوَر، برای کنجکاوی دربارهٔ دنیا</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <script>
       // Apply the saved theme before styles or page content can paint.
@@ -119,10 +119,10 @@
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Karshvar" />
-    <meta property="og:title" content="کَرشوَر — بازی حدس کشور" />
+    <meta property="og:title" content="کَرشوَر، برای کنجکاوی دربارهٔ دنیا" />
     <meta
       property="og:description"
-      content="کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن."
+      content="آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل."
     />
     <meta property="og:locale" content="fa_IR" />
     <meta
@@ -134,10 +134,10 @@
     <meta property="og:image:alt" content="با یک بازی ساده، دنیا رو بشناس." />
     <meta name="twitter:image:alt" content="با یک بازی ساده، دنیا رو بشناس." />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="کَرشوَر — بازی حدس کشور" />
+    <meta name="twitter:title" content="کَرشوَر، برای کنجکاوی دربارهٔ دنیا" />
     <meta
       name="twitter:description"
-      content="کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن."
+      content="آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل."
     />
     <meta
       name="twitter:image"
@@ -147,11 +147,11 @@
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "کَرشوَر — بازی حدس کشور",
-        "description": "کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن.",
+        "name": "کَرشوَر، برای کنجکاوی دربارهٔ دنیا",
+        "description": "آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل.",
         "url": "https://karshvar.ir/fa/",
         "inLanguage": "fa",
-        "applicationCategory": "GameApplication",
+        "applicationCategory": "EducationalApplication",
         "operatingSystem": "Any",
         "isAccessibleForFree": true
       }
@@ -302,14 +302,7 @@
       <p id="selectionStatus" role="status"></p>
       <section id="welcomePage" class="welcome">
         <div class="welcome-copy">
-          <h1 id="welcomeTitle">دنیا رو چقدر می‌شناسی؟</h1>
-          <p id="welcomeDescription">
-            کشور رو از روی نقشه حدس بزن؛ هر بار یه گوشه‌ی دنیا رو کشف کن.
-          </p>
-          <div class="welcome-actions">
-            <a id="startGame" class="primary" href="./fa/modes/">شروع بازی</a
-            ><a class="home-explore" href="./fa/explore/">کاوش نقشه</a>
-          </div>
+          <h1 id="welcomeTitle">کَرشوَر، برای کنجکاوی دربارهٔ دنیا</h1>
         </div>
         <div class="welcome-art" aria-hidden="true">
           <img
@@ -320,7 +313,87 @@
             loading="lazy"
           />
         </div>
+        <a class="discovery-scroll" href="./fa/#discover"
+          >بیشتر کشف کن<span aria-hidden="true">⌄</span></a
+        >
       </section>
+      <div id="discover" class="home-discover">
+        <section class="discovery-row" aria-labelledby="atlas-title">
+          <div class="discovery-copy">
+            <h2 id="atlas-title">اطلس جهان</h2>
+            <p>آشنایی با کشورها و جغرافیا</p>
+            <a class="discovery-action home-explore" href="./fa/explore/"
+              >ورود به اطلس</a
+            >
+          </div>
+          <figure class="discovery-visual atlas">
+            <img
+              src="./art/home-atlas.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="geography-title">
+          <div class="discovery-copy">
+            <h2 id="geography-title">بازی جغرافیا</h2>
+            <p>کشورها رو روی نقشه پیدا کن</p>
+            <a id="startGame" class="discovery-action" href="./fa/modes/"
+              >شروع بازی</a
+            >
+          </div>
+          <figure class="discovery-visual geography">
+            <img
+              src="./art/home-game.svg"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="natural-history-title">
+          <div class="discovery-copy">
+            <h2 id="natural-history-title">تاریخ طبیعی</h2>
+            <p>آشنایی با سرگذشت طبیعی زمین</p>
+            <button class="discovery-action" disabled>به‌زودی</button>
+          </div>
+          <figure class="discovery-visual natural-history">
+            <img
+              src="./art/home-natural-history.webp"
+              alt=""
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+
+        <section class="discovery-row" aria-labelledby="human-history-title">
+          <div class="discovery-copy">
+            <h2 id="human-history-title">تاریخ ملل</h2>
+            <p>آشنایی با اتفاقات و سرگذشت انسان‌ها</p>
+            <button class="discovery-action" disabled>به‌زودی</button>
+          </div>
+          <figure class="discovery-visual human-history">
+            <img
+              src="./art/home-human-history.webp"
+              alt="نقش‌های جام شهر سوخته"
+              width="720"
+              height="480"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </section>
+      </div>
       <section class="intro" hidden>
         <h1>دوست داری کجا بازی کنی؟</h1>
         <p>یک قاره انتخاب کن، بعد اسم کشورهایی که روشن می‌شن رو حدس بزن.</p>

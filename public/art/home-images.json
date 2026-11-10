@@ -1,0 +1,16 @@
+{
+  "home-natural-history.webp": {
+    "origin": "Generated for Karshvar with ImageGen",
+    "description": "Illustrative sedimentary rock strata"
+  },
+  "home-human-history.webp": {
+    "origin": "Generated for Karshvar with ImageGen",
+    "description": "Interpretive reconstruction inspired by the Shahr-e Sukhteh goat vessel; not an archival photograph"
+  },
+  "home-atlas.svg": {
+    "origin": "Generated locally by scripts/build-home.mjs from the existing public/data/countries.json"
+  },
+  "home-game.svg": {
+    "origin": "Generated locally by scripts/build-home.mjs from the existing public/data/countries.json"
+  }
+}
