@@ -14,12 +14,18 @@ self.addEventListener("install", (event) =>
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 20000);
             try {
+              const integrity = INTEGRITY[asset];
+              if (!integrity)
+                throw new Error("Missing offline integrity: " + asset);
               const url = new URL(asset, self.registration.scope);
               const requestUrl = new URL(url);
               if (url.pathname.endsWith(".css")) requestUrl.search = "?direct";
               const response = await fetch(requestUrl, {
                 cache: "reload",
                 signal: controller.signal,
+                // Fetch rejects stale or modified bytes before cache.put can
+                // write them, including successful (200) responses from a CDN.
+                integrity,
               });
               if (!response.ok)
                 throw new Error("Offline download failed: " + asset);

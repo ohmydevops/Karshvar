@@ -2,13 +2,38 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import vm from "node:vm";
 import { readFile } from "node:fs/promises";
-const source = await readFile(
-  process.env.KARSHVAR_WORKER || new URL("../public/sw.js", import.meta.url),
-  "utf8",
+import { createHash } from "node:crypto";
+import { pathToFileURL } from "node:url";
+import path from "node:path";
+const workerUrl = process.env.KARSHVAR_WORKER
+  ? pathToFileURL(path.resolve(process.env.KARSHVAR_WORKER))
+  : new URL("../public/sw.js", import.meta.url);
+const source = await readFile(workerUrl, "utf8");
+const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
+const integrity = JSON.parse(source.match(/const INTEGRITY=(\{.*?\});/s)[1]);
+const sri = (bytes) =>
+  "sha256-" + createHash("sha256").update(bytes).digest("base64");
+// Tiny network fixtures keep repeated lifecycle tests fast. The generated real
+// file manifest is independently checked against every file below.
+const bodies = new Map(
+  assets.map((asset) => [asset, Buffer.from("release 2: " + asset)]),
 );
-function worker({ fail = false, delayed = false, stalled = false } = {}) {
+bodies.set("favicon.svg", Buffer.from([0, 255, 13, 10, 128]));
+const fixtureIntegrity = Object.fromEntries(
+  [...bodies].map(([asset, bytes]) => [asset, sri(bytes)]),
+);
+function worker({
+  fail = false,
+  delayed = false,
+  stalled = false,
+  stale,
+  missingHash,
+  sharedStores,
+  version,
+} = {}) {
   const events = {},
-    stores = new Map();
+    stores = sharedStores || new Map();
+  const writes = [];
   let online = true,
     claimed = false;
   let active = 0,
@@ -21,6 +46,7 @@ function worker({ fail = false, delayed = false, stalled = false } = {}) {
       const store = stores.get(name);
       return {
         async put(url, response) {
+          writes.push(String(url));
           store.set(String(url), response.clone());
         },
         async match(url) {
@@ -35,7 +61,18 @@ function worker({ fail = false, delayed = false, stalled = false } = {}) {
       return stores.delete(name);
     },
   };
-  vm.runInNewContext(source, {
+  const expected = { ...fixtureIntegrity };
+  if (missingHash) delete expected[missingHash];
+  let workerSource = source.replace(
+    /const INTEGRITY=\{.*?\};/s,
+    `const INTEGRITY=${JSON.stringify(expected)};`,
+  );
+  if (version)
+    workerSource = workerSource.replace(
+      /const VERSION="[^"]*";/,
+      `const VERSION=${JSON.stringify(version)};`,
+    );
+  vm.runInNewContext(workerSource, {
     URL,
     Response,
     AbortController,
@@ -60,36 +97,55 @@ function worker({ fail = false, delayed = false, stalled = false } = {}) {
         events[name] = fn;
       },
     },
-    fetch: async (url, options) => {
+    fetch: async (url, options = {}) => {
       active++;
       peak = Math.max(peak, active);
-      if (stalled) {
-        await new Promise((_, reject) =>
-          options.signal.addEventListener(
-            "abort",
-            () => {
-              active--;
-              reject(Error("timeout"));
-            },
-            { once: true },
-          ),
+      try {
+        if (stalled) {
+          await new Promise((_, reject) =>
+            options.signal.addEventListener(
+              "abort",
+              () => {
+                reject(Error("timeout"));
+              },
+              { once: true },
+            ),
+          );
+        }
+        if (delayed) await new Promise((resolve) => setImmediate(resolve));
+        if (!online) throw Error("offline");
+        if (fail && String(url).includes("names.json"))
+          return new Response("", { status: 500 });
+        const asset = new URL(url.url || String(url)).pathname.slice(
+          "/game/".length,
         );
+        const body =
+          asset === stale
+            ? Buffer.from("old CDN release: " + asset)
+            : bodies.get(asset) || Buffer.from("missing asset");
+        // Exercise native Fetch integrity validation, without an external server.
+        // A 200 response containing old bytes must reject before cache.put.
+        const verified = await fetch(
+          "data:application/octet-stream;base64," + body.toString("base64"),
+          {
+            integrity: options.integrity,
+            signal: options.signal,
+          },
+        );
+        return new Response(verified.body, {
+          headers: {
+            "Content-Type": String(url).includes(".css")
+              ? "text/css"
+              : "text/plain",
+          },
+        });
+      } finally {
+        active--;
       }
-      if (delayed) await new Promise((resolve) => setImmediate(resolve));
-      active--;
-      if (!online) throw Error("offline");
-      if (fail && String(url).includes("names.json"))
-        return new Response("", { status: 500 });
-      return new Response(String(url), {
-        headers: {
-          "Content-Type": String(url).includes(".css")
-            ? "text/css"
-            : "text/plain",
-        },
-      });
     },
   });
   return {
+    writes,
     expireTimers() {
       for (const handler of [...timers.values()]) handler();
     },
@@ -132,6 +188,55 @@ function worker({ fail = false, delayed = false, stalled = false } = {}) {
     },
   };
 }
+test("generated integrity manifest matches every final file byte-for-byte", async () => {
+  assert.deepEqual(Object.keys(integrity), assets);
+  for (const asset of assets) {
+    const bytes = await readFile(new URL(asset, workerUrl));
+    assert.equal(integrity[asset], sri(bytes), asset);
+  }
+});
+
+for (const stale of [
+  "app.js",
+  "style.css",
+  "fa/index.html",
+  "data/names.json",
+  "build-info.json",
+  "favicon.svg",
+])
+  test(
+    "stale 200 response is rejected without replacing the active release: " +
+      stale,
+    async () => {
+      const previous = worker({ version: "previous" });
+      await previous.lifecycle("install");
+      await previous.lifecycle("activate");
+      const oldKeys = [...previous.stores.keys()];
+      const update = worker({
+        version: "new",
+        stale,
+        sharedStores: previous.stores,
+      });
+      await assert.rejects(update.lifecycle("install"));
+      assert(!update.writes.includes("https://example.test/game/" + stale));
+      assert.deepEqual([...previous.stores.keys()], oldKeys);
+      assert.equal(update.claimed, false);
+      previous.offline();
+      assert.equal((await previous.request("fa/")).status, 200);
+      assert.equal(
+        await (await previous.request("app.js", "cors")).text(),
+        bodies.get("app.js").toString(),
+      );
+    },
+  );
+
+test("missing file integrity fails installation instead of accepting unverified data", async () => {
+  const w = worker({ missingHash: "app.js" });
+  await assert.rejects(w.lifecycle("install"), /Missing offline integrity/);
+  assert.equal(w.stores.size, 0);
+  assert(!w.writes.includes("https://example.test/game/app.js"));
+});
+
 test("offline downloads overlap with a maximum of six requests", async () => {
   const w = worker({ delayed: true });
   await w.lifecycle("install");
