@@ -13,6 +13,7 @@ const copy = {
     "Locating…",
     "Location unavailable. Choose a point on the globe.",
     "Use globe center",
+    "Found",
   ],
   fa: [
     "اون‌طرف زمین",
@@ -24,6 +25,7 @@ const copy = {
     "در حال پیدا کردن موقعیت…",
     "موقعیت در دسترس نیست؛ یک نقطه روی کره انتخاب کن.",
     "انتخاب مرکز کره",
+    "پیدا شد",
   ],
   ar: [
     "الجانب الآخر من الأرض",
@@ -35,6 +37,7 @@ const copy = {
     "جارٍ تحديد الموقع…",
     "الموقع غير متاح. اختر نقطة على الكرة.",
     "اختيار مركز الكرة",
+    "تم العثور على الموقع",
   ],
   tr: [
     "Dünyanın öbür tarafı",
@@ -46,6 +49,7 @@ const copy = {
     "Konum bulunuyor…",
     "Konum alınamadı. Kürede bir nokta seç.",
     "Kürenin merkezini seç",
+    "Konum bulundu",
   ],
   fr: [
     "De l’autre côté de la Terre",
@@ -57,6 +61,7 @@ const copy = {
     "Localisation…",
     "Position indisponible. Choisissez un point sur le globe.",
     "Choisir le centre du globe",
+    "Position trouvée",
   ],
   ru: [
     "Обратная сторона Земли",
@@ -68,6 +73,7 @@ const copy = {
     "Определение местоположения…",
     "Местоположение недоступно. Выберите точку на глобусе.",
     "Выбрать центр глобуса",
+    "Местоположение найдено",
   ],
 };
 
@@ -114,11 +120,16 @@ export function mountAntipode({
   const locate = document.createElement("button");
   locate.type = "button";
   locate.textContent = t[5];
+  const found = document.createElement("span");
+  found.className = "antipode-location-found";
+  found.setAttribute("role", "status");
+  found.textContent = "✓ " + t[9];
+  found.hidden = true;
   const status = document.createElement("p");
   status.className = "antipode-status";
   status.setAttribute("role", "status");
   status.hidden = true;
-  actions.append(locate);
+  actions.append(locate, found);
   panel.append(heading, help, pair, actions, status);
   svg.node().parentElement.append(panel);
 
@@ -191,6 +202,7 @@ export function mountAntipode({
   function select(point) {
     if (!enabled || disposed || !point?.every(Number.isFinite)) return;
     origin = point;
+    found.hidden = true;
     status.hidden = true;
     render();
     queueDraw();
@@ -201,6 +213,7 @@ export function mountAntipode({
     return globalThis.d3.geoRotation([-point[0], -point[1], 0]).invert([60, 0]);
   }
   locate.onclick = () => {
+    found.hidden = true;
     status.textContent = t[6];
     status.hidden = false;
     locate.disabled = true;
@@ -208,6 +221,7 @@ export function mountAntipode({
       if (disposed) return;
       locate.disabled = false;
       status.textContent = t[7];
+      status.hidden = false;
     };
     if (!navigator.geolocation) return failed();
     navigator.geolocation.getCurrentPosition(
@@ -216,7 +230,9 @@ export function mountAntipode({
         locate.disabled = false;
         if (!enabled) return;
         const point = [coords.longitude, coords.latitude];
+        if (!point.every(Number.isFinite)) return failed();
         select(point);
+        found.hidden = false;
       },
       failed,
       { timeout: 10000, maximumAge: 60000 },
@@ -225,6 +241,7 @@ export function mountAntipode({
   input.onchange = () => {
     enabled = input.checked;
     origin = null;
+    found.hidden = true;
     status.hidden = true;
     if (enabled) {
       onEnable();

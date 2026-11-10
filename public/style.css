@@ -189,6 +189,10 @@ button:disabled {
   background: var(--bg);
   color: var(--text);
 }
+.antipode-location-found {
+  align-self: center;
+  color: var(--accent);
+}
 #globe.antipode-active {
   cursor: crosshair;
 }
@@ -218,12 +222,28 @@ button:disabled {
     overflow: auto;
   }
   .antipode-point {
-    padding: 7px;
+    /* Fit the coordinate row inside the original mobile card height. */
+    height: 59px;
+    padding: 6px 7px;
+    gap: 2px;
+  }
+  .antipode-point span {
+    line-height: 12px;
+  }
+  .antipode-point strong {
+    line-height: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .antipode-point bdi {
+    font-size: 10px;
+    line-height: 12px;
+    white-space: nowrap;
   }
   .antipode-panel {
     width: calc(100% - 16px);
   }
-  .antipode-point bdi,
   .antipode-panel[data-selected="true"] > p:not(.antipode-status) {
     display: none;
   }
