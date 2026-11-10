@@ -3,6 +3,8 @@ import { revealPage } from "./page-ready.js";
 import { placeMapLabel, countryFlag } from "./map-labels.js";
 import { interiorLabelPoint } from "./label-anchor.js";
 import { bindHighlightSwitch, bindLabelsSwitch } from "./explore-settings.js";
+import { mountAntipode } from "./antipode.js";
+import "./footer-version.js";
 import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
@@ -15,6 +17,7 @@ import { pageCopy, pagePath } from "./navigation.js";
 import { bindGlobeGestures } from "./gestures.js";
 import {
   createAnalytics,
+  bindExploreSwitchAnalytics,
   quizContext,
   isProduction,
   loadProductionAnalytics,
@@ -276,6 +279,7 @@ function track(event, data = {}) {
     ...data,
   });
 }
+if (page === "explore") bindExploreSwitchAnalytics(document, track);
 const t = (key) => copy[lang][keys.indexOf(key)];
 const number = (value) => formatNumber(value, lang);
 const ratio = (answered, total) => formatRatio(answered, total, lang);
@@ -525,7 +529,10 @@ function queueDraw() {
       draw();
     });
 }
-window.addEventListener("resize", queueDraw);
+window.addEventListener("resize", () => {
+  if (antipodeMode?.active) zoom = Math.min(zoom, 0.94);
+  queueDraw();
+});
 let gestureActive = false;
 let gestureTimer;
 function finishGesture() {
@@ -573,13 +580,14 @@ function updateHitPaths(key) {
 }
 function draw(animating = false) {
   const moving = gestureActive || animating === true;
-  const activeCountry = comparisonEnabled
-    ? null
-    : page === "explore"
-      ? $("highlightCountries")?.checked
-        ? hoveredCountry || current
-        : null
-      : current;
+  const activeCountry =
+    comparisonEnabled || antipodeMode?.active
+      ? null
+      : page === "explore"
+        ? $("highlightCountries")?.checked
+          ? hoveredCountry || current
+          : null
+        : current;
   // Read layout before changing paths or label attributes.
   const globe = $("globe");
   const matrix = globe.getScreenCTM();
@@ -596,6 +604,8 @@ function draw(animating = false) {
     : { x: 600, y: 530 };
   measureLabels();
   projection.rotate(rotation).scale(220 * zoom);
+  sphere.attr("opacity", antipodeMode?.active ? 0.12 : 1);
+  shadow.attr("opacity", antipodeMode?.active ? 0.08 : 1);
   const northNeedle = document.querySelector("#north svg");
   if (northNeedle) northNeedle.style.transform = `rotate(${-rotation[2]}deg)`;
   // The circular ocean and shading do not change when the Earth rotates.
@@ -605,24 +615,29 @@ function draw(animating = false) {
     shadow.attr("d", outline);
     drawnZoom = zoom;
   }
-  satellite.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
-  populationLayer?.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
-  grid.attr("display", moving ? "none" : null);
+  if (!antipodeMode?.active)
+    satellite.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+  antipodeMode?.draw();
+  if (!antipodeMode?.active)
+    populationLayer?.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+  grid.attr("display", moving || antipodeMode?.active ? "none" : null);
   land
     .attr("opacity", gpuCountries ? 0 : 1)
     .attr("display", moving && gpuCountries ? "none" : null);
   gpuCountries?.draw(
     land.selectAll("path").data(),
     (f) =>
-      comparedCountries.get(f.id) && comparisonEnabled
-        ? comparedCountries.get(f.id)
-        : answerFill(
-            f.id,
-            activeCountry?.id,
-            page === "play" ? state?.answers : [],
-          ),
+      antipodeMode?.active && antipodeMode.color(f.id)
+        ? antipodeMode.color(f.id)
+        : comparedCountries.get(f.id) && comparisonEnabled
+          ? comparedCountries.get(f.id)
+          : answerFill(
+              f.id,
+              activeCountry?.id,
+              page === "play" ? state?.answers : [],
+            ),
     (f) =>
-      satellite.active
+      satellite.active && !antipodeMode?.active
         ? (comparisonEnabled && comparedCountries.has(f.id)) ||
           f.id === activeCountry?.id ||
           (page === "play" && state?.answers?.some((a) => a.id === f.id))
@@ -630,6 +645,7 @@ function draw(animating = false) {
           : 0.04
         : 1,
     [topLeft.x, topLeft.y, bottomRight.x, bottomRight.y],
+    antipodeMode?.active,
   );
   const geometryKey = JSON.stringify([
     rotation,
@@ -654,13 +670,15 @@ function draw(animating = false) {
     land
       .selectAll("path")
       .attr("fill", (f) =>
-        comparedCountries.get(f.id) && comparisonEnabled
-          ? comparedCountries.get(f.id)
-          : answerFill(
-              f.id,
-              activeCountry?.id,
-              page === "play" ? state?.answers : [],
-            ),
+        antipodeMode?.active && antipodeMode.color(f.id)
+          ? antipodeMode.color(f.id)
+          : comparedCountries.get(f.id) && comparisonEnabled
+            ? comparedCountries.get(f.id)
+            : answerFill(
+                f.id,
+                activeCountry?.id,
+                page === "play" ? state?.answers : [],
+              ),
       )
       .attr("fill-opacity", (f) =>
         satellite.active
@@ -681,7 +699,8 @@ function draw(animating = false) {
           : null,
       );
   const labelsVisible =
-    page !== "explore" || $("showLabels")?.checked !== false;
+    !antipodeMode?.active &&
+    (page !== "explore" || $("showLabels")?.checked !== false);
   countryLabels.attr("display", labelsVisible ? null : "none");
   labelLeaders.attr("display", labelsVisible ? null : "none");
   const labelSize = Math.max(14, Math.min(18, 13 + zoom));
@@ -886,8 +905,12 @@ bindGlobeGestures($("globe"), {
     clearTimeout(gestureTimer);
     gestureTimer = setTimeout(finishGesture, 180);
   },
-  onTap: ({ target }) => {
+  onTap: ({ target, x, y }) => {
     if (page !== "explore") return;
+    if (antipodeMode?.active) {
+      antipodeMode.tap(x, y);
+      return;
+    }
     if (comparisonEnabled) {
       const id = target.closest?.("[data-country-id]")?.dataset.countryId;
       selectComparison(features.find((f) => f.id === id));
@@ -948,6 +971,15 @@ svg
     { passive: false },
   )
   .on("keydown", (e) => {
+    if (
+      antipodeMode?.active &&
+      e.target === $("globe") &&
+      (e.key === "Enter" || e.key === " ")
+    ) {
+      e.preventDefault();
+      antipodeMode.select(projection.invert(projection.translate()));
+      return;
+    }
     if (
       [
         "ArrowLeft",
@@ -1341,6 +1373,29 @@ function selectComparison(f) {
   queueDraw();
 }
 let cleanupExploreSettings = () => {};
+let antipodeMode;
+function flyToAntipodePoint(point) {
+  cancelAnimationFrame(animation);
+  const start = [...rotation];
+  const delta = ((((-point[0] - start[0]) % 360) + 540) % 360) - 180;
+  const startZoom = zoom;
+  const targetZoom = 0.94;
+  const began = performance.now();
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function step(now) {
+    const progress = reduced ? 1 : Math.min(1, (now - began) / 700);
+    const ease = d3.easeCubicInOut(progress);
+    rotation = [
+      start[0] + delta * ease,
+      start[1] + (-point[1] - start[1]) * ease,
+      start[2] * (1 - ease),
+    ];
+    zoom = startZoom + (targetZoom - startZoom) * ease;
+    draw(progress < 1);
+    if (progress < 1) animation = requestAnimationFrame(step);
+  }
+  animation = requestAnimationFrame(step);
+}
 function openExplore(continent = "All") {
   cleanupExploreSettings();
   const settingsEvents = new AbortController();
@@ -1361,6 +1416,7 @@ function openExplore(continent = "All") {
   const compareLabel = document.createElement("label");
   compareLabel.className = "population-switch";
   const compareInput = document.createElement("input");
+  compareInput.id = "showComparison";
   compareInput.type = "checkbox";
   compareInput.checked = comparisonEnabled;
   compareInput.setAttribute("role", "switch");
@@ -1431,6 +1487,7 @@ function openExplore(continent = "All") {
   };
   compareInput.onchange = () => {
     comparisonEnabled = compareInput.checked;
+    if (comparisonEnabled) antipodeMode?.disable();
     if (comparisonEnabled && matchMedia("(max-width: 760px)").matches) {
       panel.open = false;
       mobileDialog.close();
@@ -1510,6 +1567,32 @@ function openExplore(continent = "All") {
   }[lang];
   labelsLabel.append(labelsInput, labelsText);
   $("showPopulation").closest("label").before(labelsLabel);
+  antipodeMode = mountAntipode({
+    svg,
+    projection,
+    lang,
+    settingsAnchor: compareLabel,
+    describe: (point) => {
+      const country = features.find((f) => d3.geoContains(f, point));
+      return country ? { id: country.id, label: name(country) } : null;
+    },
+    flyTo: flyToAntipodePoint,
+    queueDraw,
+    onEnable: () => {
+      cancelAnimationFrame(animation);
+      zoom = 0.94;
+      compareInput.checked = false;
+      comparisonEnabled = false;
+      renderComparison();
+      hoveredCountry = null;
+      current = null;
+      updateCompareAccess();
+      if (matchMedia("(max-width: 760px)").matches) {
+        mobileDialog.close();
+        summary.focus({ preventScroll: true });
+      }
+    },
+  });
   const settings = document.createElement("div");
   settings.className = "explore-settings-bar";
   settings.setAttribute("role", "group");
@@ -1708,6 +1791,8 @@ function openExplore(continent = "All") {
     { signal: settingsEvents.signal },
   );
   cleanupExploreSettings = () => {
+    antipodeMode.destroy();
+    antipodeMode = null;
     unbindLabels();
     labelsLabel.remove();
     mobileDialog.close();
@@ -1746,7 +1831,7 @@ function openExplore(continent = "All") {
   };
   const point = centers[continent];
   rotation = [-point[0], -point[1], 0];
-  zoom = continent === "All" ? 1 : 1.5;
+  zoom = antipodeMode?.active ? 0.94 : continent === "All" ? 1 : 1.5;
   land
     .selectAll("path")
     .data(countries, (f) => f.id)
@@ -1763,6 +1848,7 @@ function openExplore(continent = "All") {
     .style("cursor", $("highlightCountries").checked ? "pointer" : null)
     .on("pointerenter", (event, f) => {
       if (
+        antipodeMode?.active ||
         !$("highlightCountries").checked ||
         event.pointerType === "touch" ||
         event.buttons
@@ -1777,6 +1863,10 @@ function openExplore(continent = "All") {
       queueDraw();
     })
     .on("click", (event, f) => {
+      if (antipodeMode?.active) {
+        if (event.detail === 0) antipodeMode.select(focusPoint(f));
+        return;
+      }
       if (comparisonEnabled) {
         if (event.detail === 0) selectComparison(f);
         return;
@@ -1786,6 +1876,13 @@ function openExplore(continent = "All") {
       draw();
     })
     .on("keydown", (event, f) => {
+      if (antipodeMode?.active) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          antipodeMode.select(focusPoint(f));
+        }
+        return;
+      }
       if (comparisonEnabled) {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();

@@ -33,6 +33,7 @@ export function mountSatellite(svg, projection, language, redraw) {
   };
   const layer = svg
     .append("foreignObject")
+    .attr("class", "satellite-layer")
     .attr("pointer-events", "none")
     .attr("aria-hidden", "true");
   const canvas = layer

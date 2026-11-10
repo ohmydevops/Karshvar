@@ -124,6 +124,119 @@ button:disabled {
   color: var(--text);
   font-size: 13px;
 }
+.antipode-panel {
+  position: absolute;
+  z-index: 8;
+  inset-inline-start: 12px;
+  bottom: calc(60px + env(safe-area-inset-bottom));
+  width: min(340px, calc(100% - 84px));
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 6px 24px #0002;
+  font-size: 12px;
+}
+.antipode-panel[hidden] {
+  display: none;
+}
+.antipode-panel > strong {
+  font-size: 15px;
+}
+.antipode-panel p {
+  color: var(--muted);
+  margin: 6px 0 10px;
+  line-height: 1.7;
+}
+.antipode-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.antipode-point {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-top: 3px solid #42d9d0;
+  background: var(--bg);
+  color: var(--text);
+  text-align: start;
+}
+.antipode-point + .antipode-point {
+  border-top-color: #ffbd4a;
+}
+.antipode-point span,
+.antipode-point bdi {
+  color: var(--muted);
+  font-size: 11px;
+}
+.antipode-point strong {
+  overflow-wrap: anywhere;
+}
+.antipode-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.antipode-actions button {
+  min-height: 38px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+}
+#globe.antipode-active {
+  cursor: crosshair;
+}
+.antipode-endpoint-label {
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  fill: var(--text);
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+.antipode-mode .population-layer,
+.antipode-mode .population-legend,
+.antipode-mode .satellite-layer,
+.antipode-mode .satellite-credit,
+.antipode-mode .satellite-download {
+  display: none;
+}
+@media (max-width: 760px) {
+  .antipode-panel {
+    inset-inline-start: 8px;
+    padding: 10px;
+    font-size: 11px;
+    max-height: 40dvh;
+    overflow: auto;
+  }
+  .antipode-point {
+    padding: 7px;
+  }
+  .antipode-panel {
+    width: calc(100% - 16px);
+  }
+  .antipode-point bdi,
+  .antipode-panel[data-selected="true"] > p:not(.antipode-status) {
+    display: none;
+  }
+  .antipode-panel > strong {
+    font-size: 13px;
+  }
+  .antipode-pair {
+    margin-top: 8px;
+  }
+  .antipode-actions {
+    margin-top: 6px;
+  }
+}
 .compare-panel ol {
   padding-inline-start: 24px;
 }
@@ -1916,6 +2029,16 @@ footer.simple-footer {
   padding: 4px 12px calc(4px + env(safe-area-inset-bottom));
   min-height: 24px;
   font-size: 10px;
+}
+.build-version {
+  display: inline-block;
+  margin-inline-start: 8px;
+  color: var(--muted);
+  font:
+    10px ui-monospace,
+    Consolas,
+    monospace;
+  letter-spacing: 0;
 }
 html[data-page="home"] footer.simple-footer {
   border-top: 0;

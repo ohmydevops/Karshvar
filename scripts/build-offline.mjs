@@ -1,6 +1,7 @@
 import { buildTheme } from "./build-theme.mjs";
 import { buildLoading } from "./build-loading.mjs";
 import { buildFonts } from "./build-fonts.mjs";
+import { buildVersion } from "./build-version.mjs";
 buildTheme();
 await buildLoading();
 await buildFonts();
@@ -11,6 +12,7 @@ import path from "node:path";
 const root = process.argv[2]
   ? pathToFileURL(path.resolve(process.argv[2]) + path.sep)
   : new URL("../public/", import.meta.url);
+await buildVersion(root);
 async function walk(dir, prefix = "") {
   const entries = await readdir(dir, { withFileTypes: true });
   return (

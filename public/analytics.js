@@ -28,7 +28,31 @@ export function quizContext(selection) {
     : { mode: "continent", continent: selection };
 }
 
+const exploreSwitchEvents = new Map([
+  ["showLabels", "explore-labels-enable"],
+  ["showPopulation", "explore-population-enable"],
+  ["showClock", "explore-clock-enable"],
+  ["showFlags", "explore-flags-enable"],
+  ["showComparison", "explore-comparison-enable"],
+  ["showAntipode", "explore-antipode-enable"],
+  ["highlightCountries", "explore-highlight-enable"],
+  ["showSatellite", "explore-satellite-enable"],
+  ["showPopulationDensity", "explore-population-density-enable"],
+]);
+
+// One delegated listener also covers controls rebuilt during continent changes.
+// Capture the directly changed switch before settings handlers update related ones.
+export function bindExploreSwitchAnalytics(root, track) {
+  const onChange = ({ target }) => {
+    const event = exploreSwitchEvents.get(target?.id);
+    if (event && target.checked === true) track(event);
+  };
+  root.addEventListener("change", onChange, { capture: true });
+  return () => root.removeEventListener("change", onChange, { capture: true });
+}
+
 const events = new Set([
+  ...exploreSwitchEvents.values(),
   "play-click",
   "explore-click",
   "mode-select",

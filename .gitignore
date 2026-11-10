@@ -4,3 +4,4 @@ __pycache__/
 
 # Generated from scripts/sw-template.js before development, tests, and deployment
 public/sw.js
+public/build-info.json

@@ -44,6 +44,7 @@ export function mountGpuCountries(svg, projection) {
     basis: { value: new THREE.Matrix3() },
     border: { value: new THREE.Color() },
     alpha: { value: 1 },
+    interior: { value: 0 },
   };
   const material = new THREE.ShaderMaterial({
     uniforms,
@@ -53,8 +54,26 @@ export function mountGpuCountries(svg, projection) {
     vertexShader:
       "varying vec2 vUv; void main(){vUv=position.xy*.5+.5;gl_Position=vec4(position.xy,0.,1.);}",
     fragmentShader: `precision highp float;
-      varying vec2 vUv;uniform sampler2D atlas;uniform sampler2D palette;uniform vec4 bounds;uniform vec3 globe;uniform mat3 basis;uniform vec3 border;
+      varying vec2 vUv;uniform sampler2D atlas;uniform sampler2D palette;uniform vec4 bounds;uniform vec3 globe;uniform mat3 basis;uniform vec3 border;uniform float interior;
+      vec4 countryAt(vec3 w){
+        vec2 coord=vec2((atan(w.y,w.x)+3.14159265359)/6.28318530718,(asin(clamp(w.z,-1.,1.))+1.57079632679)/3.14159265359);
+        vec4 id=texture2D(atlas,coord);if(id.a<.5)return vec4(0.);
+        return texture2D(palette,vec2((floor(id.r*255.+.5)+.5)/256.,.5));
+      }
+      float gridAt(vec3 w){vec2 a=vec2(atan(w.y,w.x),asin(clamp(w.z,-1.,1.)));vec2 cell=abs(mod(a+.261799,.523599)-.261799);return 1.-smoothstep(.002,.006,min(cell.x,cell.y));}
       void main(){vec2 p=mix(bounds.xy,bounds.zw,vec2(vUv.x,1.-vUv.y));vec2 q=(p-globe.xy)/globe.z;float r=dot(q,q);if(r>1.)discard;
+      if(interior>.5){
+        float front=sqrt(1.-r);vec3 ray=vec3(q.x,-q.y,0.);vec3 surface=ray+vec3(0.,0.,front);
+        vec4 nearLand=countryAt(basis*surface);vec4 farLand=countryAt(basis*(ray-vec3(0.,0.,front)));
+        vec3 ocean=vec3(.12,.48,.68);vec3 landColor=mix(nearLand.rgb,vec3(.25,.64,.43),.45);
+        vec3 color=mix(ocean,landColor,step(.001,nearLand.a));
+        color=mix(color,farLand.rgb,.13*step(.001,farLand.a));
+        float light=.64+.36*max(0.,dot(surface,normalize(vec3(-.5,.7,1.))));
+        float rim=pow(1.-front,3.);color=color*light+vec3(.3,.62,.78)*rim*.35;
+        color=mix(color,vec3(.74,.89,1.),gridAt(basis*surface)*.25);
+        color=mix(color,vec3(.74,.89,1.),gridAt(basis*(ray-vec3(0.,0.,front)))*.07);
+        gl_FragColor=vec4(color,.68+rim*.24);return;
+      }
       vec3 w=basis*vec3(q.x,-q.y,sqrt(1.-r));vec2 coord=vec2((atan(w.y,w.x)+3.14159265359)/6.28318530718,(asin(clamp(w.z,-1.,1.))+1.57079632679)/3.14159265359);
       vec4 id=texture2D(atlas,coord);if(id.a<.5)discard;float index=floor(id.r*255.+.5);vec4 color=texture2D(palette,vec2((index+.5)/256.,.5));
       if(color.a<.001)discard;gl_FragColor=color;}`,
@@ -70,7 +89,7 @@ export function mountGpuCountries(svg, projection) {
     vertexShader: `uniform vec4 bounds; uniform vec3 globe; uniform mat3 basis; varying float front;
       void main(){vec3 v=vec3(dot(position,basis[0]),dot(position,basis[1]),dot(position,basis[2]));front=v.z;
       vec2 p=globe.xy+vec2(v.x,-v.y)*globe.z;vec2 uv=(p-bounds.xy)/(bounds.zw-bounds.xy);gl_Position=vec4(uv.x*2.-1.,1.-uv.y*2.,0.,1.);}`,
-    fragmentShader: `precision highp float; uniform vec3 border; varying float front; void main(){if(front<0.)discard;gl_FragColor=vec4(border,.85);}`,
+    fragmentShader: `precision highp float; uniform vec3 border; uniform float interior; varying float front; void main(){if(interior>.5){gl_FragColor=vec4(border,front<0.?.10:.28);return;}if(front<0.)discard;gl_FragColor=vec4(border,.85);}`,
   });
   let lines;
   let previous = [],
@@ -142,7 +161,8 @@ export function mountGpuCountries(svg, projection) {
     uniforms.atlas.value = texture;
   }
   return {
-    draw(features, color, opacity, bounds) {
+    draw(features, color, opacity, bounds, interior = false) {
+      uniforms.interior.value = interior ? 1 : 0;
       if (
         features.length !== previous.length ||
         features.some((f, i) => f !== previous[i])

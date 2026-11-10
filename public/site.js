@@ -1,4 +1,5 @@
 import { pagePath } from "./navigation.js";
+import "./footer-version.js";
 import { setUpdateLoading } from "./update-loading.js";
 import { resetCopy } from "./reset.js";
 import { bindHistory } from "./history.js";

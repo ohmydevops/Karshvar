@@ -73,7 +73,13 @@ export function bindGlobeGestures(
     if (element.hasPointerCapture(event.pointerId))
       element.releasePointerCapture(event.pointerId);
     if (!pointers.size && changed) onEnd(input);
-    if (tapped) onTap?.({ target: tapped.target, pointerType: input });
+    if (tapped)
+      onTap?.({
+        target: tapped.target,
+        pointerType: input,
+        x: tapped.x,
+        y: tapped.y,
+      });
   }
   const handlers = {
     pointerdown: down,
