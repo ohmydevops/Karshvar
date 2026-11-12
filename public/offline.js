@@ -137,11 +137,22 @@ async function setupOffline() {
     checkButton.setAttribute?.("aria-busy", "true");
   }
   try {
-    const registration = await withUpdateTimeout(
-      navigator.serviceWorker.register(new URL("./sw.js", import.meta.url), {
-        updateViaCache: "none",
-      }),
+    const workerURL = new URL("./sw.js", import.meta.url);
+    // Reuse the installed registration: register() can wait behind a slow update
+    // and prevent the menu from reaching an already downloaded waiting worker.
+    const existing = await withUpdateTimeout(
+      navigator.serviceWorker.getRegistration(workerURL),
     );
+    const installed =
+      existing?.active || existing?.waiting || existing?.installing;
+    const registration =
+      installed?.scriptURL === workerURL.href
+        ? existing
+        : await withUpdateTimeout(
+            navigator.serviceWorker.register(workerURL, {
+              updateViaCache: "none",
+            }),
+          );
     let updating;
     const updateRegistration = () => {
       if (!updating)
@@ -310,6 +321,7 @@ async function setupOffline() {
           offerUpdate();
           return;
         }
+        if (registration.installing) return showCheckStatus(2);
         if (navigator.onLine === false) return showCheckStatus(3);
         checkButton.disabled = true;
         checkButton.setAttribute?.("aria-busy", "true");
@@ -322,7 +334,10 @@ async function setupOffline() {
             offerUpdate();
           } else showCheckStatus(registration.installing ? 2 : 1);
         } catch {
-          showCheckStatus(4);
+          showCheckStatus(
+            registration.waiting ? 5 : registration.installing ? 2 : 4,
+          );
+          if (registration.waiting) offerUpdate();
         } finally {
           checkButton.disabled = false;
           checkButton.setAttribute?.("aria-busy", "false");
@@ -335,6 +350,7 @@ async function setupOffline() {
       if (document.visibilityState === "hidden" || navigator.onLine === false)
         return;
       offerUpdate();
+      if (registration.installing) return;
       if (checking || Date.now() - lastCheck < 60_000) return;
       checking = true;
       lastCheck = Date.now();

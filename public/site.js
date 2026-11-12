@@ -209,11 +209,13 @@ if (page === "home") {
 }
 // Public pages only initialize offline downloads on an explicit update request.
 const updateButton = $("checkUpdates");
-if (updateButton && "serviceWorker" in navigator && window.isSecureContext) {
+if (updateButton) {
   updateButton.hidden = false;
   const startOffline = async () => {
     setUpdateLoading(updateButton, true);
     try {
+      if (!("serviceWorker" in navigator) || !window.isSecureContext)
+        throw new Error("Updates unavailable in this browser context");
       const { offlineReady } = await withUpdateTimeout(import("./offline.js"));
       if ((await offlineReady) && updateButton.onclick !== startOffline)
         await updateButton.onclick();

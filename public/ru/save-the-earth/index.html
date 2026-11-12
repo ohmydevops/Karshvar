@@ -124,16 +124,23 @@
         hidden
         aria-label="Save the Earth"
       >
-        <button id="briefing-close" type="button" aria-label="Close help">
+        <button id="briefing-close" type="button" aria-label="Закрыть справку">
           ×
         </button>
         <div class="briefing-heading" aria-hidden="true">
-          ◉ MISSION CONTROL <span>ONLINE</span>
+          ◉ ЦЕНТР УПРАВЛЕНИЯ <span>НА СВЯЗИ</span>
         </div>
         <p class="briefing-source">
-          Перехватывай метеоры, пока они не достигли Земли. WASD: полёт Мышь:
-          обзор Space / Shift: вверх / вниз Q / E: крен F: тормоз V: камера Esc:
-          пауза R: перезарядка
+          МИССИЯ: Защити Землю. Уничтожай приближающиеся метеоры до
+          столкновения. ПРИЦЕЛ И ОГОНЬ: Двигай мышью, чтобы поворачиваться и
+          целиться. Удерживай левую кнопку для стрельбы, правую — для
+          приближения. ДВИЖЕНИЕ: W — вперёд, S — назад, A — влево, D — вправо.
+          Пробел — вверх, Shift — вниз. ПЕРЕЗАРЯДКА: Нажми R, чтобы заменить
+          магазин на 30 патронов. ПОЛЁТ: Q и E вращают тело вокруг продольной
+          оси. Удерживай F, чтобы замедлить дрейф. КАМЕРА: V меняет вид.
+          Удерживай Ctrl и двигай мышью, чтобы осмотреть космонавта; в этом
+          режиме тоже можно стрелять. УПРАВЛЕНИЕ: Esc — пауза, M — включение или
+          отключение звука, H — справка.
         </p>
         <p class="briefing-typed" aria-hidden="true"></p>
       </aside>
@@ -202,7 +209,7 @@
           type="button"
           aria-controls="mission-briefing"
         >
-          Help · H
+          Помощь · H
         </button>
         <p id="controls" hidden>
           WASD: полёт · Мышь: обзор · Space / Shift: вверх / вниз · Q / E: крен
@@ -218,7 +225,7 @@
           Лучший результат <strong id="best-score">0</strong>
         </p>
         <ol id="scores"></ol>
-        <nav id="scores-pagination" hidden aria-label="Scores">
+        <nav id="scores-pagination" hidden aria-label="Результаты">
           <button id="scores-prev" type="button">Назад</button
           ><span id="scores-page" aria-live="polite"></span
           ><button id="scores-next" type="button">Далее</button>
@@ -226,23 +233,26 @@
       </details>
       <p class="scene-credits">
         <a href="../sources/#home-scene-credits"
-          >Earth · Astronaut · Meteorite</a
+          >Земля · Космонавт · Метеорит</a
         >
         ·
         <a
           href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
-          >SMG Gun — Drus</a
+          >Пистолет-пулемёт — Drus</a
         >
         · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-        <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> ·
-        <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> ·
+        <a href="../../audio/nasa-radio-SOURCE.txt"
+          >Радиосвязь NASA · источники</a
+        >
+        · <a href="../../audio/helmet-breathing-SOURCE.txt">Дыхание · CC0</a> ·
         <a
           href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
-          >Andromeda: R. Gendler</a
+          >Андромеда: R. Gendler</a
         >
-        · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> ·
+        ·
+        <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · адаптировано</a> ·
         <a href="https://www.solarsystemscope.com/textures/"
-          >Planet textures: Solar System Scope / INOVE</a
+          >Текстуры планет: Solar System Scope / INOVE</a
         >
         · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a>
       </p>

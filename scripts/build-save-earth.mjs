@@ -1,3 +1,4 @@
+import { missionUI, translatedBriefings } from "./save-earth-i18n.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { brandName } from "../public/brand.js";
@@ -36,13 +37,15 @@ const sceneMessages = {
 };
 
 const briefingCopy = {
+  ...translatedBriefings,
   en: [
     "MISSION: Protect Earth. Destroy incoming meteors before they hit.",
     "LOOK & AIM: Move your mouse to turn and aim. Hold the left mouse button to fire.",
     "MOVE: W / S moves forward / backward; A / D moves sideways. Space rises; Shift descends.",
     "RELOAD: Press R to replace your 30-round magazine.",
     "FLIGHT: Q / E rolls your body. Hold F to brake your drift.",
-    "VIEW: V switches camera. Esc pauses. M toggles sound.",
+    "VIEW: V switches camera. Hold Ctrl and move the mouse to look around the astronaut; you can still fire. Hold the right mouse button to zoom.",
+    "CONTROLS: Esc pauses. M toggles sound. H opens help.",
   ],
   fa: [
     "مأموریت: از زمین محافظت کن؛ شهاب‌ها را پیش از برخورد با زمین نابود کن.",
@@ -50,7 +53,8 @@ const briefingCopy = {
     "حرکت: با W جلو و با S عقب برو؛ A و D حرکت به چپ و راست هستند. با Space بالا و با Shift پایین برو.",
     "تعویض خشاب: با R خشاب ۳۰تایی اسلحه را عوض کن.",
     "کنترل پرواز: با Q و E به دور محور بدنت بچرخ. F را نگه دار تا حرکتت آرام بگیرد.",
-    "دوربین و توقف: V نمای دوربین را عوض می‌کند؛ Esc بازی را متوقف و M صدا را قطع یا وصل می‌کند.",
+    "دوربین: V نما را عوض می‌کند. Ctrl را نگه دار و موس را حرکت بده تا دور فضانورد را ببینی؛ در این حالت هم می‌توانی شلیک کنی. دکمهٔ راست موس را برای زوم نگه دار.",
+    "کنترل‌ها: Esc بازی را متوقف می‌کند؛ M صدا را قطع یا وصل می‌کند و H راهنما را نشان می‌دهد.",
   ],
 };
 const flightCopy = {
@@ -374,9 +378,9 @@ ${alternates}
       </div>
     </div>
     <aside id="mission-briefing" class="mission-briefing" hidden aria-label="${title}">
-      <button id="briefing-close" type="button" aria-label="${lang === "fa" ? "بستن راهنما" : "Close help"}">×</button>
-      <div class="briefing-heading" aria-hidden="true">◉ MISSION CONTROL <span>ONLINE</span></div>
-      <p class="briefing-source">${(briefingCopy[lang] || [description, ...flightCopy[lang][0].split(" · "), ammoCopy[lang][1]]).join("\n\n")}</p>
+      <button id="briefing-close" type="button" aria-label="${missionUI[lang][1]}">×</button>
+      <div class="briefing-heading" aria-hidden="true">◉ ${missionUI[lang][2]} <span>${missionUI[lang][3]}</span></div>
+      <p class="briefing-source">${briefingCopy[lang].join("\n\n")}</p>
       <p class="briefing-typed" aria-hidden="true"></p>
     </aside>
     <div id="crosshair" aria-hidden="true"><i></i></div>
@@ -399,7 +403,7 @@ ${alternates}
       </div>
     </aside>
     <div class="mission-controls">
-      <button id="mission-help" type="button" aria-controls="mission-briefing">${lang === "fa" ? "راهنما" : "Help"} · H</button>
+      <button id="mission-help" type="button" aria-controls="mission-briefing">${missionUI[lang][0]} · H</button>
       <p id="controls" hidden>${flightCopy[lang][0]}</p>
       <button id="end" type="button" hidden>${end}</button>
     </div>
@@ -409,9 +413,9 @@ ${alternates}
       <p id="no-scores">${empty}</p>
       <p class="best-score">${{ fa: "بهترین امتیاز", en: "Best score", ar: "أفضل نتيجة", fr: "Meilleur score", ru: "Лучший результат", tr: "En iyi skor" }[lang]} <strong id="best-score">0</strong></p>
       <ol id="scores"></ol>
-      <nav id="scores-pagination" hidden aria-label="Scores"><button id="scores-prev" type="button">${{ fa: "قبلی", en: "Previous", ar: "السابق", fr: "Précédent", ru: "Назад", tr: "Önceki" }[lang]}</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">${{ fa: "بعدی", en: "Next", ar: "التالي", fr: "Suivant", ru: "Далее", tr: "Sonraki" }[lang]}</button></nav>
+      <nav id="scores-pagination" hidden aria-label="${missionUI[lang][4]}"><button id="scores-prev" type="button">${{ fa: "قبلی", en: "Previous", ar: "السابق", fr: "Précédent", ru: "Назад", tr: "Önceki" }[lang]}</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">${{ fa: "بعدی", en: "Next", ar: "التالي", fr: "Suivant", ru: "Далее", tr: "Sonraki" }[lang]}</button></nav>
     </details>
-    <p class="scene-credits"><a href="../sources/#home-scene-credits">Earth · Astronaut · Meteorite</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">SMG Gun — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">Andromeda: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> · <a href="https://www.solarsystemscope.com/textures/">Planet textures: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a></p>
+    <p class="scene-credits"><a href="../sources/#home-scene-credits">${missionUI[lang][5]}</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">${missionUI[lang][6]} — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">${missionUI[lang][7]}</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">${missionUI[lang][8]} · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">${missionUI[lang][9]}: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · ${missionUI[lang][10]}</a> · <a href="https://www.solarsystemscope.com/textures/">${missionUI[lang][11]}: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a></p>
   </main>
   ${saveEarthDialog(lang, true)}
 </body>

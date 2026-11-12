@@ -17,6 +17,7 @@ async function setup(
   register,
   hostname = "example.test",
   vite = false,
+  reuse = false,
 ) {
   const nodes = [],
     events = {},
@@ -54,7 +55,7 @@ async function setup(
       return register ? register(registration) : registration;
     },
     async getRegistration() {
-      return registration;
+      return reuse ? registration : undefined;
     },
     addEventListener(name, handler) {
       events[name] = handler;
@@ -370,4 +371,27 @@ test("Vite preview explains local updates without installing a worker", async ()
   assert.equal(installs, 0);
   assert.equal(app.menuButton.disabled, false);
   assert.match(app.menuStatus.textContent, /Local development preview/);
+});
+
+test("existing waiting update is offered without registering again", async () => {
+  const app = await setup(
+    true,
+    () => {
+      throw new Error("register must not run");
+    },
+    "example.test",
+    false,
+    true,
+  );
+  assert.ok(app.nodes.some((node) => node.tag === "dialog" && node.open));
+});
+
+test("manual check reports an in-progress download without starting another request", async () => {
+  const app = await setup();
+  app.registration.waiting = null;
+  app.registration.installing = {};
+  const before = app.checks;
+  await app.menuButton.onclick();
+  assert.equal(app.menuStatus.textContent, "Downloading update…");
+  assert.equal(app.checks, before);
 });
