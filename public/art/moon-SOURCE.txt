@@ -1,3 +1,5 @@
-Lunar surface texture from three.js examples (moon_1024.jpg).
-https://github.com/mrdoob/three.js/blob/dev/examples/textures/planets/moon_1024.jpg
-See vendor/THREE-LICENSE.txt.
+Lunar natural-color albedo map, 2048 x 1024, from NASA's Scientific Visualization Studio CGI Moon Kit.
+https://svs.gsfc.nasa.gov/4720/
+https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg
+Credit: NASA's Scientific Visualization Studio; LRO / LROC; Ernie Wright.
+2025 map derived from the LROC WAC Hapke-normalized mosaic. Downloaded unchanged.

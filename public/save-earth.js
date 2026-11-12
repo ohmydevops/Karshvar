@@ -2,6 +2,7 @@ import { createMissionBriefing } from "./save-earth-briefing.js";
 import { createMagazineHUD } from "./save-earth-magazine.js";
 import { DESKTOP_MEDIA } from "./save-earth-access.js";
 import { createGameAudio } from "./save-earth-audio.js";
+import { analytics } from "./save-earth-analytics.js";
 const sound = createGameAudio();
 import {
   createPilot,
@@ -308,6 +309,9 @@ function start() {
   document.body.classList.add("playing");
   const at = Date.now();
   round = { id: crypto.randomUUID?.() ?? at + "-" + Math.random(), at };
+  analytics.track("save-earth-start", {
+    language: document.documentElement.lang,
+  });
   score = 0;
   ammo = 30;
   reloadIn = 0;

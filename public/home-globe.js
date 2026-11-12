@@ -188,6 +188,7 @@ export async function mountHomeGlobe(host) {
     const moonOrbitZ = compact ? -0.22 : -1.4;
     moon.position.set(moonOrbitX, 0.55, moonOrbitZ);
     moon.lookAt(0, 0, 0);
+    moon.rotateY(-Math.PI / 2);
     moonOrbit.add(moon);
     const orbiters = [];
     for (const [i, configuration] of settings.satellites.entries()) {
@@ -759,19 +760,20 @@ export async function mountHomeGlobe(host) {
           const y = 1.6;
           meteorStart.set(x, y, 0.5).unproject(camera);
           meteorStart.sub(camera.position).normalize();
-          const distance = -camera.position.z / meteorStart.z;
+          const distance = (2.4 - camera.position.z) / meteorStart.z;
           meteorStart.multiplyScalar(distance).add(camera.position);
         }
         // Straight approach: fast entry, gradually slower near Earth.
-        const travel = 1 - Math.pow(1 - progress, 3);
+        const travel = 1 - Math.pow(1 - progress, 1.5);
         meteorite.position.set(
           meteorStart.x * (1 - travel),
           meteorStart.y * (1 - travel),
-          0.35 - travel * 0.35,
+          // Stay in front of the unit-radius Earth until atmospheric burnout.
+          2.4 - travel * 1.36,
         );
         meteorite.rotation.set(time * 0.7, time * 0.9, time * 0.3);
         meteorite.scale.setScalar(
-          meteorScale * (compact ? 18 : 32) * Math.pow(1 - travel, 2),
+          meteorScale * (compact ? 4 : 6) * Math.pow(1 - travel, 1.4),
         );
       }
       if (astronaut) {

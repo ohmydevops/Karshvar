@@ -540,8 +540,10 @@ export async function createSpaceRenderer(canvas, width, height) {
         9 + 3 * Math.sin(moonPhase),
         -18 - 6 * Math.sin(moonPhase),
       );
-      moon.rotation.y = state.elapsed * 0.045;
-      moon.rotation.z = 0.09;
+      // The LROC map is centered at longitude zero (U=.5, local +X).
+      // Keep this near hemisphere facing Earth instead of spinning freely.
+      moon.lookAt(planet.position);
+      moon.rotateY(-Math.PI / 2);
       sky.userData.update?.(state.elapsed);
       meteors.forEach((m, i) => {
         const p = state.meteors[i];

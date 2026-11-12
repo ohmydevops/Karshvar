@@ -58,6 +58,7 @@ const events = new Set([
   "mode-select",
   "country-select",
   "game-start",
+  "save-earth-start",
   "blog-play-click",
   "continent-select",
   "answer-submit",
