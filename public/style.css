@@ -4752,10 +4752,38 @@ html[data-page="continents"] .journey-art img {
   width: 100%;
 }
 
-.astronaut-speech { position: fixed; z-index: 8; width: min(280px, 72vw); box-sizing: border-box; padding: 12px 15px; border: 1px solid #8baabe66; border-radius: 16px; background: #102232ed; color: #f4eadc; font-size: 13px; line-height: 1.9; text-align: start; pointer-events: none; transform: translate(-50%, -100%); box-shadow: 0 6px 22px #0004; }
-.astronaut-speech::after { content: ""; position: absolute; bottom: -7px; left: 50%; width: 12px; height: 12px; background: #102232; transform: rotate(45deg); border-right: 1px solid #8baabe66; border-bottom: 1px solid #8baabe66; }
-.astronaut-speech[hidden] { display: none; }
-
+.astronaut-speech {
+  position: fixed;
+  z-index: 8;
+  width: min(280px, 72vw);
+  box-sizing: border-box;
+  padding: 12px 15px;
+  border: 1px solid #8baabe66;
+  border-radius: 16px;
+  background: #102232ed;
+  color: #f4eadc;
+  font-size: 13px;
+  line-height: 1.9;
+  text-align: start;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  box-shadow: 0 6px 22px #0004;
+}
+.astronaut-speech::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: #102232;
+  transform: rotate(45deg);
+  border-right: 1px solid #8baabe66;
+  border-bottom: 1px solid #8baabe66;
+}
+.astronaut-speech[hidden] {
+  display: none;
+}
 
 @media (max-width: 760px) {
   html[data-page="home"] .welcome {
@@ -4781,15 +4809,24 @@ html[data-page="continents"] .journey-art img {
     border-right: 2px solid #9cc8df;
     border-bottom: 2px solid #9cc8df;
     transform: rotate(45deg);
-    opacity: .45;
+    opacity: 0.45;
     filter: drop-shadow(0 0 6px #72b4df66);
     animation: home-scroll-hint 2.4s ease-in-out infinite;
   }
 }
 @keyframes home-scroll-hint {
-  0%, 100% { transform: translateY(-3px) rotate(45deg); opacity: .2; }
-  55% { transform: translateY(4px) rotate(45deg); opacity: .65; }
+  0%,
+  100% {
+    transform: translateY(-3px) rotate(45deg);
+    opacity: 0.2;
+  }
+  55% {
+    transform: translateY(4px) rotate(45deg);
+    opacity: 0.65;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  html[data-page="home"] .welcome::after { animation: none; }
+  html[data-page="home"] .welcome::after {
+    animation: none;
+  }
 }

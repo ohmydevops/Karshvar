@@ -87,7 +87,12 @@ async function fixture({
   };
   const host = {
     style: {},
-    getBoundingClientRect: () => ({ top: 0, left: 0, width: hostSize, height: hostSize }),
+    getBoundingClientRect: () => ({
+      top: 0,
+      left: 0,
+      width: hostSize,
+      height: hostSize,
+    }),
     replaceChildren() {},
     classList: { add() {} },
   };
@@ -403,7 +408,9 @@ test("reduced motion renders a still globe that remains draggable", async () => 
   f.canvasEvents.pointerdown({ clientX: 0, clientY: 0, pointerId: 1 });
   f.canvasEvents.pointermove({ clientX: 10, clientY: 5 });
   assert.equal(f.draws(), 2);
-  assert.ok(moon.getWorldPosition(new THREE.Vector3()).distanceTo(before) > 0.1);
+  assert.ok(
+    moon.getWorldPosition(new THREE.Vector3()).distanceTo(before) > 0.1,
+  );
   f.motion.matches = false;
   f.events.motion();
   assert.equal(f.pending.size, 1);

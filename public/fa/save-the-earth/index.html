@@ -1,101 +1,285 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Save the Earth · کَرشوَر</title>
-  <meta name="description" content="قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن.">
-  <link rel="canonical" href="https://karshvar.ir/fa/save-the-earth/">
-  <link rel="alternate" hreflang="en" href="https://karshvar.ir/en/save-the-earth/">
-  <link rel="alternate" hreflang="fa" href="https://karshvar.ir/fa/save-the-earth/">
-  <link rel="alternate" hreflang="ar" href="https://karshvar.ir/ar/save-the-earth/">
-  <link rel="alternate" hreflang="fr" href="https://karshvar.ir/fr/save-the-earth/">
-  <link rel="alternate" hreflang="ru" href="https://karshvar.ir/ru/save-the-earth/">
-  <link rel="alternate" hreflang="tr" href="https://karshvar.ir/tr/save-the-earth/">
-  <link rel="alternate" hreflang="x-default" href="https://karshvar.ir/en/save-the-earth/">
-  <meta property="og:url" content="https://karshvar.ir/fa/save-the-earth/">
-  <meta property="og:title" content="Save the Earth">
-  <meta property="og:description" content="قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن.">
-  <meta property="og:image" content="https://karshvar.ir/social/karshvar-fa.png?v=9dce5db59c47">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://karshvar.ir/social/karshvar-fa.png?v=9dce5db59c47">
-  <link rel="stylesheet" href="../../save-earth.css">
-  <link rel="stylesheet" href="../../save-earth-access.css">
-  <script type="module" src="../../save-earth-entry.js"></script>
-</head>
-<body>
-  <main class="mission" hidden inert>
-    <header class="mission-header">
-      <div><a class="mission-back" href="../">بازگشت به صفحهٔ اول</a><h1 lang="en">Save the Earth</h1></div>
-      <div class="mission-stats">
-        <span>امتیاز <strong id="score">0</strong></span>
-        <span>سپر زمین <strong id="shield">5</strong></span>
-        <button id="sound-toggle" type="button" aria-pressed="false" data-on="صدا روشن · M" data-off="صدا خاموش · M">صدا روشن · M</button>
-
-      </div>
-    </header>
-    <div class="arena">
-      <canvas id="arena" width="800" height="470" tabindex="0" aria-label="Save the Earth" aria-describedby="controls"></canvas>
-      <div id="round-overlay" class="round-overlay">
-        <p id="round-status" data-paused="بازی متوقف شد؛ برای کنترل موس ادامه بده." data-lock="برای فعال‌شدن کنترل موس، ادامهٔ بازی را بزن." data-desktop="فقط برای دسکتاپ؛ با صفحه‌کلید و موس بازی کن." data-loading="در حال بارگذاری صحنهٔ سه‌بعدی…" data-error="صحنهٔ سه‌بعدی بارگذاری نشد. صفحه را دوباره بارگذاری کن." data-lost="سپر زمین از بین رفت." data-ended="دور تمام شد." role="status">قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن.</p>
-        <button id="start" disabled type="button" data-resume="ادامهٔ بازی" data-replay="دوباره بازی کن">شروع بازی</button>
-      </div>
-    </div>
-    <aside id="mission-briefing" class="mission-briefing" hidden aria-label="Save the Earth">
-      <button id="briefing-close" type="button" aria-label="بستن راهنما">×</button>
-      <div class="briefing-heading" aria-hidden="true">◉ MISSION CONTROL <span>ONLINE</span></div>
-      <p class="briefing-source">مأموریت: از زمین محافظت کن؛ شهاب‌ها را پیش از برخورد با زمین نابود کن.
-
-نشانه‌گیری و شلیک: موس را حرکت بده تا بچرخی و هدف بگیری. دکمهٔ چپ موس را نگه دار تا شلیک کنی.
-
-حرکت: با W جلو و با S عقب برو؛ A و D حرکت به چپ و راست هستند. با Space بالا و با Shift پایین برو.
-
-تعویض خشاب: با R خشاب ۳۰تایی اسلحه را عوض کن.
-
-کنترل پرواز: با Q و E به دور محور بدنت بچرخ. F را نگه دار تا حرکتت آرام بگیرد.
-
-دوربین و توقف: V نمای دوربین را عوض می‌کند؛ Esc بازی را متوقف و M صدا را قطع یا وصل می‌کند.</p>
-      <p class="briefing-typed" aria-hidden="true"></p>
-    </aside>
-    <div id="crosshair" aria-hidden="true"><i></i></div>
-    <aside id="ammo-hud" class="ammo-hud" aria-label="تیر">
-      <div class="magazine-visual" aria-hidden="true">
-        <div class="magazine-body">
-          <span class="magazine-lips"></span>
-          <div class="magazine-rounds"><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i></div>
-          <span class="magazine-base"></span>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save the Earth · کَرشوَر</title>
+    <meta
+      name="description"
+      content="قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن."
+    />
+    <link rel="canonical" href="https://karshvar.ir/fa/save-the-earth/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://karshvar.ir/en/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://karshvar.ir/fa/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://karshvar.ir/ar/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://karshvar.ir/fr/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://karshvar.ir/ru/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://karshvar.ir/tr/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://karshvar.ir/en/save-the-earth/"
+    />
+    <meta property="og:url" content="https://karshvar.ir/fa/save-the-earth/" />
+    <meta property="og:title" content="Save the Earth" />
+    <meta
+      property="og:description"
+      content="قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن."
+    />
+    <meta
+      property="og:image"
+      content="https://karshvar.ir/social/karshvar-fa.png?v=9dce5db59c47"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:image"
+      content="https://karshvar.ir/social/karshvar-fa.png?v=9dce5db59c47"
+    />
+    <link rel="stylesheet" href="../../save-earth.css" />
+    <link rel="stylesheet" href="../../save-earth-access.css" />
+    <script type="module" src="../../save-earth-entry.js"></script>
+  </head>
+  <body>
+    <main class="mission" hidden inert>
+      <header class="mission-header">
+        <div>
+          <a class="mission-back" href="../">بازگشت به صفحهٔ اول</a>
+          <h1 lang="en">Save the Earth</h1>
         </div>
-        <i class="magazine-eject"></i>
+        <div class="mission-stats">
+          <span>امتیاز <strong id="score">0</strong></span>
+          <span>سپر زمین <strong id="shield">5</strong></span>
+          <button
+            id="sound-toggle"
+            type="button"
+            aria-pressed="false"
+            data-on="صدا روشن · M"
+            data-off="صدا خاموش · M"
+          >
+            صدا روشن · M
+          </button>
+        </div>
+      </header>
+      <div class="arena">
+        <canvas
+          id="arena"
+          width="800"
+          height="470"
+          tabindex="0"
+          aria-label="Save the Earth"
+          aria-describedby="controls"
+        ></canvas>
+        <div id="round-overlay" class="round-overlay">
+          <p
+            id="round-status"
+            data-paused="بازی متوقف شد؛ برای کنترل موس ادامه بده."
+            data-lock="برای فعال‌شدن کنترل موس، ادامهٔ بازی را بزن."
+            data-desktop="فقط برای دسکتاپ؛ با صفحه‌کلید و موس بازی کن."
+            data-loading="در حال بارگذاری صحنهٔ سه‌بعدی…"
+            data-error="صحنهٔ سه‌بعدی بارگذاری نشد. صفحه را دوباره بارگذاری کن."
+            data-lost="سپر زمین از بین رفت."
+            data-ended="دور تمام شد."
+            role="status"
+          >
+            قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن.
+          </p>
+          <button
+            id="start"
+            disabled
+            type="button"
+            data-resume="ادامهٔ بازی"
+            data-replay="دوباره بازی کن"
+          >
+            شروع بازی
+          </button>
+        </div>
       </div>
-      <div class="magazine-details">
-        <span class="weapon-name">SMG · خشاب</span>
-        <div class="ammo-count" dir="ltr"><strong id="ammo">30</strong><span>/ 30</span></div>
-        <div class="magazine-track"><i id="magazine-fill"></i></div>
-        <div class="reload-track"><i id="reload-fill"></i></div>
-        <span id="ammo-state" role="status" data-ready="آمادهٔ شلیک" data-reloading="بارگذاری خشاب…" data-empty="خشاب خالی — R را بزن">آمادهٔ شلیک</span>
-        <small>R · تعویض خشاب</small>
+      <aside
+        id="mission-briefing"
+        class="mission-briefing"
+        hidden
+        aria-label="Save the Earth"
+      >
+        <button id="briefing-close" type="button" aria-label="بستن راهنما">
+          ×
+        </button>
+        <div class="briefing-heading" aria-hidden="true">
+          ◉ MISSION CONTROL <span>ONLINE</span>
+        </div>
+        <p class="briefing-source">
+          مأموریت: از زمین محافظت کن؛ شهاب‌ها را پیش از برخورد با زمین نابود کن.
+          نشانه‌گیری و شلیک: موس را حرکت بده تا بچرخی و هدف بگیری. دکمهٔ چپ موس
+          را نگه دار تا شلیک کنی. حرکت: با W جلو و با S عقب برو؛ A و D حرکت به
+          چپ و راست هستند. با Space بالا و با Shift پایین برو. تعویض خشاب: با R
+          خشاب ۳۰تایی اسلحه را عوض کن. کنترل پرواز: با Q و E به دور محور بدنت
+          بچرخ. F را نگه دار تا حرکتت آرام بگیرد. دوربین و توقف: V نمای دوربین
+          را عوض می‌کند؛ Esc بازی را متوقف و M صدا را قطع یا وصل می‌کند.
+        </p>
+        <p class="briefing-typed" aria-hidden="true"></p>
+      </aside>
+      <div id="crosshair" aria-hidden="true"><i></i></div>
+      <aside id="ammo-hud" class="ammo-hud" aria-label="تیر">
+        <div class="magazine-visual" aria-hidden="true">
+          <div class="magazine-body">
+            <span class="magazine-lips"></span>
+            <div class="magazine-rounds">
+              <i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i>
+            </div>
+            <span class="magazine-base"></span>
+          </div>
+          <i class="magazine-eject"></i>
+        </div>
+        <div class="magazine-details">
+          <span class="weapon-name">SMG · خشاب</span>
+          <div class="ammo-count" dir="ltr">
+            <strong id="ammo">30</strong><span>/ 30</span>
+          </div>
+          <div class="magazine-track"><i id="magazine-fill"></i></div>
+          <div class="reload-track"><i id="reload-fill"></i></div>
+          <span
+            id="ammo-state"
+            role="status"
+            data-ready="آمادهٔ شلیک"
+            data-reloading="بارگذاری خشاب…"
+            data-empty="خشاب خالی — R را بزن"
+            >آمادهٔ شلیک</span
+          >
+          <small>R · تعویض خشاب</small>
+        </div>
+      </aside>
+      <div class="mission-controls">
+        <button
+          id="mission-help"
+          type="button"
+          aria-controls="mission-briefing"
+        >
+          راهنما · H
+        </button>
+        <p id="controls" hidden>
+          WASD: پرواز · موس: چرخش · Space / Shift: بالا / پایین · Q / E: غلتش ·
+          F: ترمز · V: دوربین · Esc: مکث
+        </p>
+        <button id="end" type="button" hidden>پایان دور</button>
       </div>
-    </aside>
-    <div class="mission-controls">
-      <button id="mission-help" type="button" aria-controls="mission-briefing">راهنما · H</button>
-      <p id="controls" hidden>WASD: پرواز · موس: چرخش · Space / Shift: بالا / پایین · Q / E: غلتش · F: ترمز · V: دوربین · Esc: مکث</p>
-      <button id="end" type="button" hidden>پایان دور</button>
-    </div>
-    <p class="desktop-note">فقط برای دسکتاپ؛ با صفحه‌کلید و موس بازی کن.</p>
-    <details class="round-history">
-      <summary>امتیازهای قبلی</summary>
-      <p id="no-scores">هنوز دوری بازی نکرده‌ای.</p>
-      <p class="best-score">بهترین امتیاز <strong id="best-score">0</strong></p>
-      <ol id="scores"></ol>
-      <nav id="scores-pagination" hidden aria-label="Scores"><button id="scores-prev" type="button">قبلی</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">بعدی</button></nav>
-    </details>
-    <p class="scene-credits"><a href="../sources/#home-scene-credits">Earth · Astronaut · Meteorite</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">SMG Gun — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">Andromeda: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> · <a href="https://www.solarsystemscope.com/textures/">Planet textures: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a></p>
-  </main>
-  <dialog id="save-earth-desktop-dialog" class="desktop-required-dialog" aria-labelledby="desktop-required-title" aria-describedby="desktop-required-message">
-    <svg class="desktop-required-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="7" width="38" height="27" rx="3"/><path d="M17 42h14M24 34v8"/></svg>
-    <h2 id="desktop-required-title">با کامپیوتر بازی کن</h2>
-    <p id="desktop-required-message" data-access-message data-error="صحنهٔ سه‌بعدی بارگذاری نشد. صفحه را دوباره بارگذاری کن.">برای بازی Save the Earth به کامپیوتر یا لپ‌تاپ با صفحه‌کلید و موس نیاز داری. این صفحه را روی کامپیوتر باز کن.</p>
-    <a class="desktop-required-action" href="../" autofocus>بازگشت به صفحهٔ اول</a>
-  </dialog>
-</body>
+      <p class="desktop-note">فقط برای دسکتاپ؛ با صفحه‌کلید و موس بازی کن.</p>
+      <details class="round-history">
+        <summary>امتیازهای قبلی</summary>
+        <p id="no-scores">هنوز دوری بازی نکرده‌ای.</p>
+        <p class="best-score">
+          بهترین امتیاز <strong id="best-score">0</strong>
+        </p>
+        <ol id="scores"></ol>
+        <nav id="scores-pagination" hidden aria-label="Scores">
+          <button id="scores-prev" type="button">قبلی</button
+          ><span id="scores-page" aria-live="polite"></span
+          ><button id="scores-next" type="button">بعدی</button>
+        </nav>
+      </details>
+      <p class="scene-credits">
+        <a href="../sources/#home-scene-credits"
+          >Earth · Astronaut · Meteorite</a
+        >
+        ·
+        <a
+          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
+          >SMG Gun — Drus</a
+        >
+        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
+        <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> ·
+        <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> ·
+        <a
+          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
+          >Andromeda: R. Gendler</a
+        >
+        · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> ·
+        <a href="https://www.solarsystemscope.com/textures/"
+          >Planet textures: Solar System Scope / INOVE</a
+        >
+        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a>
+      </p>
+    </main>
+    <dialog
+      id="save-earth-desktop-dialog"
+      class="desktop-required-dialog"
+      aria-labelledby="desktop-required-title"
+      aria-describedby="desktop-required-message"
+    >
+      <svg
+        class="desktop-required-icon"
+        viewBox="0 0 48 48"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <rect x="5" y="7" width="38" height="27" rx="3" />
+        <path d="M17 42h14M24 34v8" />
+      </svg>
+      <h2 id="desktop-required-title">با کامپیوتر بازی کن</h2>
+      <p
+        id="desktop-required-message"
+        data-access-message
+        data-error="صحنهٔ سه‌بعدی بارگذاری نشد. صفحه را دوباره بارگذاری کن."
+      >
+        برای بازی Save the Earth به کامپیوتر یا لپ‌تاپ با صفحه‌کلید و موس نیاز
+        داری. این صفحه را روی کامپیوتر باز کن.
+      </p>
+      <a class="desktop-required-action" href="../" autofocus
+        >بازگشت به صفحهٔ اول</a
+      >
+    </dialog>
+  </body>
 </html>

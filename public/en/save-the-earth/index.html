@@ -1,101 +1,280 @@
 <!doctype html>
 <html lang="en" dir="ltr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Save the Earth · Karshvar</title>
-  <meta name="description" content="Intercept the meteors before they hit Earth.">
-  <link rel="canonical" href="https://karshvar.ir/en/save-the-earth/">
-  <link rel="alternate" hreflang="en" href="https://karshvar.ir/en/save-the-earth/">
-  <link rel="alternate" hreflang="fa" href="https://karshvar.ir/fa/save-the-earth/">
-  <link rel="alternate" hreflang="ar" href="https://karshvar.ir/ar/save-the-earth/">
-  <link rel="alternate" hreflang="fr" href="https://karshvar.ir/fr/save-the-earth/">
-  <link rel="alternate" hreflang="ru" href="https://karshvar.ir/ru/save-the-earth/">
-  <link rel="alternate" hreflang="tr" href="https://karshvar.ir/tr/save-the-earth/">
-  <link rel="alternate" hreflang="x-default" href="https://karshvar.ir/en/save-the-earth/">
-  <meta property="og:url" content="https://karshvar.ir/en/save-the-earth/">
-  <meta property="og:title" content="Save the Earth">
-  <meta property="og:description" content="Intercept the meteors before they hit Earth.">
-  <meta property="og:image" content="https://karshvar.ir/social/karshvar-en.png?v=0fe13292cef5">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://karshvar.ir/social/karshvar-en.png?v=0fe13292cef5">
-  <link rel="stylesheet" href="../../save-earth.css">
-  <link rel="stylesheet" href="../../save-earth-access.css">
-  <script type="module" src="../../save-earth-entry.js"></script>
-</head>
-<body>
-  <main class="mission" hidden inert>
-    <header class="mission-header">
-      <div><a class="mission-back" href="../">Back to home</a><h1 lang="en">Save the Earth</h1></div>
-      <div class="mission-stats">
-        <span>Score <strong id="score">0</strong></span>
-        <span>Earth shields <strong id="shield">5</strong></span>
-        <button id="sound-toggle" type="button" aria-pressed="false" data-on="Sound on · M" data-off="Sound off · M">Sound on · M</button>
-
-      </div>
-    </header>
-    <div class="arena">
-      <canvas id="arena" width="800" height="470" tabindex="0" aria-label="Save the Earth" aria-describedby="controls"></canvas>
-      <div id="round-overlay" class="round-overlay">
-        <p id="round-status" data-paused="Paused — resume to capture the mouse." data-lock="Click Resume to enable mouse look." data-desktop="Desktop only · keyboard and mouse required." data-loading="Loading the 3D scene…" data-error="The 3D scene could not load. Reload to try again." data-lost="Earth’s shields are down." data-ended="Round ended." role="status">Intercept the meteors before they hit Earth.</p>
-        <button id="start" disabled type="button" data-resume="Resume" data-replay="Play again">Start game</button>
-      </div>
-    </div>
-    <aside id="mission-briefing" class="mission-briefing" hidden aria-label="Save the Earth">
-      <button id="briefing-close" type="button" aria-label="Close help">×</button>
-      <div class="briefing-heading" aria-hidden="true">◉ MISSION CONTROL <span>ONLINE</span></div>
-      <p class="briefing-source">MISSION: Protect Earth. Destroy incoming meteors before they hit.
-
-LOOK & AIM: Move your mouse to turn and aim. Hold the left mouse button to fire.
-
-MOVE: W / S moves forward / backward; A / D moves sideways. Space rises; Shift descends.
-
-RELOAD: Press R to replace your 30-round magazine.
-
-FLIGHT: Q / E rolls your body. Hold F to brake your drift.
-
-VIEW: V switches camera. Esc pauses. M toggles sound.</p>
-      <p class="briefing-typed" aria-hidden="true"></p>
-    </aside>
-    <div id="crosshair" aria-hidden="true"><i></i></div>
-    <aside id="ammo-hud" class="ammo-hud" aria-label="Ammo">
-      <div class="magazine-visual" aria-hidden="true">
-        <div class="magazine-body">
-          <span class="magazine-lips"></span>
-          <div class="magazine-rounds"><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i></div>
-          <span class="magazine-base"></span>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save the Earth · Karshvar</title>
+    <meta
+      name="description"
+      content="Intercept the meteors before they hit Earth."
+    />
+    <link rel="canonical" href="https://karshvar.ir/en/save-the-earth/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://karshvar.ir/en/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://karshvar.ir/fa/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://karshvar.ir/ar/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://karshvar.ir/fr/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://karshvar.ir/ru/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://karshvar.ir/tr/save-the-earth/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://karshvar.ir/en/save-the-earth/"
+    />
+    <meta property="og:url" content="https://karshvar.ir/en/save-the-earth/" />
+    <meta property="og:title" content="Save the Earth" />
+    <meta
+      property="og:description"
+      content="Intercept the meteors before they hit Earth."
+    />
+    <meta
+      property="og:image"
+      content="https://karshvar.ir/social/karshvar-en.png?v=0fe13292cef5"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:image"
+      content="https://karshvar.ir/social/karshvar-en.png?v=0fe13292cef5"
+    />
+    <link rel="stylesheet" href="../../save-earth.css" />
+    <link rel="stylesheet" href="../../save-earth-access.css" />
+    <script type="module" src="../../save-earth-entry.js"></script>
+  </head>
+  <body>
+    <main class="mission" hidden inert>
+      <header class="mission-header">
+        <div>
+          <a class="mission-back" href="../">Back to home</a>
+          <h1 lang="en">Save the Earth</h1>
         </div>
-        <i class="magazine-eject"></i>
+        <div class="mission-stats">
+          <span>Score <strong id="score">0</strong></span>
+          <span>Earth shields <strong id="shield">5</strong></span>
+          <button
+            id="sound-toggle"
+            type="button"
+            aria-pressed="false"
+            data-on="Sound on · M"
+            data-off="Sound off · M"
+          >
+            Sound on · M
+          </button>
+        </div>
+      </header>
+      <div class="arena">
+        <canvas
+          id="arena"
+          width="800"
+          height="470"
+          tabindex="0"
+          aria-label="Save the Earth"
+          aria-describedby="controls"
+        ></canvas>
+        <div id="round-overlay" class="round-overlay">
+          <p
+            id="round-status"
+            data-paused="Paused — resume to capture the mouse."
+            data-lock="Click Resume to enable mouse look."
+            data-desktop="Desktop only · keyboard and mouse required."
+            data-loading="Loading the 3D scene…"
+            data-error="The 3D scene could not load. Reload to try again."
+            data-lost="Earth’s shields are down."
+            data-ended="Round ended."
+            role="status"
+          >
+            Intercept the meteors before they hit Earth.
+          </p>
+          <button
+            id="start"
+            disabled
+            type="button"
+            data-resume="Resume"
+            data-replay="Play again"
+          >
+            Start game
+          </button>
+        </div>
       </div>
-      <div class="magazine-details">
-        <span class="weapon-name">SMG · MAGAZINE</span>
-        <div class="ammo-count" dir="ltr"><strong id="ammo">30</strong><span>/ 30</span></div>
-        <div class="magazine-track"><i id="magazine-fill"></i></div>
-        <div class="reload-track"><i id="reload-fill"></i></div>
-        <span id="ammo-state" role="status" data-ready="Ready" data-reloading="Reloading…" data-empty="Empty — press R">Ready</span>
-        <small>R · RELOAD</small>
+      <aside
+        id="mission-briefing"
+        class="mission-briefing"
+        hidden
+        aria-label="Save the Earth"
+      >
+        <button id="briefing-close" type="button" aria-label="Close help">
+          ×
+        </button>
+        <div class="briefing-heading" aria-hidden="true">
+          ◉ MISSION CONTROL <span>ONLINE</span>
+        </div>
+        <p class="briefing-source">
+          MISSION: Protect Earth. Destroy incoming meteors before they hit. LOOK
+          & AIM: Move your mouse to turn and aim. Hold the left mouse button to
+          fire. MOVE: W / S moves forward / backward; A / D moves sideways.
+          Space rises; Shift descends. RELOAD: Press R to replace your 30-round
+          magazine. FLIGHT: Q / E rolls your body. Hold F to brake your drift.
+          VIEW: V switches camera. Esc pauses. M toggles sound.
+        </p>
+        <p class="briefing-typed" aria-hidden="true"></p>
+      </aside>
+      <div id="crosshair" aria-hidden="true"><i></i></div>
+      <aside id="ammo-hud" class="ammo-hud" aria-label="Ammo">
+        <div class="magazine-visual" aria-hidden="true">
+          <div class="magazine-body">
+            <span class="magazine-lips"></span>
+            <div class="magazine-rounds">
+              <i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i
+              ><i class="magazine-cartridge is-loaded" data-cartridge></i>
+            </div>
+            <span class="magazine-base"></span>
+          </div>
+          <i class="magazine-eject"></i>
+        </div>
+        <div class="magazine-details">
+          <span class="weapon-name">SMG · MAGAZINE</span>
+          <div class="ammo-count" dir="ltr">
+            <strong id="ammo">30</strong><span>/ 30</span>
+          </div>
+          <div class="magazine-track"><i id="magazine-fill"></i></div>
+          <div class="reload-track"><i id="reload-fill"></i></div>
+          <span
+            id="ammo-state"
+            role="status"
+            data-ready="Ready"
+            data-reloading="Reloading…"
+            data-empty="Empty — press R"
+            >Ready</span
+          >
+          <small>R · RELOAD</small>
+        </div>
+      </aside>
+      <div class="mission-controls">
+        <button
+          id="mission-help"
+          type="button"
+          aria-controls="mission-briefing"
+        >
+          Help · H
+        </button>
+        <p id="controls" hidden>
+          WASD: fly · Mouse: look · Space / Shift: up / down · Q / E: roll · F:
+          brake · V: camera · Esc: pause
+        </p>
+        <button id="end" type="button" hidden>End round</button>
       </div>
-    </aside>
-    <div class="mission-controls">
-      <button id="mission-help" type="button" aria-controls="mission-briefing">Help · H</button>
-      <p id="controls" hidden>WASD: fly · Mouse: look · Space / Shift: up / down · Q / E: roll · F: brake · V: camera · Esc: pause</p>
-      <button id="end" type="button" hidden>End round</button>
-    </div>
-    <p class="desktop-note">Desktop only · keyboard and mouse required.</p>
-    <details class="round-history">
-      <summary>Previous scores</summary>
-      <p id="no-scores">No rounds yet.</p>
-      <p class="best-score">Best score <strong id="best-score">0</strong></p>
-      <ol id="scores"></ol>
-      <nav id="scores-pagination" hidden aria-label="Scores"><button id="scores-prev" type="button">Previous</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">Next</button></nav>
-    </details>
-    <p class="scene-credits"><a href="../sources/#home-scene-credits">Earth · Astronaut · Meteorite</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">SMG Gun — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">Andromeda: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> · <a href="https://www.solarsystemscope.com/textures/">Planet textures: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a></p>
-  </main>
-  <dialog id="save-earth-desktop-dialog" class="desktop-required-dialog" aria-labelledby="desktop-required-title" aria-describedby="desktop-required-message">
-    <svg class="desktop-required-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="7" width="38" height="27" rx="3"/><path d="M17 42h14M24 34v8"/></svg>
-    <h2 id="desktop-required-title">Play on a computer</h2>
-    <p id="desktop-required-message" data-access-message data-error="The 3D scene could not load. Reload to try again.">Save the Earth needs a desktop or laptop with a keyboard and mouse. Open this page on your computer to play.</p>
-    <a class="desktop-required-action" href="../" autofocus>Back to home</a>
-  </dialog>
-</body>
+      <p class="desktop-note">Desktop only · keyboard and mouse required.</p>
+      <details class="round-history">
+        <summary>Previous scores</summary>
+        <p id="no-scores">No rounds yet.</p>
+        <p class="best-score">Best score <strong id="best-score">0</strong></p>
+        <ol id="scores"></ol>
+        <nav id="scores-pagination" hidden aria-label="Scores">
+          <button id="scores-prev" type="button">Previous</button
+          ><span id="scores-page" aria-live="polite"></span
+          ><button id="scores-next" type="button">Next</button>
+        </nav>
+      </details>
+      <p class="scene-credits">
+        <a href="../sources/#home-scene-credits"
+          >Earth · Astronaut · Meteorite</a
+        >
+        ·
+        <a
+          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
+          >SMG Gun — Drus</a
+        >
+        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
+        <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> ·
+        <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> ·
+        <a
+          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
+          >Andromeda: R. Gendler</a
+        >
+        · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> ·
+        <a href="https://www.solarsystemscope.com/textures/"
+          >Planet textures: Solar System Scope / INOVE</a
+        >
+        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a>
+      </p>
+    </main>
+    <dialog
+      id="save-earth-desktop-dialog"
+      class="desktop-required-dialog"
+      aria-labelledby="desktop-required-title"
+      aria-describedby="desktop-required-message"
+    >
+      <svg
+        class="desktop-required-icon"
+        viewBox="0 0 48 48"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <rect x="5" y="7" width="38" height="27" rx="3" />
+        <path d="M17 42h14M24 34v8" />
+      </svg>
+      <h2 id="desktop-required-title">Play on a computer</h2>
+      <p
+        id="desktop-required-message"
+        data-access-message
+        data-error="The 3D scene could not load. Reload to try again."
+      >
+        Save the Earth needs a desktop or laptop with a keyboard and mouse. Open
+        this page on your computer to play.
+      </p>
+      <a class="desktop-required-action" href="../" autofocus>Back to home</a>
+    </dialog>
+  </body>
 </html>
