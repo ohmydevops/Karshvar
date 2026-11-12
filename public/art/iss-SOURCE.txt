@@ -35,3 +35,10 @@ scene hierarchy was compared against the original. World bounds match.
 Runtime presentation adds a subtle neutral earthshine floor for dark panels.
 The original SHA256 and size above identify the downloaded source, not the
 optimized deployment asset.
+
+Surface repair on 2026-11-13:
+scripts/repair-iss.mjs removes 160 redundant, coincident same-facing triangles
+from the source model. All unique oriented surfaces (including thin panel
+backs), materials and texture payloads are retained. Final size: 2368160 bytes.
+At runtime primitive_18 uses front-face culling because a separate reverse
+surface already exists; its original double-sided setting caused overlap.

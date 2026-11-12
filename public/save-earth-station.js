@@ -14,6 +14,9 @@ export async function createSpaceStation(loader) {
     for (const material of [mesh.material].flat()) {
       if (!material?.emissive || litMaterials.has(material)) continue;
       litMaterials.add(material);
+      // This source material already has a separate reverse-facing surface.
+      // Drawing it double-sided makes both skins compete at the same depth.
+      if (material.name === "primitive_18") material.side = THREE.FrontSide;
       material.emissive.setRGB(0.025, 0.032, 0.04);
       material.emissiveIntensity = 1;
       // The source's glossy clearcoat blows out the solar-cell texture under
