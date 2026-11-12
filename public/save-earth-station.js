@@ -6,6 +6,28 @@ export async function createSpaceStation(loader) {
     new URL("./art/iss.glb", import.meta.url).href,
   );
   const model = gltf.scene;
+  // A subtle neutral earthshine floor keeps unlit panel backs legible against
+  // black space. Preserve the original texture, roughness and material colors.
+  const litMaterials = new Set();
+  model.traverse((mesh) => {
+    if (!mesh.isMesh) return;
+    for (const material of [mesh.material].flat()) {
+      if (!material?.emissive || litMaterials.has(material)) continue;
+      litMaterials.add(material);
+      material.emissive.setRGB(0.025, 0.032, 0.04);
+      material.emissiveIntensity = 1;
+      // The source's glossy clearcoat blows out the solar-cell texture under
+      // the game's sun. Broad, subdued highlights preserve the panel pattern.
+      material.roughness = Math.max(material.roughness, 0.6);
+      if ("clearcoat" in material) {
+        material.clearcoat = Math.min(material.clearcoat, 0.08);
+        material.clearcoatRoughness = Math.max(
+          material.clearcoatRoughness,
+          0.6,
+        );
+      }
+    }
+  });
   model.updateMatrixWorld(true);
   const sourceBounds = new THREE.Box3().setFromObject(model);
   const size = sourceBounds.getSize(new THREE.Vector3());

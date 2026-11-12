@@ -267,7 +267,12 @@ test("all traffic layers exclude the Moon and random meteor paths stay in the sk
     const f = await fixture({ width, height, random });
     const ground = Math.max(height, (width * 941) / 1672) * 0.18;
     const bottom = height - ground;
-    assert.equal(f.layers.length, 3);
+    assert.equal(f.layers.length, 2);
+    assert.ok(
+      f.layers.every(
+        (layer) => !layer.className.includes("space-traffic-near"),
+      ),
+    );
     for (const layer of f.layers)
       assert.equal(layer.style, `clip-path:inset(0 0 ${height - bottom}px 0)`);
     for (let i = 0; i < 40; i++) {
@@ -298,7 +303,7 @@ test("spacecraft silhouettes remain above the lunar horizon across screen shapes
     const f = await fixture({ width, height, random: () => 0.9999 });
     const horizon = height - Math.max(height, (width * 941) / 1672) * 0.18;
     for (const [index, flight] of f.flights.entries()) {
-      const silhouette = [168, 84, 42][index] * 0.75;
+      const silhouette = [84, 42][index] * 0.75;
       for (const frame of flight.keyframes) {
         const y =
           (parseFloat(frame.transform.match(/, ([\d.-]+)vh/)[1]) / 100) *
@@ -315,16 +320,13 @@ test("spacecraft silhouettes remain above the lunar horizon across screen shapes
 
 test("spacecraft keep moving through successive routes and resume after tab visibility changes", async () => {
   const f = await fixture();
-  assert.equal(f.flights.length, 3);
-  assert.ok(
-    f.flights[0].options.delay >= 16000 && f.flights[0].options.delay <= 40000,
-  );
+  assert.equal(f.flights.length, 2);
+  assert.equal(f.flights[0].options.delay, 0);
   assert.equal(f.flights[0].options.fill, "both");
   assert.equal(f.flights[1].options.delay, 0);
-  assert.equal(f.flights[2].options.delay, 0);
   assert.deepEqual(
     f.flights.map((flight) => flight.options.duration),
-    [16000, 24000, 48000],
+    [24000, 48000],
   );
   for (const flight of f.flights.slice()) {
     assert.equal(flight.currentTime, 0);

@@ -255,9 +255,6 @@ export async function mountHomeGlobe(host) {
     const traffic = document.createElement("div");
     traffic.className = "space-traffic";
     traffic.setAttribute("aria-hidden", "true");
-    const foregroundTraffic = document.createElement("div");
-    foregroundTraffic.className = "space-traffic space-traffic-near";
-    foregroundTraffic.setAttribute("aria-hidden", "true");
     const mediumTraffic = document.createElement("div");
     mediumTraffic.className = "space-traffic space-traffic-medium";
     mediumTraffic.setAttribute("aria-hidden", "true");
@@ -284,7 +281,6 @@ export async function mountHomeGlobe(host) {
     }
     // Depth is independent of the randomly generated flight path.
     for (const [depth, asset] of [
-      ["near", initialAssets[0]],
       ["medium", initialAssets[1]],
       ["far", initialAssets[2]],
     ]) {
@@ -293,12 +289,7 @@ export async function mountHomeGlobe(host) {
       ship.alt = "";
       ship.className = "passing-ship depth-" + depth;
       ships.push(ship);
-      (depth === "near"
-        ? foregroundTraffic
-        : depth === "medium"
-          ? mediumTraffic
-          : traffic
-      ).append(ship);
+      (depth === "medium" ? mediumTraffic : traffic).append(ship);
     }
     let atmosphereTarget = null;
     const skyBounds = () => {
@@ -402,7 +393,6 @@ export async function mountHomeGlobe(host) {
     };
     document.querySelector("main").prepend(traffic);
     document.querySelector("main").prepend(mediumTraffic);
-    document.body.append(foregroundTraffic);
     const canvas = renderer.domElement;
     canvas.className = "home-canvas";
     canvas.setAttribute("aria-hidden", "true");
@@ -583,7 +573,7 @@ export async function mountHomeGlobe(host) {
     };
     document.addEventListener("click", launchMeteor);
     const flights = new Map();
-    // The medium/far schedules overlap even when mobile hides the near craft.
+    // Only medium/far traffic remains; no large foreground flybys.
     // Route changes happen beyond the viewport, never in the visible scene.
     const fly = (ship, index, initial = false) => {
       if (disposed) return;
@@ -649,14 +639,14 @@ export async function mountHomeGlobe(host) {
       flight.onfinish = () => fly(ship, index);
       if (!visible || document.hidden || motion.matches) flight.pause();
     };
-    ships.forEach((ship, index) => fly(ship, index, true));
+    ships.forEach((ship, index) => fly(ship, index + 1, true));
     const frameInterval = 32;
     function render() {
       renderer.render(scene, camera);
     }
     function resize() {
       const sky = skyBounds();
-      for (const layer of [traffic, mediumTraffic, foregroundTraffic]) {
+      for (const layer of [traffic, mediumTraffic]) {
         layer.setAttribute(
           "style",
           `clip-path:inset(0 0 ${sky.height - sky.bottom}px 0)`,
@@ -1087,7 +1077,6 @@ export async function mountHomeGlobe(host) {
       document.removeEventListener("click", launchMeteor);
       for (const flight of flights.values()) flight.cancel();
       traffic.remove();
-      foregroundTraffic.remove();
       mediumTraffic.remove();
       cancelAnimationFrame(frame);
       observer.disconnect();

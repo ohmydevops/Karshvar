@@ -23,3 +23,15 @@ The model is normalized, rotated and positioned at runtime for gameplay.
 Its native geometry and texture pixels are unchanged. Credit the title and
 author visibly, link to the source and CC BY 4.0, and state the presentation
 adaptations. Neither the author nor the real ISS partners endorse this game.
+
+Optimization on 2026-11-13:
+scripts/optimize-iss.mjs compacts indexed geometry losslessly: removes unused
+vertices, welds byte-identical attribute tuples, uses 16-bit indices where
+possible, and deduplicates identical buffer payloads. No triangles removed,
+no quantization, no texture changes, and no decoder extension added.
+Optimized GLB: 2369124 bytes (87.9% reduction).
+Every indexed attribute byte, image payload, material, node transform and
+scene hierarchy was compared against the original. World bounds match.
+Runtime presentation adds a subtle neutral earthshine floor for dark panels.
+The original SHA256 and size above identify the downloaded source, not the
+optimized deployment asset.

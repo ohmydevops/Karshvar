@@ -44,7 +44,8 @@ export async function createSpaceRenderer(canvas, width, height) {
   );
   const scene = new THREE.Scene();
   scene.add(station.object);
-  scene.background = new THREE.Color(0x030812);
+  const background = new THREE.Scene();
+  background.background = new THREE.Color(0x030812);
   const camera = new THREE.PerspectiveCamera(68, width / height, 0.04, 5000);
   camera.position.set(0, 3.55, 46);
   const sun = new THREE.DirectionalLight(0xffffff, 3.2);
@@ -57,7 +58,7 @@ export async function createSpaceRenderer(canvas, width, height) {
     axialFrame = new THREE.Group();
   axialFrame.rotation.set(0, settings.axisHeading, earthAxialTilt);
   planet.add(axialFrame);
-  scene.add(planet);
+  background.add(planet);
   const { earth, clouds } = createPlanet(
     axialFrame,
     settings,
@@ -81,7 +82,7 @@ export async function createSpaceRenderer(canvas, width, height) {
   );
   planet.add(halo);
   const sky = createDeepSky();
-  scene.add(sky);
+  background.add(sky);
   const moon = sky.getObjectByName("Moon");
   // Keep the Moon in the same distant reference frame as Earth.
   // Its back hemisphere stays behind Earth, with a visible offset at mission start.
@@ -429,7 +430,7 @@ export async function createSpaceRenderer(canvas, width, height) {
     magazineAnimation.update(reload);
   }
   await renderer.compileAsync(scene, camera);
-  await motionBlur.warmup(scene, camera);
+  await motionBlur.warmup(scene, camera, background);
   return {
     shot(player, thirdPerson, time) {
       posePilot(player, thirdPerson, time);
@@ -580,7 +581,7 @@ export async function createSpaceRenderer(canvas, width, height) {
           m.material.opacity = 1 - p.age / 0.32;
         }
       });
-      motionBlur.render(scene, camera, visualMotion.blur);
+      motionBlur.render(scene, camera, visualMotion.blur, background);
     },
   };
   // Read only by the shot query between render frames.

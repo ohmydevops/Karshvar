@@ -71,11 +71,12 @@ export function createMotionBlur(renderer) {
   pass.add(triangle);
   const passCamera = new THREE.Camera();
   return {
-    async warmup(scene, camera) {
+    async warmup(scene, camera, background) {
       const previous = renderer.getRenderTarget();
       try {
         renderer.initRenderTarget(target);
         renderer.setRenderTarget(target);
+        if (background) await renderer.compileAsync(background, camera);
         await renderer.compileAsync(scene, camera);
         renderer.setRenderTarget(previous);
         await renderer.compileAsync(pass, passCamera);
@@ -83,19 +84,30 @@ export function createMotionBlur(renderer) {
         renderer.setRenderTarget(previous);
       }
     },
-    render(scene, camera, motion) {
+    render(scene, camera, motion, background) {
       const amount = Math.max(0, Math.min(1, motion?.strength || 0));
       const x = motion?.x || 0;
       const y = motion?.y || 0;
       uniforms.direction.value.set(x, y);
       uniforms.strength.value = x * x + y * y < 0.000001 ? 0 : amount;
       const previous = renderer.getRenderTarget();
+      const autoClear = renderer.autoClear;
       try {
         renderer.setRenderTarget(target);
+        if (background) {
+          renderer.autoClear = true;
+          renderer.render(background, camera);
+          // Celestial distances are compressed. Their depth must never occlude
+          // the nearby station, pilot or other local flight-space objects.
+          renderer.clearDepth();
+          renderer.autoClear = false;
+        }
         renderer.render(scene, camera);
+        renderer.autoClear = autoClear;
         renderer.setRenderTarget(previous);
         renderer.render(pass, passCamera);
       } finally {
+        renderer.autoClear = autoClear;
         renderer.setRenderTarget(previous);
       }
     },
