@@ -1,0 +1,8 @@
+Lossless WebP packaging (2026-11-13)
+earth-clouds.webp, saturn-rings.webp and uranus.webp retain the exact decoded
+RGBA pixels, dimensions and alpha of the former PNG/JPEG files.
+Converted using scripts/compress-game-textures.py (Pillow, lossless=True,
+exact=True, method=6); every pixel compared after decoding.
+Existing source credits and licenses continue to apply.
+JPEG maps remain JPEG when a pixel-identical WebP would increase download size.
+Build output must not apply lossy re-encoding to these scene maps.

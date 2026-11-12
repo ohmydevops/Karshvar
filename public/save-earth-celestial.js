@@ -158,7 +158,7 @@ export function addCelestialBodies(sky) {
         ringReady: { value: 0 },
       };
       loader.load(
-        new URL("./art/saturn-rings.png", import.meta.url).href,
+        new URL("./art/saturn-rings.webp", import.meta.url).href,
         (texture) => {
           texture.colorSpace = THREE.SRGBColorSpace;
           texture.anisotropy = 4;

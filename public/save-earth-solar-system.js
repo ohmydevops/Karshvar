@@ -44,7 +44,7 @@ const display = Object.freeze({
   Mars: { phase: 80, diameter: 0.34, kind: 2, texture: "mars.jpg" },
   Jupiter: { phase: 60, diameter: 7, kind: 3, texture: "jupiter.jpg" },
   Saturn: { phase: -45, diameter: 5.8, kind: 4, texture: "saturn.jpg" },
-  Uranus: { phase: -100, diameter: 2.5, kind: 6, texture: "uranus.jpg" },
+  Uranus: { phase: -100, diameter: 2.5, kind: 6, texture: "uranus.webp" },
   Neptune: { phase: 60, diameter: 2.4, kind: 7, texture: "neptune.jpg" },
 });
 

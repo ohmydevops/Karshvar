@@ -2,3 +2,7 @@ SMG Gun — Drus
 https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277
 CC BY 4.0 https://creativecommons.org/licenses/by/4.0/
 Original GLB; resized and rotated in the game.
+Texture packaging on 2026-11-13: embedded images converted to lossless WebP
+only when smaller, using scripts/compress-game-textures.py. EXT_texture_webp
+is required and supported by the bundled GLTFLoader. Decoded RGBA pixels,
+dimensions, alpha and all non-image buffer payloads were verified unchanged.

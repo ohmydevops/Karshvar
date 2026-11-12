@@ -28,7 +28,7 @@ export async function createSpaceRenderer(canvas, width, height) {
   const url = (name) => new URL("./art/" + name, import.meta.url).href;
   const [day, night, cloud, person, rock, blaster, station] = await Promise.all(
     [
-      ...["earth-texture.webp", "earth-night.webp", "earth-clouds.png"].map(
+      ...["earth-texture.webp", "earth-night.webp", "earth-clouds.webp"].map(
         (n) => textures.loadAsync(url(n)),
       ),
       ...["astronaut.glb", "meteorite.glb", "smg-gun.glb"].map((n) =>

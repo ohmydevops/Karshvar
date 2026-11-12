@@ -41,7 +41,7 @@ export async function mountHomeGlobe(host) {
           new URL("./art/earth-night.webp", import.meta.url).href,
         ),
         loader.loadAsync(
-          new URL("./art/earth-clouds.png", import.meta.url).href,
+          new URL("./art/earth-clouds.webp", import.meta.url).href,
         ),
         loader
           .loadAsync(new URL("./art/moon.jpg", import.meta.url).href)

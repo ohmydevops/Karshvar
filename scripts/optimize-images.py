@@ -9,6 +9,10 @@ before = after = 0
 for file in target.rglob("*"):
     if file.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp"}:
         continue
+    # Game/scene maps have already been packaged and pixel-verified. Never
+    # re-encode them with the lossy general-site settings during deployment.
+    if file.parent.name == "art":
+        continue
     size = file.stat().st_size
     with Image.open(file) as image:
         image.load()

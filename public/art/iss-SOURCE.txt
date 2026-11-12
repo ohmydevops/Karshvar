@@ -42,3 +42,7 @@ from the source model. All unique oriented surfaces (including thin panel
 backs), materials and texture payloads are retained. Final size: 2368160 bytes.
 At runtime primitive_18 uses front-face culling because a separate reverse
 surface already exists; its original double-sided setting caused overlap.
+Texture packaging on 2026-11-13: embedded images converted to lossless WebP
+only when smaller, using scripts/compress-game-textures.py. EXT_texture_webp
+is required and supported by the bundled GLTFLoader. Decoded RGBA pixels,
+dimensions, alpha and all non-image buffer payloads were verified unchanged.

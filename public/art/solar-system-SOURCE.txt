@@ -44,9 +44,9 @@ Mirror filename: 2k_saturn.jpg
 2048 x 1024; 199916 bytes
 SHA256: 54a900ca9bf7ab62e70f862852759abdf342e6d6436a95a2fe9ebdb6bcd3bbac
 
-Local file: uranus.jpg
-Original: https://www.solarsystemscope.com/textures/download/2k_uranus.jpg
-Mirror filename: 2k_uranus.jpg
+Local file: uranus.webp
+Original: https://www.solarsystemscope.com/textures/download/2k_uranus.webp
+Mirror filename: 2k_uranus.webp
 2048 x 1024; 77751 bytes
 SHA256: d15239d46f82d3ea13d2b260b5b29b2a382f42f2916dae0694d0387b1204a09d
 
@@ -56,7 +56,7 @@ Mirror filename: 2k_neptune.jpg
 2048 x 1024; 241580 bytes
 SHA256: cb42ea82709741d28b0af44d8b283cbc6dbd0c521a7f0e1e1e010ade00977df6
 
-Local file: saturn-rings.png
+Local file: saturn-rings.webp
 Original: https://www.solarsystemscope.com/textures/download/2k_saturn_ring_alpha.png
 Mirror filename: 2k_saturn_ring_alpha.png
 2048 x 125; 12119 bytes
