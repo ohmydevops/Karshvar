@@ -158,6 +158,7 @@
     <link rel="alternate" hreflang="ru" href="https://karshvar.ir/ru/" />
     <link rel="alternate" hreflang="x-default" href="https://karshvar.ir/" />
     <meta property="og:url" content="https://karshvar.ir/ru/" />
+    <link rel="stylesheet" href="./save-earth-access.css" />
   </head>
   <body class="light">
     <header>
@@ -307,86 +308,165 @@
             loading="lazy"
           />
         </div>
-        <a class="discovery-scroll" href="./ru/#discover"
-          >Узнать больше<span aria-hidden="true">⌄</span></a
-        >
+        <p class="home-introduction">
+          Karshvar — мой личный проект о географии, истории и обо всём, что мне
+          хочется узнать о мире.
+        </p>
       </section>
       <div id="discover" class="home-discover">
-        <section class="discovery-row" aria-labelledby="atlas-title">
-          <div class="discovery-copy">
-            <h2 id="atlas-title">Атлас мира</h2>
-            <p>Знакомьтесь со странами и географией</p>
-            <a class="discovery-action home-explore" href="./ru/explore/"
-              >Открыть атлас</a
+        <div class="destination-grid">
+          <section
+            class="destination destination-atlas"
+            aria-labelledby="atlas-title"
+          >
+            <div class="destination-copy">
+              <h2 id="atlas-title">Атлас мира</h2>
+              <p>Знакомьтесь со странами и географией</p>
+            </div>
+            <a class="destination-action home-explore" href="./ru/explore/"
+              ><span>Открыть атлас</span
+              ><span class="destination-arrow" aria-hidden="true">←</span></a
             >
-          </div>
-          <figure class="discovery-visual atlas">
-            <img
-              src="./art/home-atlas.svg"
-              alt=""
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
-
-        <section class="discovery-row" aria-labelledby="geography-title">
-          <div class="discovery-copy">
-            <h2 id="geography-title">Географическая игра</h2>
-            <p>Находите страны на карте</p>
-            <a id="startGame" class="discovery-action" href="./ru/modes/"
-              >Начать игру</a
+          </section>
+          <section
+            class="destination destination-geography"
+            aria-labelledby="geography-title"
+          >
+            <div class="destination-copy">
+              <h2 id="geography-title">Географическая игра</h2>
+              <p>Находите страны на карте</p>
+            </div>
+            <a id="startGame" class="destination-action" href="./ru/modes/"
+              ><span>Начать игру</span
+              ><span class="destination-arrow" aria-hidden="true">←</span></a
             >
-          </div>
-          <figure class="discovery-visual geography">
-            <img
-              src="./art/home-game.svg"
-              alt=""
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
+          </section>
 
-        <section class="discovery-row" aria-labelledby="natural-history-title">
-          <div class="discovery-copy">
-            <h2 id="natural-history-title">Естественная история</h2>
-            <p>Изучайте природную историю Земли</p>
-            <button class="discovery-action" disabled>Скоро</button>
-          </div>
-          <figure class="discovery-visual natural-history">
-            <img
-              src="./art/home-natural-history.webp"
-              alt=""
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
-
-        <section class="discovery-row" aria-labelledby="human-history-title">
-          <div class="discovery-copy">
-            <h2 id="human-history-title">История народов</h2>
-            <p>Знакомьтесь с событиями и судьбами людей</p>
-            <button class="discovery-action" disabled>Скоро</button>
-          </div>
-          <figure class="discovery-visual human-history">
-            <img
-              src="./art/home-human-history.webp"
-              alt="Рисунки на сосуде из Шахри-Сухте"
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
+          <section
+            class="destination destination-natural-history"
+            aria-labelledby="natural-history-title"
+          >
+            <div class="destination-copy">
+              <h2 id="natural-history-title">Естественная история</h2>
+              <p>Изучайте природную историю Земли</p>
+            </div>
+            <button
+              type="button"
+              class="destination-action"
+              data-preview="natural-history"
+              aria-haspopup="dialog"
+              aria-controls="natural-history-dialog"
+            >
+              <span>Об этом разделе</span
+              ><span class="destination-arrow" aria-hidden="true">←</span>
+            </button>
+            <dialog
+              class="section-preview"
+              id="natural-history-dialog"
+              aria-labelledby="natural-history-dialog-title"
+              aria-describedby="natural-history-dialog-description"
+            >
+              <h2 id="natural-history-dialog-title">Естественная история</h2>
+              <p id="natural-history-dialog-description">
+                Карты, иллюстрации и хронология расскажут о формировании Земли,
+                движении материков и появлении жизни.
+              </p>
+              <p class="section-preview-status">
+                Раздел готовится и скоро появится.
+              </p>
+              <form method="dialog">
+                <button class="destination-action" autofocus>Закрыть</button>
+              </form>
+            </dialog>
+          </section>
+          <section
+            class="destination destination-human-history"
+            aria-labelledby="human-history-title"
+          >
+            <div class="destination-copy">
+              <h2 id="human-history-title">История народов</h2>
+              <p>Знакомьтесь с событиями и судьбами людей</p>
+            </div>
+            <button
+              type="button"
+              class="destination-action"
+              data-preview="human-history"
+              aria-haspopup="dialog"
+              aria-controls="human-history-dialog"
+            >
+              <span>Об этом разделе</span
+              ><span class="destination-arrow" aria-hidden="true">←</span>
+            </button>
+            <dialog
+              class="section-preview"
+              id="human-history-dialog"
+              aria-labelledby="human-history-dialog-title"
+              aria-describedby="human-history-dialog-description"
+            >
+              <h2 id="human-history-dialog-title">История народов</h2>
+              <p id="human-history-dialog-description">
+                Знакомьтесь с цивилизациями, территориями и жизнью разных эпох с
+                помощью карт и хронологии.
+              </p>
+              <p class="section-preview-status">
+                Раздел готовится и скоро появится.
+              </p>
+              <form method="dialog">
+                <button class="destination-action" autofocus>Закрыть</button>
+              </form>
+            </dialog>
+          </section>
+          <section
+            class="destination destination-save-earth"
+            aria-labelledby="save-earth-title"
+          >
+            <div class="destination-copy">
+              <h2 id="save-earth-title" lang="en">Save the Earth</h2>
+              <p>Перехватывай метеоры, пока они не достигли Земли.</p>
+            </div>
+            <a
+              class="destination-action"
+              data-save-earth-link
+              aria-haspopup="dialog"
+              aria-controls="save-earth-desktop-dialog"
+              href="./ru/save-the-earth/"
+              ><span>Играть</span
+              ><span class="destination-arrow" aria-hidden="true">←</span></a
+            >
+            <dialog
+              id="save-earth-desktop-dialog"
+              class="desktop-required-dialog"
+              aria-labelledby="desktop-required-title"
+              aria-describedby="desktop-required-message"
+            >
+              <svg
+                class="desktop-required-icon"
+                viewBox="0 0 48 48"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <rect x="5" y="7" width="38" height="27" rx="3" />
+                <path d="M17 42h14M24 34v8" />
+              </svg>
+              <h2 id="desktop-required-title">Играй на компьютере</h2>
+              <p
+                id="desktop-required-message"
+                data-access-message
+                data-error="Не удалось загрузить сцену. Обнови страницу."
+              >
+                Для Save the Earth нужен компьютер или ноутбук с клавиатурой и
+                мышью. Открой эту страницу на компьютере, чтобы играть.
+              </p>
+              <form method="dialog">
+                <button class="desktop-required-action" autofocus>
+                  Понятно
+                </button>
+              </form>
+            </dialog>
+          </section>
+        </div>
       </div>
       <section class="intro" hidden>
         <h1>Где хотите сыграть?</h1>

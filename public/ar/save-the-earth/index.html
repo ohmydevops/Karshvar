@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Save the Earth · Karshvar</title>
+  <meta name="description" content="اعترض الشهب قبل أن تصطدم بالأرض.">
+  <link rel="canonical" href="https://karshvar.ir/ar/save-the-earth/">
+  <link rel="alternate" hreflang="en" href="https://karshvar.ir/en/save-the-earth/">
+  <link rel="alternate" hreflang="fa" href="https://karshvar.ir/fa/save-the-earth/">
+  <link rel="alternate" hreflang="ar" href="https://karshvar.ir/ar/save-the-earth/">
+  <link rel="alternate" hreflang="fr" href="https://karshvar.ir/fr/save-the-earth/">
+  <link rel="alternate" hreflang="ru" href="https://karshvar.ir/ru/save-the-earth/">
+  <link rel="alternate" hreflang="tr" href="https://karshvar.ir/tr/save-the-earth/">
+  <link rel="alternate" hreflang="x-default" href="https://karshvar.ir/en/save-the-earth/">
+  <meta property="og:url" content="https://karshvar.ir/ar/save-the-earth/">
+  <meta property="og:title" content="Save the Earth">
+  <meta property="og:description" content="اعترض الشهب قبل أن تصطدم بالأرض.">
+  <meta property="og:image" content="https://karshvar.ir/social/karshvar-ar.png?v=281b9592fc90">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://karshvar.ir/social/karshvar-ar.png?v=281b9592fc90">
+  <link rel="stylesheet" href="../../save-earth.css">
+  <link rel="stylesheet" href="../../save-earth-access.css">
+  <script type="module" src="../../save-earth-entry.js"></script>
+</head>
+<body>
+  <main class="mission" hidden inert>
+    <header class="mission-header">
+      <div><a class="mission-back" href="../">العودة إلى الرئيسية</a><h1 lang="en">Save the Earth</h1></div>
+      <div class="mission-stats">
+        <span>النقاط <strong id="score">0</strong></span>
+        <span>درع الأرض <strong id="shield">5</strong></span>
+        <button id="sound-toggle" type="button" aria-pressed="false" data-on="الصوت يعمل · M" data-off="الصوت مكتوم · M">الصوت يعمل · M</button>
+
+      </div>
+    </header>
+    <div class="arena">
+      <canvas id="arena" width="800" height="470" tabindex="0" aria-label="Save the Earth" aria-describedby="controls"></canvas>
+      <div id="round-overlay" class="round-overlay">
+        <p id="round-status" data-paused="متوقف مؤقتًا. استأنف للتحكم بالفأرة." data-lock="انقر استئناف لتفعيل الفأرة." data-desktop="للحاسوب فقط؛ يلزم استخدام لوحة المفاتيح والفأرة." data-loading="جارٍ تحميل المشهد ثلاثي الأبعاد…" data-error="تعذّر تحميل المشهد. أعد تحميل الصفحة." data-lost="انهار درع الأرض." data-ended="انتهت الجولة." role="status">اعترض الشهب قبل أن تصطدم بالأرض.</p>
+        <button id="start" disabled type="button" data-resume="استئناف" data-replay="العب مجددًا">ابدأ اللعبة</button>
+      </div>
+    </div>
+    <aside id="mission-briefing" class="mission-briefing" hidden aria-label="Save the Earth">
+      <button id="briefing-close" type="button" aria-label="Close help">×</button>
+      <div class="briefing-heading" aria-hidden="true">◉ MISSION CONTROL <span>ONLINE</span></div>
+      <p class="briefing-source">اعترض الشهب قبل أن تصطدم بالأرض.
+
+WASD: طيران
+
+الفأرة: نظر
+
+Space / Shift: صعود / هبوط
+
+Q / E: دوران
+
+F: فرملة
+
+V: كاميرا
+
+Esc: إيقاف
+
+R: إعادة التلقيم</p>
+      <p class="briefing-typed" aria-hidden="true"></p>
+    </aside>
+    <div id="crosshair" aria-hidden="true"><i></i></div>
+    <aside id="ammo-hud" class="ammo-hud" aria-label="الذخيرة">
+      <div class="magazine-visual" aria-hidden="true">
+        <div class="magazine-body">
+          <span class="magazine-lips"></span>
+          <div class="magazine-rounds"><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i></div>
+          <span class="magazine-base"></span>
+        </div>
+        <i class="magazine-eject"></i>
+      </div>
+      <div class="magazine-details">
+        <span class="weapon-name">SMG · المخزن</span>
+        <div class="ammo-count" dir="ltr"><strong id="ammo">30</strong><span>/ 30</span></div>
+        <div class="magazine-track"><i id="magazine-fill"></i></div>
+        <div class="reload-track"><i id="reload-fill"></i></div>
+        <span id="ammo-state" role="status" data-ready="جاهز" data-reloading="إعادة التلقيم…" data-empty="فارغ — اضغط R">جاهز</span>
+        <small>R · تلقيم</small>
+      </div>
+    </aside>
+    <div class="mission-controls">
+      <button id="mission-help" type="button" aria-controls="mission-briefing">Help · H</button>
+      <p id="controls" hidden>WASD: طيران · الفأرة: نظر · Space / Shift: صعود / هبوط · Q / E: دوران · F: فرملة · V: كاميرا · Esc: إيقاف</p>
+      <button id="end" type="button" hidden>أنه الجولة</button>
+    </div>
+    <p class="desktop-note">للحاسوب فقط؛ يلزم استخدام لوحة المفاتيح والفأرة.</p>
+    <details class="round-history">
+      <summary>النقاط السابقة</summary>
+      <p id="no-scores">لم تلعب أي جولة بعد.</p>
+      <p class="best-score">أفضل نتيجة <strong id="best-score">0</strong></p>
+      <ol id="scores"></ol>
+      <nav id="scores-pagination" hidden aria-label="Scores"><button id="scores-prev" type="button">السابق</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">التالي</button></nav>
+    </details>
+    <p class="scene-credits"><a href="../sources/#home-scene-credits">Earth · Astronaut · Meteorite</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">SMG Gun — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">Andromeda: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> · <a href="https://www.solarsystemscope.com/textures/">Planet textures: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a></p>
+  </main>
+  <dialog id="save-earth-desktop-dialog" class="desktop-required-dialog" aria-labelledby="desktop-required-title" aria-describedby="desktop-required-message">
+    <svg class="desktop-required-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="7" width="38" height="27" rx="3"/><path d="M17 42h14M24 34v8"/></svg>
+    <h2 id="desktop-required-title">العب على الكمبيوتر</h2>
+    <p id="desktop-required-message" data-access-message data-error="تعذّر تحميل المشهد. أعد تحميل الصفحة.">تحتاج لعبة Save the Earth إلى كمبيوتر مكتبي أو محمول مع لوحة مفاتيح وفأرة. افتح هذه الصفحة على الكمبيوتر للعب.</p>
+    <a class="desktop-required-action" href="../" autofocus>العودة إلى الرئيسية</a>
+  </dialog>
+</body>
+</html>

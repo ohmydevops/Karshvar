@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import * as THREE from "../public/vendor/three.module.min.js";
+import { homeSpeech } from "../public/home-speech.js";
 import { createHomeScene, earthAxialTilt } from "../public/home-scene.js";
 
 async function fixture({
@@ -85,7 +86,8 @@ async function fixture({
     },
   };
   const host = {
-    getBoundingClientRect: () => ({ width: hostSize, height: hostSize }),
+    style: {},
+    getBoundingClientRect: () => ({ top: 0, left: 0, width: hostSize, height: hostSize }),
     replaceChildren() {},
     classList: { add() {} },
   };
@@ -100,6 +102,7 @@ async function fixture({
       ...THREE,
       WebGLRenderer: class {
         domElement = {
+          style: {},
           setAttribute() {},
           setPointerCapture() {},
           addEventListener: (name, fn) => {
@@ -123,6 +126,7 @@ async function fixture({
         }
       },
     },
+    homeSpeech,
     createHomeScene,
     earthAxialTilt,
     document,
@@ -394,9 +398,12 @@ test("reduced motion renders a still globe that remains draggable", async () => 
   const f = await fixture({ reduced: true });
   assert.equal(f.draws(), 1);
   assert.equal(f.pending.size, 0);
+  const moon = f.scene().getObjectByName("home-moon");
+  const before = moon.getWorldPosition(new THREE.Vector3());
   f.canvasEvents.pointerdown({ clientX: 0, clientY: 0, pointerId: 1 });
   f.canvasEvents.pointermove({ clientX: 10, clientY: 5 });
   assert.equal(f.draws(), 2);
+  assert.ok(moon.getWorldPosition(new THREE.Vector3()).distanceTo(before) > 0.1);
   f.motion.matches = false;
   f.events.motion();
   assert.equal(f.pending.size, 1);
@@ -431,7 +438,7 @@ test("satellites keep orbiting while the globe is dragged", async () => {
     )
       satellites.push(object);
   });
-  assert.equal(satellites.length, 6);
+  assert.equal(satellites.length, 3);
   f.step(100);
   const positions = satellites.map((satellite) => satellite.position.clone());
   const rotation = earth.rotation.y;

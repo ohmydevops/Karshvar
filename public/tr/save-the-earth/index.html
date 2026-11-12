@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Save the Earth · Karshvar</title>
+  <meta name="description" content="Göktaşlarını Dünya’ya çarpmadan durdur.">
+  <link rel="canonical" href="https://karshvar.ir/tr/save-the-earth/">
+  <link rel="alternate" hreflang="en" href="https://karshvar.ir/en/save-the-earth/">
+  <link rel="alternate" hreflang="fa" href="https://karshvar.ir/fa/save-the-earth/">
+  <link rel="alternate" hreflang="ar" href="https://karshvar.ir/ar/save-the-earth/">
+  <link rel="alternate" hreflang="fr" href="https://karshvar.ir/fr/save-the-earth/">
+  <link rel="alternate" hreflang="ru" href="https://karshvar.ir/ru/save-the-earth/">
+  <link rel="alternate" hreflang="tr" href="https://karshvar.ir/tr/save-the-earth/">
+  <link rel="alternate" hreflang="x-default" href="https://karshvar.ir/en/save-the-earth/">
+  <meta property="og:url" content="https://karshvar.ir/tr/save-the-earth/">
+  <meta property="og:title" content="Save the Earth">
+  <meta property="og:description" content="Göktaşlarını Dünya’ya çarpmadan durdur.">
+  <meta property="og:image" content="https://karshvar.ir/social/karshvar-tr.png?v=22ccbdb0ca41">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://karshvar.ir/social/karshvar-tr.png?v=22ccbdb0ca41">
+  <link rel="stylesheet" href="../../save-earth.css">
+  <link rel="stylesheet" href="../../save-earth-access.css">
+  <script type="module" src="../../save-earth-entry.js"></script>
+</head>
+<body>
+  <main class="mission" hidden inert>
+    <header class="mission-header">
+      <div><a class="mission-back" href="../">Ana sayfaya dön</a><h1 lang="en">Save the Earth</h1></div>
+      <div class="mission-stats">
+        <span>Puan <strong id="score">0</strong></span>
+        <span>Dünya’nın kalkanı <strong id="shield">5</strong></span>
+        <button id="sound-toggle" type="button" aria-pressed="false" data-on="Ses açık · M" data-off="Ses kapalı · M">Ses açık · M</button>
+
+      </div>
+    </header>
+    <div class="arena">
+      <canvas id="arena" width="800" height="470" tabindex="0" aria-label="Save the Earth" aria-describedby="controls"></canvas>
+      <div id="round-overlay" class="round-overlay">
+        <p id="round-status" data-paused="Duraklatıldı. Fare kontrolü için devam et." data-lock="Fare kontrolü için Devam et düğmesine tıkla." data-desktop="Yalnızca masaüstü; klavye ve fare gerektirir." data-loading="3B sahne yükleniyor…" data-error="Sahne yüklenemedi. Sayfayı yenile." data-lost="Dünya’nın kalkanı çöktü." data-ended="Tur bitti." role="status">Göktaşlarını Dünya’ya çarpmadan durdur.</p>
+        <button id="start" disabled type="button" data-resume="Devam et" data-replay="Tekrar oyna">Oyunu başlat</button>
+      </div>
+    </div>
+    <aside id="mission-briefing" class="mission-briefing" hidden aria-label="Save the Earth">
+      <button id="briefing-close" type="button" aria-label="Close help">×</button>
+      <div class="briefing-heading" aria-hidden="true">◉ MISSION CONTROL <span>ONLINE</span></div>
+      <p class="briefing-source">Göktaşlarını Dünya’ya çarpmadan durdur.
+
+WASD: uçuş
+
+Fare: bakış
+
+Space / Shift: yukarı / aşağı
+
+Q / E: yatış
+
+F: fren
+
+V: kamera
+
+Esc: duraklat
+
+R: şarjör değiştir</p>
+      <p class="briefing-typed" aria-hidden="true"></p>
+    </aside>
+    <div id="crosshair" aria-hidden="true"><i></i></div>
+    <aside id="ammo-hud" class="ammo-hud" aria-label="Mermi">
+      <div class="magazine-visual" aria-hidden="true">
+        <div class="magazine-body">
+          <span class="magazine-lips"></span>
+          <div class="magazine-rounds"><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i><i class="magazine-cartridge is-loaded" data-cartridge></i></div>
+          <span class="magazine-base"></span>
+        </div>
+        <i class="magazine-eject"></i>
+      </div>
+      <div class="magazine-details">
+        <span class="weapon-name">SMG · ŞARJÖR</span>
+        <div class="ammo-count" dir="ltr"><strong id="ammo">30</strong><span>/ 30</span></div>
+        <div class="magazine-track"><i id="magazine-fill"></i></div>
+        <div class="reload-track"><i id="reload-fill"></i></div>
+        <span id="ammo-state" role="status" data-ready="Hazır" data-reloading="Dolduruluyor…" data-empty="Boş — R tuşuna bas">Hazır</span>
+        <small>R · DOLDUR</small>
+      </div>
+    </aside>
+    <div class="mission-controls">
+      <button id="mission-help" type="button" aria-controls="mission-briefing">Help · H</button>
+      <p id="controls" hidden>WASD: uçuş · Fare: bakış · Space / Shift: yukarı / aşağı · Q / E: yatış · F: fren · V: kamera · Esc: duraklat</p>
+      <button id="end" type="button" hidden>Turu bitir</button>
+    </div>
+    <p class="desktop-note">Yalnızca masaüstü; klavye ve fare gerektirir.</p>
+    <details class="round-history">
+      <summary>Önceki puanlar</summary>
+      <p id="no-scores">Henüz tur oynanmadı.</p>
+      <p class="best-score">En iyi skor <strong id="best-score">0</strong></p>
+      <ol id="scores"></ol>
+      <nav id="scores-pagination" hidden aria-label="Scores"><button id="scores-prev" type="button">Önceki</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">Sonraki</button></nav>
+    </details>
+    <p class="scene-credits"><a href="../sources/#home-scene-credits">Earth · Astronaut · Meteorite</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">SMG Gun — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">NASA radio · sources</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">Breathing · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">Andromeda: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapted</a> · <a href="https://www.solarsystemscope.com/textures/">Planet textures: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a></p>
+  </main>
+  <dialog id="save-earth-desktop-dialog" class="desktop-required-dialog" aria-labelledby="desktop-required-title" aria-describedby="desktop-required-message">
+    <svg class="desktop-required-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="7" width="38" height="27" rx="3"/><path d="M17 42h14M24 34v8"/></svg>
+    <h2 id="desktop-required-title">Bilgisayarda oyna</h2>
+    <p id="desktop-required-message" data-access-message data-error="Sahne yüklenemedi. Sayfayı yenile.">Save the Earth için klavye ve fareli bir masaüstü veya dizüstü bilgisayar gerekir. Oynamak için bu sayfayı bilgisayarında aç.</p>
+    <a class="desktop-required-action" href="../" autofocus>Ana sayfaya dön</a>
+  </dialog>
+</body>
+</html>

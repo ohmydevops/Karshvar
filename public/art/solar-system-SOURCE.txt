@@ -1,0 +1,67 @@
+Solar System planetary texture pack
+Credit: Solar System Scope / INOVE
+Primary publisher and license statement:
+https://www.solarsystemscope.com/textures/
+License: Creative Commons Attribution 4.0 International
+https://creativecommons.org/licenses/by/4.0/
+Retrieved: 2026-11-12
+
+The publisher describes these as equirectangular planetary maps derived from
+NASA elevation and spacecraft imagery. Color/shading is tuned to spacecraft
+photos, with enhanced saturation; unmapped regions may contain compatible
+fictional fill. These are planetary visualization maps, not live photographs.
+Venus uses its cloud-covered atmosphere rather than an exposed surface map.
+
+Downloaded from the same documented public mirror used for jupiter.jpg:
+https://github.com/TanvirAhmedArnab/SolarSystem/tree/main/SourceAssets/ThirdParty/Textures/SolarSystemScope
+Mirror media base:
+https://media.githubusercontent.com/media/TanvirAhmedArnab/SolarSystem/main/SourceAssets/ThirdParty/Textures/SolarSystemScope/
+All downloaded image pixels are unchanged. Local names are simplified for the
+game. Runtime sphere/ring mapping and lighting are presentation adaptations.
+Credit Solar System Scope / INOVE visibly and link the publisher and license.
+
+Local file: mercury.jpg
+Original: https://www.solarsystemscope.com/textures/download/2k_mercury.jpg
+Mirror filename: 2k_mercury.jpg
+2048 x 1024; 872555 bytes
+SHA256: 5a5c80607f643496bac9a631e71957def35ed788895f18b678ac849c2b38e48a
+
+Local file: venus.jpg
+Original: https://www.solarsystemscope.com/textures/download/2k_venus_atmosphere.jpg
+Mirror filename: 2k_venus_atmosphere.jpg
+2048 x 1024; 229696 bytes
+SHA256: 225012ad4911730605c4e189ca2a3bf674fce50cc48aab4102b936b47d6991ac
+
+Local file: mars.jpg
+Original: https://www.solarsystemscope.com/textures/download/2k_mars.jpg
+Mirror filename: 2k_mars.jpg
+2048 x 1024; 750547 bytes
+SHA256: 2d187f3e77a98eaa8cea5f4cc722f633c122ef170b9e94ace6b5fb6cbc3f8e01
+
+Local file: saturn.jpg
+Original: https://www.solarsystemscope.com/textures/download/2k_saturn.jpg
+Mirror filename: 2k_saturn.jpg
+2048 x 1024; 199916 bytes
+SHA256: 54a900ca9bf7ab62e70f862852759abdf342e6d6436a95a2fe9ebdb6bcd3bbac
+
+Local file: uranus.jpg
+Original: https://www.solarsystemscope.com/textures/download/2k_uranus.jpg
+Mirror filename: 2k_uranus.jpg
+2048 x 1024; 77751 bytes
+SHA256: d15239d46f82d3ea13d2b260b5b29b2a382f42f2916dae0694d0387b1204a09d
+
+Local file: neptune.jpg
+Original: https://www.solarsystemscope.com/textures/download/2k_neptune.jpg
+Mirror filename: 2k_neptune.jpg
+2048 x 1024; 241580 bytes
+SHA256: cb42ea82709741d28b0af44d8b283cbc6dbd0c521a7f0e1e1e010ade00977df6
+
+Local file: saturn-rings.png
+Original: https://www.solarsystemscope.com/textures/download/2k_saturn_ring_alpha.png
+Mirror filename: 2k_saturn_ring_alpha.png
+2048 x 125; 12119 bytes
+SHA256: 4b0644b2f3ef259fd0bfaedd9dc52f9e7d9738f65f50363e8c4dd19f650d7334
+
+The local SHA256 values identify the retrieved bytes; they are not independent
+checksums published by Solar System Scope. Existing Jupiter attribution remains
+in jupiter-SOURCE.txt. Existing Earth and Moon assets retain their own sources.

@@ -1,3 +1,4 @@
+import { homeSpeech } from "./home-speech.js";
 import { createHomeScene, earthAxialTilt } from "./home-scene.js";
 import * as THREE from "./vendor/three.module.min.js";
 export async function mountHomeGlobe(host) {
@@ -10,13 +11,42 @@ export async function mountHomeGlobe(host) {
       powerPreference: "low-power",
     });
     const settings = createHomeScene();
+    // Start model downloads alongside the planet textures, so the astronaut
+    // does not have to wait for the planet to finish loading first.
+    const gltfLoader = import("./vendor/GLTFLoader.js").then(
+      ({ GLTFLoader }) => new GLTFLoader(),
+    );
+    const loadModel = (url, label) =>
+      gltfLoader
+        .then((loader) => loader.loadAsync(url.href))
+        .catch((error) => {
+          console.warn(label + " unavailable", error);
+          return null;
+        });
+    const astronautModel = loadModel(
+      new URL("./art/astronaut.glb", import.meta.url),
+      "Astronaut",
+    );
+    const meteorModel = loadModel(
+      new URL("./art/meteorite.glb", import.meta.url),
+      "Meteorite",
+    );
     const loader = new THREE.TextureLoader();
-    const [texture, nightTexture] = await Promise.all([
-      loader.loadAsync(
-        new URL("./art/earth-texture.webp", import.meta.url).href,
-      ),
-      loader.loadAsync(new URL("./art/earth-night.webp", import.meta.url).href),
-    ]);
+    const [texture, nightTexture, cloudTexture, moonTexture] =
+      await Promise.all([
+        loader.loadAsync(
+          new URL("./art/earth-texture.webp", import.meta.url).href,
+        ),
+        loader.loadAsync(
+          new URL("./art/earth-night.webp", import.meta.url).href,
+        ),
+        loader.loadAsync(
+          new URL("./art/earth-clouds.png", import.meta.url).href,
+        ),
+        loader
+          .loadAsync(new URL("./art/moon.jpg", import.meta.url).href)
+          .catch(() => null),
+      ]);
     nightTexture.colorSpace = THREE.SRGBColorSpace;
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
@@ -49,8 +79,9 @@ export async function mountHomeGlobe(host) {
         float sunlight=dot(normalize(vNormalWorld),normalize(sunDirection));
         float day=smoothstep(-0.12,0.15,sunlight);
         vec3 surface=texture2D(dayMap,vUv).rgb;
+
         vec3 cities=texture2D(nightMap,vUv).rgb;
-        vec3 color=surface*(0.055+max(sunlight,0.0)*1.15)+cities*(1.0-day)*1.6;
+        vec3 color=surface*(0.055+day*0.18+max(sunlight,0.0)*1.15)+cities*(1.0-day)*1.6;
         gl_FragColor=vec4(color,1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -59,6 +90,32 @@ export async function mountHomeGlobe(host) {
     );
     earth.rotation.y = settings.earthRotation;
     axialFrame.add(earth);
+    const clouds = new THREE.Mesh(
+      new THREE.SphereGeometry(1.012, 64, 48),
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        uniforms: {
+          cloudMap: { value: cloudTexture },
+          sunDirection: { value: sun.position.clone().normalize() },
+        },
+        vertexShader: earth.material.vertexShader,
+        fragmentShader: `
+          uniform sampler2D cloudMap;
+          uniform vec3 sunDirection;
+          varying vec2 vUv;
+          varying vec3 vNormalWorld;
+          void main() {
+            float light = max(dot(normalize(vNormalWorld), sunDirection), 0.0);
+            float density = texture2D(cloudMap, vUv).a;
+            gl_FragColor = vec4(vec3(0.12 + light * 1.05), density * 0.82);
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
+          }`,
+      }),
+    );
+    clouds.rotation.y = settings.earthRotation;
+    axialFrame.add(clouds);
     const atmosphereRadius = 1.11;
     const atmosphere = new THREE.Mesh(
       new THREE.SphereGeometry(atmosphereRadius, 64, 48),
@@ -95,6 +152,43 @@ export async function mountHomeGlobe(host) {
       }),
     );
     system.add(atmosphere);
+    if (moonTexture) {
+      moonTexture.colorSpace = THREE.SRGBColorSpace;
+      moonTexture.anisotropy = texture.anisotropy;
+    }
+    // Compressed orbit keeps both bodies readable within the homepage artwork.
+    const moonOrbit = new THREE.Group();
+    system.add(moonOrbit);
+    const moon = new THREE.Mesh(
+      new THREE.SphereGeometry(0.22, 40, 28),
+      new THREE.ShaderMaterial({
+        uniforms: {
+          moonMap: { value: moonTexture || texture },
+          sunDirection: { value: sun.position.clone().normalize() },
+        },
+        vertexShader: earth.material.vertexShader,
+        fragmentShader: `
+          uniform sampler2D moonMap;
+          uniform vec3 sunDirection;
+          varying vec2 vUv;
+          varying vec3 vNormalWorld;
+          void main() {
+            float light = max(dot(normalize(vNormalWorld), sunDirection), 0.0);
+            vec3 surface = texture2D(moonMap, vUv).rgb;
+            float gray = dot(surface, vec3(0.2126, 0.7152, 0.0722));
+            gl_FragColor = vec4(vec3(gray) * (0.07 + light * 1.15), 1.0);
+            #include <tonemapping_fragment>
+            #include <colorspace_fragment>
+          }
+        `,
+      }),
+    );
+    moon.name = "home-moon";
+    const moonOrbitX = compact ? 1.55 : 2;
+    const moonOrbitZ = compact ? -0.22 : -1.4;
+    moon.position.set(moonOrbitX, 0.55, moonOrbitZ);
+    moon.lookAt(0, 0, 0);
+    moonOrbit.add(moon);
     const orbiters = [];
     for (const [i, configuration] of settings.satellites.entries()) {
       const orbit = new THREE.Group();
@@ -320,6 +414,110 @@ export async function mountHomeGlobe(host) {
       frame;
     let visible = true;
     let disposed = false;
+    let astronaut;
+    let meteorite;
+    let meteorScale = 1;
+    let meteorCycle = -1;
+    let encounterStartedAt = null;
+    const meteorStart = new THREE.Vector3();
+    const astronautTime = { value: 0 };
+    const headTurn = { value: new THREE.Quaternion() };
+    let headInitialized = false;
+    const speech = document.createElement('div');
+    speech.className = 'astronaut-speech';
+    const language = document.documentElement?.lang || "en";
+    speech.lang = language;
+    speech.dir = language === "fa" || language === "ar" ? "rtl" : "ltr";
+    const speechMessages = homeSpeech(language);
+    const characterTime = 0.055;
+    const firstDuration = speechMessages[0].length * characterTime + 4;
+    const secondStart = firstDuration + 1;
+    const secondDuration = speechMessages[1].length * characterTime + 5;
+    let lastSpeechText = '';
+    let speechStartedAt = null;
+    let speechCycle = -1;
+    speech.hidden = true;
+    document.body.append(speech);
+    const speechAnchor = new THREE.Vector3();
+    const meteorOnScreen = new THREE.Vector3();
+    const meteorLowerEdge = new THREE.Vector3();
+    let meteorRadius = 0;
+    let firstMeteorSeenAt = null;
+    let sceneViewport;
+    const headTarget = new THREE.Vector3();
+    const headForward = new THREE.Vector3(0, 0, 1);
+    const desiredHeadTurn = new THREE.Quaternion();
+    const astronautOffset = new THREE.Vector2();
+    const earthCenter = new THREE.Vector3();
+    const bodyDirection = new THREE.Vector3();
+    const bodyAngles = new THREE.Euler(0, 0, 0, "YXZ");
+    const bodyTurn = new THREE.Quaternion();
+    const astronautDragDepth = 0.8;
+    const astronautSize = compact ? 0.6 : 1.7;
+    {
+      meteorModel.then((gltf) => {
+        if (disposed || !gltf) return;
+        const rock = gltf.scene;
+        const bounds = new THREE.Box3().setFromObject(rock);
+        const size = bounds.getSize(new THREE.Vector3());
+        rock.position.sub(bounds.getCenter(new THREE.Vector3()));
+        meteorite = new THREE.Group();
+        meteorite.add(rock);
+        meteorScale = 0.22 / Math.max(size.x, size.y, size.z);
+        meteorRadius = size.length() / 2;
+        meteorite.visible = false;
+        scene.add(meteorite);
+      }).catch(error => console.warn('Meteorite unavailable', error));
+      astronautModel.then((gltf) => {
+        if (disposed || !gltf) return;
+        const model = gltf.scene;
+        const bounds = new THREE.Box3().setFromObject(model);
+        const size = bounds.getSize(new THREE.Vector3());
+        const center = bounds.getCenter(new THREE.Vector3());
+        model.updateMatrixWorld(true);
+        const parts = [];
+        model.traverse(part => {
+          if (!part.isMesh) return;
+          const geometry = part.geometry.clone();
+          geometry.applyMatrix4(part.matrixWorld);
+          geometry.translate(-center.x, -center.y, -center.z);
+          geometry.scale(1 / size.y, 1 / size.y, 1 / size.y);
+          const material = part.material.clone();
+          material.onBeforeCompile = shader => {
+            shader.uniforms.floatTime = astronautTime;
+            shader.uniforms.headTurn = headTurn;
+            shader.vertexShader = 'uniform float floatTime;\nuniform vec4 headTurn;\nvec3 turnHead(vec3 v) { return v + 2.0 * cross(headTurn.xyz, cross(headTurn.xyz, v) + headTurn.w * v); }\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <beginnormal_vertex>', `
+              #include <beginnormal_vertex>
+              float headNormalWeight = smoothstep(0.26, 0.34, position.y);
+              objectNormal = normalize(mix(objectNormal, turnHead(objectNormal), headNormalWeight));
+            `);
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `
+              #include <begin_vertex>
+              vec3 neck = vec3(0.0, 0.28, 0.0);
+              float headWeight = smoothstep(0.26, 0.34, position.y);
+              transformed = mix(transformed, neck + turnHead(transformed - neck), headWeight);
+              float side = sign(position.x);
+              float arm = smoothstep(0.13, 0.29, abs(position.x)) * smoothstep(-0.18, 0.02, position.y);
+              float leg = 1.0 - smoothstep(-0.35, -0.08, position.y);
+              transformed.z += arm * sin(floatTime * 0.7 + side) * 0.018;
+              transformed.x += side * arm * sin(floatTime * 0.6 + side) * 0.012;
+              transformed.z += leg * sin(floatTime * 0.55 + side * 1.4) * 0.018;
+            `);
+          };
+          parts.push(new THREE.Mesh(geometry, material));
+        });
+        const posedModel = new THREE.Group();
+        posedModel.add(...parts);
+        astronaut = new THREE.Group();
+        astronaut.add(posedModel);
+        astronaut.scale.setScalar(astronautSize);
+        astronaut.position.set(compact ? -1.1 : -3.8, -0.65, astronautDragDepth);
+        astronaut.visible = false;
+        scene.add(astronaut);
+        render();
+      }).catch(error => console.warn('Astronaut unavailable', error));
+    }
     let suspended = false;
     let meteorTimer = null;
     const scheduleMeteor = () => {
@@ -453,8 +651,22 @@ export async function mountHomeGlobe(host) {
       renderer.setPixelRatio(
         Math.min(devicePixelRatio || 1, 2, 1024 / Math.max(r.width, r.height)),
       );
-      renderer.setSize(r.width, r.height, false);
-      camera.aspect = r.width / r.height;
+      const sceneWidth = globalThis.innerWidth;
+      renderer.setSize(sceneWidth, globalThis.innerHeight, false);
+      {
+        canvas.style.width = sceneWidth + 'px';
+        canvas.style.maxWidth = 'none';
+        host.style.position = 'relative';
+        canvas.style.position = 'absolute';
+        canvas.style.left = '50%';
+        canvas.style.right = 'auto';
+        canvas.style.top = -r.top + 'px';
+        canvas.style.height = globalThis.innerHeight + 'px';
+        canvas.style.transform = 'translateX(-50%)';
+        canvas.style.marginLeft = '0';
+        host.style.overflow = 'visible';
+      }
+      camera.aspect = sceneWidth / r.height;
       const verticalHalfFov = THREE.MathUtils.degToRad(camera.fov / 2);
       const horizontalHalfFov = Math.atan(
         Math.tan(verticalHalfFov) * camera.aspect,
@@ -463,7 +675,17 @@ export async function mountHomeGlobe(host) {
         1.62 / Math.sin(Math.min(verticalHalfFov, horizontalHalfFov));
       camera.position.set(0, 0, distance);
       camera.lookAt(0, 0, 0);
+      camera.setViewOffset(sceneWidth, r.height, 0, -r.top, sceneWidth, globalThis.innerHeight);
       camera.updateProjectionMatrix();
+      meteorCycle = -1;
+      const bounds = canvas.getBoundingClientRect?.();
+      sceneViewport = {
+        width: sceneWidth,
+        height: sky.height,
+        left: bounds?.left ?? 0,
+        pageTop: (bounds?.top ?? 0) + (globalThis.scrollY || 0),
+        skyBottom: sky.bottom,
+      };
       // Project the atmospheric limb once on resize, never during a flight.
       const atmosphericRadius = atmosphereRadius;
       atmosphereTarget = {
@@ -486,10 +708,152 @@ export async function mountHomeGlobe(host) {
       if (now - last < frameInterval) return;
       const dt = Math.min((now - last) / 1000, 0.06);
       last = now;
+
       if (!motion.matches && !drag) {
         earth.rotation.y += dt * 0.16;
+        clouds.rotation.y += dt * 0.168;
       }
       time += dt;
+      if (encounterStartedAt === null && meteorite && astronaut && sceneViewport) {
+        encounterStartedAt = time;
+      }
+      const encounterTime = encounterStartedAt === null ? 0 : time - encounterStartedAt;
+      const currentSpeechCycle = Math.floor(encounterTime / 30);
+      if (encounterStartedAt !== null) {
+        const phase = encounterTime % 30;
+        const progress = Math.min(phase / 24, 1);
+        meteorite.visible = phase < 24;
+        const cycle = currentSpeechCycle;
+        if (cycle !== meteorCycle) {
+          meteorCycle = cycle;
+          const x = 0;
+          const y = 1.6;
+          meteorStart.set(x, y, 0.5).unproject(camera);
+          meteorStart.sub(camera.position).normalize();
+          const distance = -camera.position.z / meteorStart.z;
+          meteorStart.multiplyScalar(distance).add(camera.position);
+        }
+        // Straight approach: fast entry, gradually slower near Earth.
+        const travel = 1 - Math.pow(1 - progress, 3);
+        meteorite.position.set(
+          meteorStart.x * (1 - travel),
+          meteorStart.y * (1 - travel),
+          0.35 - travel * 0.35,
+        );
+        meteorite.rotation.set(time * 0.7, time * 0.9, time * 0.3);
+        meteorite.scale.setScalar(meteorScale * (compact ? 18 : 32) * Math.pow(1 - travel, 2));
+      }
+      if (astronaut) {
+        // Keep the whole suit in front of the atmosphere. Compensate for
+        // perspective so moving the model forward preserves its screen size.
+        const referenceDistance = camera.position.z - astronautDragDepth;
+        const scale = (camera.position.z - atmosphereRadius) /
+          (referenceDistance + 0.55 * astronautSize);
+        const x = (compact ? -1.1 : -Math.max(1.6, (camera.aspect - 1) * 1.05)) + astronautOffset.x;
+        const y = (compact ? -0.75 : -0.25) + Math.sin(time * 0.55) * 0.07 + astronautOffset.y;
+        astronaut.position.set(x * scale, y * scale, camera.position.z - referenceDistance * scale);
+        astronaut.scale.setScalar(astronautSize * scale);
+        astronautTime.value = time;
+        earth.getWorldPosition(earthCenter);
+        bodyDirection.subVectors(earthCenter, astronaut.position);
+        // Soften perspective in the torso pose; the helmet still aims at the
+        // exact center of Earth.
+        bodyDirection.z = -0.24 * scale;
+        const horizontalDistance = Math.hypot(bodyDirection.x, bodyDirection.z);
+        bodyAngles.set(
+          -Math.atan2(bodyDirection.y, horizontalDistance),
+          Math.atan2(bodyDirection.x, bodyDirection.z),
+          0.2 + Math.sin(time * 0.4) * 0.06,
+        );
+        bodyTurn.setFromEuler(bodyAngles);
+        if (headInitialized) {
+          const turnAngle = astronaut.quaternion.angleTo(bodyTurn);
+          // Large drags can move the target across the astronaut in one frame.
+          // Limit the turn speed, then ease in as the body nears its target.
+          const turnStep = Math.min(turnAngle * (1 - Math.exp(-dt * 2.6)), dt * 0.85);
+          astronaut.quaternion.rotateTowards(bodyTurn, turnStep);
+        } else {
+          astronaut.quaternion.copy(bodyTurn);
+        }
+        astronaut.updateMatrixWorld(true);
+        if (firstMeteorSeenAt === null && currentSpeechCycle === 0 && meteorite?.visible && sceneViewport) {
+          // The leading edge appears before the meteor's center reaches the viewport.
+          meteorLowerEdge.copy(meteorite.position);
+          meteorLowerEdge.y -= meteorRadius * meteorite.scale.x;
+          meteorLowerEdge.project(camera);
+          const canvasTop = sceneViewport.pageTop - (globalThis.scrollY || 0);
+          const edgeY = canvasTop + (1 - meteorLowerEdge.y) * sceneViewport.height / 2;
+          if (Math.abs(meteorLowerEdge.x) < 1 && edgeY >= 6 && edgeY < sceneViewport.height) {
+            firstMeteorSeenAt = time;
+          }
+        }
+        const watchingMeteor = firstMeteorSeenAt !== null && time - firstMeteorSeenAt < 4;
+        if (watchingMeteor && meteorite?.visible) {
+          headTarget.copy(meteorite.position);
+        } else {
+          headTarget.copy(earthCenter);
+        }
+        astronaut.worldToLocal(headTarget);
+        headTarget.y -= 0.28;
+        headTarget.normalize();
+        desiredHeadTurn.setFromUnitVectors(headForward, headTarget);
+        if (!headInitialized) {
+          headTurn.value.copy(desiredHeadTurn);
+          headInitialized = true;
+          astronaut.visible = true;
+        } else {
+          headTurn.value.slerp(desiredHeadTurn, 1 - Math.exp(-dt * 8));
+        }
+      }
+      if (currentSpeechCycle !== speechCycle) {
+        speechCycle = currentSpeechCycle;
+        speechStartedAt = null;
+        speech.textContent = '';
+        lastSpeechText = '';
+      }
+      const canvasTop = (sceneViewport?.pageTop ?? 0) - (globalThis.scrollY || 0);
+      if (speechStartedAt === null && headInitialized && meteorite?.visible && sceneViewport) {
+        // The mesh is enabled while it is still above the canvas. Wait until
+        // its center is inside the visible sky, past the clipped entry edge.
+        meteorOnScreen.copy(meteorite.position).project(camera);
+        const y = (1 - meteorOnScreen.y) * sceneViewport.height / 2;
+        if (
+          Math.abs(meteorOnScreen.x) < 1 &&
+          Math.abs(meteorOnScreen.z) < 1 &&
+          y >= 12 && y < sceneViewport.skyBottom &&
+          canvasTop + y >= 12 && canvasTop + y < sceneViewport.height
+        ) {
+          speechStartedAt = time;
+        }
+      }
+      const speechTime = speechStartedAt === null ? -1 : time - speechStartedAt - 1;
+      const messageIndex = speechTime >= secondStart ? 1 : 0;
+      const messageTime = messageIndex ? speechTime - secondStart : speechTime;
+      const message = speechMessages[messageIndex];
+      const messageDuration = messageIndex ? secondDuration : firstDuration;
+      speech.hidden = !(astronaut?.visible && messageTime >= 0 && messageTime < messageDuration);
+      if (!speech.hidden) {
+        const count = Math.min(message.length, Math.floor(messageTime / characterTime) + 1);
+        const text = message.slice(0, count).join('');
+        if (text !== lastSpeechText) { speech.textContent = text; lastSpeechText = text; }
+        speech.style.opacity = String(Math.min(1, messageTime / 0.35, (messageDuration - messageTime) / 0.4));
+      }
+      if (!speech.hidden) {
+        speechAnchor.set(0, 0.58, 0);
+        astronaut.localToWorld(speechAnchor);
+        speechAnchor.project(camera);
+        const halfWidth = Math.min(140, globalThis.innerWidth * 0.36);
+        const left = sceneViewport.left + (speechAnchor.x + 1) * sceneViewport.width / 2;
+        speech.style.left = Math.max(halfWidth + 12, Math.min(globalThis.innerWidth - halfWidth - 12, left)) + 'px';
+        speech.style.top = Math.max(105, canvasTop + (1 - speechAnchor.y) * sceneViewport.height / 2 - 14) + 'px';
+      }
+      const moonPhase = time * 0.27;
+      moon.position.set(
+        moonOrbitX + Math.sin(moonPhase) * (compact ? 0.1 : 0.17),
+        0.55 + Math.sin(moonPhase + 0.5) * 0.27,
+        moonOrbitZ + (1 - Math.cos(moonPhase)) * 0.12,
+      );
+      moon.lookAt(0, 0, 0);
       orbiters.forEach((o) => {
         const a = time * o.speed + o.phase;
         o.satellite.position.set(
@@ -503,6 +867,7 @@ export async function mountHomeGlobe(host) {
     }
     function updateAnimation() {
       if (disposed || suspended) return;
+      if (!visible || document.hidden || motion.matches) speech.hidden = true;
       if (!visible || document.hidden || motion.matches) {
         clearTimeout(meteorTimer);
         meteorTimer = null;
@@ -531,12 +896,51 @@ export async function mountHomeGlobe(host) {
     const dragSensitivity = 0.009;
     const horizontalAxis = new THREE.Vector3(0, 1, 0);
     const verticalAxis = new THREE.Vector3(1, 0, 0);
+    const pointer = new THREE.Vector2();
+    const pointerRay = new THREE.Raycaster();
+    const astronautHitArea = new THREE.Sphere();
+    const astronautDragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1));
+    const astronautDragPoint = new THREE.Vector3();
+    const astronautNextPoint = new THREE.Vector3();
+    function aimPointerRay(event, keepInFrame = false) {
+      const { left, pageTop, width, height } = sceneViewport;
+      const top = pageTop - (globalThis.scrollY || 0);
+      let x = event.clientX - left;
+      let y = event.clientY - top;
+      if (keepInFrame) {
+        x = THREE.MathUtils.clamp(x, 24, width - 24);
+        y = THREE.MathUtils.clamp(y, 24, height - 24);
+      }
+      pointer.set(2 * x / width - 1, 1 - 2 * y / height);
+      pointerRay.setFromCamera(pointer, camera);
+    }
     canvas.addEventListener("pointerdown", (e) => {
-      drag = { x: e.clientX, y: e.clientY };
+      let movingAstronaut = false;
+      if (sceneViewport && astronaut?.visible) {
+        aimPointerRay(e);
+        astronautHitArea.center.copy(astronaut.position);
+        astronautHitArea.radius = astronaut.scale.x * 0.52;
+        if (pointerRay.ray.intersectsSphere(astronautHitArea)) {
+          astronautDragPlane.constant = -astronautDragDepth;
+          movingAstronaut = Boolean(
+            pointerRay.ray.intersectPlane(astronautDragPlane, astronautDragPoint),
+          );
+        }
+      }
+      drag = { x: e.clientX, y: e.clientY, movingAstronaut };
       canvas.setPointerCapture(e.pointerId);
     });
     canvas.addEventListener("pointermove", (e) => {
       if (drag) {
+        if (drag.movingAstronaut) {
+          aimPointerRay(e, true);
+          if (pointerRay.ray.intersectPlane(astronautDragPlane, astronautNextPoint)) {
+            astronautOffset.x += astronautNextPoint.x - astronautDragPoint.x;
+            astronautOffset.y += astronautNextPoint.y - astronautDragPoint.y;
+            astronautDragPoint.copy(astronautNextPoint);
+          }
+          return;
+        }
         system.rotateOnWorldAxis(
           horizontalAxis,
           (e.clientX - drag.x) * dragSensitivity,
@@ -545,7 +949,8 @@ export async function mountHomeGlobe(host) {
           verticalAxis,
           (e.clientY - drag.y) * dragSensitivity,
         );
-        drag = { x: e.clientX, y: e.clientY };
+        drag.x = e.clientX;
+        drag.y = e.clientY;
         if (motion.matches) render();
       }
     });
@@ -579,6 +984,7 @@ export async function mountHomeGlobe(host) {
         return;
       }
       disposed = true;
+      speech.remove();
       document.removeEventListener("click", launchMeteor);
       for (const flight of flights.values()) flight.cancel();
       traffic.remove();
@@ -595,6 +1001,8 @@ export async function mountHomeGlobe(host) {
       });
       texture.dispose();
       nightTexture.dispose();
+      cloudTexture.dispose();
+      moonTexture?.dispose();
       renderer.dispose();
     });
   } catch (error) {

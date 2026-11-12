@@ -1,0 +1,3 @@
+Lunar surface texture from three.js examples (moon_1024.jpg).
+https://github.com/mrdoob/three.js/blob/dev/examples/textures/planets/moon_1024.jpg
+See vendor/THREE-LICENSE.txt.

@@ -1,0 +1,21 @@
+helmet-breathing.mp3
+
+Title: Man Breathing (sound 2195)
+Author and recordist: Joseph SARDIN / BigSoundBank
+Original source: https://bigsoundbank.com/respiration-homme-s2195.html
+Direct audio: https://bigsoundbank.com/UPLOAD/mp3/2195.mp3
+License: CC0 1.0 Universal / public-domain dedication
+License statement: https://bigsoundbank.com/licenses.html
+License text: https://creativecommons.org/publicdomain/zero/1.0/
+Downloaded: 2026-11-12
+
+The source identifies this as an actual studio recording of a man breathing
+slowly through his nose, recorded using a SoundDevices MixPre-3 and Neumann
+KM184. The author explicitly allows copying, modification, redistribution,
+and commercial use without permission or mandatory attribution.
+
+The downloaded MP3 is unchanged. During playback the game crossfades its
+loop seam over 0.3 seconds, filters below 85 Hz and above 2400 Hz, and plays
+it softly only in first-person mode. This is recorded human breathing,
+not synthesized breathing or an AI-generated voice. The author does not
+endorse this game.

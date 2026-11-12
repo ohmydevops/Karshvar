@@ -1,0 +1,24 @@
+andromeda.jpg
+
+Title: Visible Andromeda
+Credit (full wording required): R. Gendler
+Source institution: European Southern Observatory (ESO Supernova)
+Source page: https://supernova.eso.org/exhibition/images/0808_andromeda_visible/
+Downloaded image: https://supernova.eso.org/static/archives/exhibitionimages/screen/0808_andromeda_visible.jpg
+License: Creative Commons Attribution 4.0 International
+License text: https://creativecommons.org/licenses/by/4.0/
+ESO use policy: https://www.eso.org/public/outreach/copyright/
+Downloaded: 2026-11-12
+Dimensions: 1280 x 563 pixels
+
+This is an actual visible-wavelength photograph of the Andromeda Galaxy (M31),
+not a generated spiral or infrared false-color illustration. The downloaded
+ESO screensize JPEG is unchanged. Runtime sky placement, brightness and edge
+blending are presentation adaptations of this photograph.
+
+ESO's linked use policy licenses its published images under CC BY 4.0 unless
+otherwise stated. This image lists no license exception. The policy explicitly
+allows games and explains that credited contributors do not need to be contacted
+separately. Preserve the exact visible credit "R. Gendler", link to the source
+and CC BY 4.0 license, and identify presentation adaptations. Neither ESO nor
+R. Gendler endorses this game.

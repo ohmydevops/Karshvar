@@ -104,6 +104,33 @@ async function setupOffline() {
     checkStatus.hidden = false;
     checkStatus.textContent = messages[index];
   };
+  if (
+    typeof location !== "undefined" &&
+    ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname) &&
+    document.querySelector?.('script[src="/@vite/client"]')
+  ) {
+    const explainLocal = () => {
+      if (!checkStatus) return;
+      checkStatus.hidden = false;
+      checkStatus.textContent =
+        {
+          fa: "نسخهٔ توسعهٔ محلی است؛ برای دیدن تغییرات صفحه را تازه کنید.",
+          en: "Local development preview. Reload the page to see changes.",
+          ar: "معاينة تطوير محلية. أعد تحميل الصفحة لرؤية التغييرات.",
+          tr: "Yerel geliştirme önizlemesi. Değişiklikler için sayfayı yenileyin.",
+          fr: "Aperçu de développement local. Rechargez la page pour voir les modifications.",
+          ru: "Локальная версия разработки. Обновите страницу, чтобы увидеть изменения.",
+        }[document.documentElement.lang] ||
+        "Local development preview. Reload to see changes.";
+    };
+    if (checkButton) {
+      checkButton.hidden = false;
+      checkButton.disabled = false;
+      checkButton.setAttribute?.("aria-busy", "false");
+      checkButton.onclick = explainLocal;
+    }
+    return true;
+  }
   if (checkButton) {
     checkButton.hidden = false;
     checkButton.disabled = true;

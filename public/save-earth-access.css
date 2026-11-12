@@ -1,0 +1,55 @@
+.desktop-required-dialog {
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 40px));
+  max-height: calc(100dvh - 40px);
+  padding: 28px;
+  color: #edf4ff;
+  background: #101d2c;
+  border: 1px solid #365371;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px #0006;
+  text-align: start;
+  overflow: auto;
+}
+.desktop-required-dialog::backdrop {
+  background: #030812d9;
+}
+.desktop-required-dialog .desktop-required-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 18px;
+  color: #93ddff;
+}
+.desktop-required-dialog h2 {
+  margin: 0 0 12px;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.desktop-required-dialog p {
+  margin: 0 0 24px;
+  color: #c4d4e6;
+  line-height: 1.8;
+}
+.desktop-required-dialog form {
+  margin: 0;
+}
+.desktop-required-dialog .desktop-required-action {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 9px;
+  color: #07131c;
+  background: #93ddff;
+  text-align: center;
+  text-decoration: none;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+.desktop-required-dialog .desktop-required-action:focus-visible {
+  outline: 3px solid #ffe0a3;
+  outline-offset: 4px;
+}

@@ -1,0 +1,2 @@
+Cloud map from https://github.com/turban/webgl-earth/blob/master/images/fair_clouds_4k.png
+Resized to 2048 x 1024 for the homepage cloud layer.

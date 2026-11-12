@@ -219,7 +219,7 @@ test("all localized pages and assets resolve on the custom domain", () => {
     fs.readFileSync("public/robots.txt", "utf8").includes(`${root}sitemap.xml`),
   );
   const sitemap = fs.readFileSync("public/sitemap.xml", "utf8");
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 96);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 102);
 });
 import { pagePath, pageTypes, routeLanguages } from "../public/navigation.js";
 test("Persian UI numbers use Persian digits without changing other languages", () => {
@@ -455,15 +455,16 @@ test("Persian spelling variants remain country-specific", () => {
 });
 
 import { createHomeScene, earthAxialTilt } from "../public/home-scene.js";
-test("home scene varies its starting view while preserving Earth's axial tilt", () => {
+test("home scene opens on the same sunlit view while satellite paths vary", () => {
   const a = createHomeScene(() => 0.1),
     b = createHomeScene(() => 0.8);
-  assert.notEqual(a.earthRotation, b.earthRotation);
-  assert.notEqual(a.axisHeading, b.axisHeading);
-  assert.notDeepEqual(a.sunDirection, b.sunDirection);
+  assert.equal(a.earthRotation, b.earthRotation);
+  assert.equal(a.axisHeading, b.axisHeading);
+  assert.deepEqual(a.sunDirection, b.sunDirection);
+  assert(a.sunDirection[2] > Math.hypot(...a.sunDirection.slice(0, 2)));
   assert(Math.abs((earthAxialTilt * 180) / Math.PI - 23.44) < 0.0001);
   for (const scene of [a, b]) {
-    assert.equal(scene.satellites.length, 6);
+    assert.equal(scene.satellites.length, 3);
     for (const satellite of scene.satellites) {
       assert(satellite.scale < 1);
       assert(satellite.radius > 1 && satellite.radius < 1.5);

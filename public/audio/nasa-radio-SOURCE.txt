@@ -1,0 +1,54 @@
+NASA archival mission radio audio
+
+These are actual recordings, not generated voices. The original downloaded MP3 files are unchanged. During playback the game applies a mild radio band filter and volume envelope and adds synthesized squelch. NASA has not endorsed this game.
+
+nasa-houston-discovery.mp3
+NASA Historical Sounds title: Discovery - Houston Discovery
+https://www.nasa.gov/wp-content/uploads/2015/01/639898main_Houston_Discovery.mp3
+
+nasa-discovery-computers.mp3
+NASA Historical Sounds title: Discovery - Computers are in control
+https://www.nasa.gov/wp-content/uploads/2015/01/640149main_Computers20are20in20Control.mp3
+
+Source collection:
+https://www.nasa.gov/historical-sounds/
+
+NASA Images and Media Usage Guidelines:
+https://www.nasa.gov/nasa-brand-center/images-and-media/
+NASA states its audio and other content generally are not subject to copyright in the United States, asks that NASA be acknowledged, and prohibits implying endorsement. This is source attribution, not a claim that NASA granted specific permission. The guidelines also describe third-party material, identifiable-person/publicity rights, and commercial-use limitations; these recordings are supplied as archival mission audio, not promotional endorsements.
+
+Downloaded from the official source on 2026-11-12.
+
+Flyby, weapon, impact, reload, and suit propulsion cues are synthesized in save-earth-audio.js. The flyby cue is a gameplay/suit sonification effect, not a physically propagating sound in the vacuum of space.
+
+Additional original recording:
+nasa-discovery-go-deploy.mp3
+NASA Historical Sounds title: Discovery - Go for deploy
+https://www.nasa.gov/wp-content/uploads/2015/01/640164main_Go20for20Deploy.mp3
+Same official source collection and media-use guidelines above; original MP3 unchanged.
+
+Helmet breathing uses a separate real CC0 studio recording by Joseph SARDIN / BigSoundBank. See helmet-breathing-SOURCE.txt for source, license, and playback processing.
+
+Additional original NASA Discovery mission recordings (2026-11-12):
+All from the official Historical Sounds collection above, unchanged MP3 files,
+under the same NASA media-use guidelines. No generated voice or endorsement.
+
+nasa-discovery-how-read.mp3
+Title: Discovery - How do you read
+https://www.nasa.gov/wp-content/uploads/2015/01/639900main_How_do_you_Read.mp3
+
+nasa-discovery-looking.mp3
+Title: Discovery - Lookin' at it
+https://www.nasa.gov/wp-content/uploads/2015/01/640165main_Lookin20At20It.mp3
+
+nasa-discovery-orbit.mp3
+Title: Discovery - Nice to be in orbit
+https://www.nasa.gov/wp-content/uploads/2015/01/640167main_Nice20to20be20in20Orbit.mp3
+
+nasa-discovery-roger-roll.mp3
+Title: Discovery - Roger roll
+https://www.nasa.gov/wp-content/uploads/2015/01/640170main_Roger20Roll.mp3
+
+nasa-discovery-vector.mp3
+Title: Discovery - Vector transfer
+https://www.nasa.gov/wp-content/uploads/2015/01/640173main_Vector20Transfer.mp3

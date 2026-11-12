@@ -1,3 +1,4 @@
+import { bindSaveEarthLink } from "./save-earth-access.js";
 import { pagePath } from "./navigation.js";
 import "./footer-version.js";
 import { setUpdateLoading, withUpdateTimeout } from "./update-loading.js";
@@ -12,6 +13,7 @@ import {
 const $ = (id) => document.getElementById(id);
 const page = document.documentElement.dataset.page || "home";
 const lang = document.documentElement.dataset.locale || "en";
+if (page === "home") bindSaveEarthLink();
 const analytics = createAnalytics({ enabled: isProduction(location) });
 loadProductionAnalytics(document, location)?.addEventListener(
   "load",
@@ -171,6 +173,24 @@ await bindHistory({
 });
 await revealPage();
 if (page === "home") {
+  document.querySelectorAll("[data-preview]").forEach((button) => {
+    button.addEventListener("click", () =>
+      document.getElementById(button.dataset.preview + "-dialog").showModal(),
+    );
+  });
+  document.querySelectorAll(".section-preview").forEach((dialog) => {
+    dialog.addEventListener("click", (event) => {
+      if (event.target !== dialog) return;
+      const bounds = dialog.getBoundingClientRect();
+      if (
+        event.clientX < bounds.left ||
+        event.clientX > bounds.right ||
+        event.clientY < bounds.top ||
+        event.clientY > bounds.bottom
+      )
+        dialog.close();
+    });
+  });
   const start = () =>
     import("./home-globe.js")
       .then(({ mountHomeGlobe }) =>

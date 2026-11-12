@@ -1,0 +1,25 @@
+iss.glb
+Title: ISS- International Space Station
+Author: Content House Studios, LLC
+Author profile: https://sketchfab.com/contenthousestudios
+Source: https://sketchfab.com/3d-models/iss-international-space-station-8fccda739b464719b32fffda5b1fb328
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+The user downloaded this model from Sketchfab and supplied it locally as:
+C:/Users/ohmydevops/Downloads/iss-_international_space_station.glb
+Copied into the project on 2026-11-12 without changing its bytes.
+The source URL, author and license above are also embedded in the GLB's
+asset.extras metadata. The source page returned HTTP403 to automated lookup;
+the exact URL and license were verified directly in the downloaded asset.
+
+GLB 2.0, declared and actual length: 19653300 bytes
+SHA256: 9c25d7544a49e2de09d83b873addbeb75622a912e7efaed650d7c4326ea07b4e
+50 meshes, 33757 triangles, 48 materials, 39 embedded PNG images.
+No external resource URLs or animation tracks. KHR_materials_clearcoat is
+used and is supported by the game's bundled GLTFLoader.
+
+The model is normalized, rotated and positioned at runtime for gameplay.
+Its native geometry and texture pixels are unchanged. Credit the title and
+author visibly, link to the source and CC BY 4.0, and state the presentation
+adaptations. Neither the author nor the real ISS partners endorse this game.

@@ -12,7 +12,12 @@ const timeoutSource = (
     "utf8",
   )
 ).replaceAll("export ", "");
-async function setup(controller = true, register, hostname = "example.test") {
+async function setup(
+  controller = true,
+  register,
+  hostname = "example.test",
+  vite = false,
+) {
   const nodes = [],
     events = {},
     sent = [];
@@ -58,6 +63,7 @@ async function setup(controller = true, register, hostname = "example.test") {
   const menuButton = {},
     menuStatus = {};
   const document = {
+    querySelector: () => (vite ? {} : null),
     getElementById(id) {
       return id === "checkUpdates" ? menuButton : menuStatus;
     },
@@ -160,7 +166,7 @@ async function setup(controller = true, register, hostname = "example.test") {
   };
 }
 
-test("local development keeps the same update prompt as production", async () => {
+test("a local static build keeps the same update prompt as production", async () => {
   const app = await setup(true, undefined, "localhost");
   assert.equal(app.registration.unregistered, undefined);
   assert.equal(app.menuButton.hidden, false);
@@ -348,4 +354,20 @@ test("manual and automatic checks share one in-flight update request", async () 
   await Promise.all([automatic, manual]);
   assert.equal(app.menuButton.disabled, false);
   assert.equal(app.menuStatus.textContent, "You’re up to date.");
+});
+
+test("Vite preview explains local updates without installing a worker", async () => {
+  let installs = 0;
+  const app = await setup(
+    true,
+    () => {
+      installs++;
+    },
+    "localhost",
+    true,
+  );
+  app.menuButton.onclick();
+  assert.equal(installs, 0);
+  assert.equal(app.menuButton.disabled, false);
+  assert.match(app.menuStatus.textContent, /Local development preview/);
 });

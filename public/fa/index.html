@@ -14,7 +14,7 @@
     <meta name="theme-color" content="#f7f9ff" />
     <meta
       name="description"
-      content="آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل."
+      content="آشنایی با کشورها و جغرافیا. کشورها رو از روی نقشه حدس بزن. تاریخ طبیعی. تاریخ ملل."
     />
     <title>کَرشوَر، برای کنجکاوی دربارهٔ دنیا</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -122,7 +122,7 @@
     <meta property="og:title" content="کَرشوَر، برای کنجکاوی دربارهٔ دنیا" />
     <meta
       property="og:description"
-      content="آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل."
+      content="آشنایی با کشورها و جغرافیا. کشورها رو از روی نقشه حدس بزن. تاریخ طبیعی. تاریخ ملل."
     />
     <meta property="og:locale" content="fa_IR" />
     <meta
@@ -137,7 +137,7 @@
     <meta name="twitter:title" content="کَرشوَر، برای کنجکاوی دربارهٔ دنیا" />
     <meta
       name="twitter:description"
-      content="آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل."
+      content="آشنایی با کشورها و جغرافیا. کشورها رو از روی نقشه حدس بزن. تاریخ طبیعی. تاریخ ملل."
     />
     <meta
       name="twitter:image"
@@ -148,7 +148,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "کَرشوَر، برای کنجکاوی دربارهٔ دنیا",
-        "description": "آشنایی با کشورها و جغرافیا. کشورها رو روی نقشه پیدا کن. تاریخ طبیعی. تاریخ ملل.",
+        "description": "آشنایی با کشورها و جغرافیا. کشورها رو از روی نقشه حدس بزن. تاریخ طبیعی. تاریخ ملل.",
         "url": "https://karshvar.ir/fa/",
         "inLanguage": "fa",
         "applicationCategory": "EducationalApplication",
@@ -165,6 +165,7 @@
     <link rel="alternate" hreflang="ru" href="https://karshvar.ir/ru/" />
     <link rel="alternate" hreflang="x-default" href="https://karshvar.ir/" />
     <meta property="og:url" content="https://karshvar.ir/fa/" />
+    <link rel="stylesheet" href="./save-earth-access.css" />
   </head>
   <body class="light">
     <header>
@@ -313,86 +314,167 @@
             loading="lazy"
           />
         </div>
-        <a class="discovery-scroll" href="./fa/#discover"
-          >بیشتر کشف کن<span aria-hidden="true">⌄</span></a
-        >
+        <p class="home-introduction">
+          کَرشوَر پروژهٔ شخصی منه برای دنبال‌کردن کنجکاوی‌هام؛ دربارهٔ جغرافیا،
+          تاریخ و هر چیزی که دوست دارم از دنیا بدونم.
+        </p>
       </section>
       <div id="discover" class="home-discover">
-        <section class="discovery-row" aria-labelledby="atlas-title">
-          <div class="discovery-copy">
-            <h2 id="atlas-title">اطلس جهان</h2>
-            <p>آشنایی با کشورها و جغرافیا</p>
-            <a class="discovery-action home-explore" href="./fa/explore/"
-              >ورود به اطلس</a
+        <div class="destination-grid">
+          <section
+            class="destination destination-atlas"
+            aria-labelledby="atlas-title"
+          >
+            <div class="destination-copy">
+              <h2 id="atlas-title">اطلس جهان</h2>
+              <p>آشنایی با کشورها و جغرافیا</p>
+            </div>
+            <a class="destination-action home-explore" href="./fa/explore/"
+              ><span>ورود به اطلس</span
+              ><span class="destination-arrow" aria-hidden="true">←</span></a
             >
-          </div>
-          <figure class="discovery-visual atlas">
-            <img
-              src="./art/home-atlas.svg"
-              alt=""
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
-
-        <section class="discovery-row" aria-labelledby="geography-title">
-          <div class="discovery-copy">
-            <h2 id="geography-title">بازی جغرافیا</h2>
-            <p>کشورها رو روی نقشه پیدا کن</p>
-            <a id="startGame" class="discovery-action" href="./fa/modes/"
-              >شروع بازی</a
+          </section>
+          <section
+            class="destination destination-geography"
+            aria-labelledby="geography-title"
+          >
+            <div class="destination-copy">
+              <h2 id="geography-title">بازی جغرافیا</h2>
+              <p>کشورها رو از روی نقشه حدس بزن</p>
+            </div>
+            <a id="startGame" class="destination-action" href="./fa/modes/"
+              ><span>شروع بازی</span
+              ><span class="destination-arrow" aria-hidden="true">←</span></a
             >
-          </div>
-          <figure class="discovery-visual geography">
-            <img
-              src="./art/home-game.svg"
-              alt=""
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
+          </section>
 
-        <section class="discovery-row" aria-labelledby="natural-history-title">
-          <div class="discovery-copy">
-            <h2 id="natural-history-title">تاریخ طبیعی</h2>
-            <p>آشنایی با سرگذشت طبیعی زمین</p>
-            <button class="discovery-action" disabled>به‌زودی</button>
-          </div>
-          <figure class="discovery-visual natural-history">
-            <img
-              src="./art/home-natural-history.webp"
-              alt=""
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
-
-        <section class="discovery-row" aria-labelledby="human-history-title">
-          <div class="discovery-copy">
-            <h2 id="human-history-title">تاریخ ملل</h2>
-            <p>آشنایی با اتفاقات و سرگذشت انسان‌ها</p>
-            <button class="discovery-action" disabled>به‌زودی</button>
-          </div>
-          <figure class="discovery-visual human-history">
-            <img
-              src="./art/home-human-history.webp"
-              alt="نقش‌های جام شهر سوخته"
-              width="720"
-              height="480"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-        </section>
+          <section
+            class="destination destination-natural-history"
+            aria-labelledby="natural-history-title"
+          >
+            <div class="destination-copy">
+              <h2 id="natural-history-title">تاریخ طبیعی</h2>
+              <p>آشنایی با سرگذشت طبیعی زمین</p>
+            </div>
+            <button
+              type="button"
+              class="destination-action"
+              data-preview="natural-history"
+              aria-haspopup="dialog"
+              aria-controls="natural-history-dialog"
+            >
+              <span>دربارهٔ این بخش</span
+              ><span class="destination-arrow" aria-hidden="true">←</span>
+            </button>
+            <dialog
+              class="section-preview"
+              id="natural-history-dialog"
+              aria-labelledby="natural-history-dialog-title"
+              aria-describedby="natural-history-dialog-description"
+            >
+              <h2 id="natural-history-dialog-title">تاریخ طبیعی</h2>
+              <p id="natural-history-dialog-description">
+                اینجا قراره سرگذشت زمین رو دنبال کنیم؛ از شکل‌گیری قاره‌ها و
+                اقیانوس‌ها تا پیدایش زندگی، دایناسورها و جانوران امروز. نقشه،
+                تصویر و خط زمان کمک می‌کنن این تغییرها رو کنار هم ببینیم.
+              </p>
+              <p class="section-preview-status">
+                این بخش در حال آماده‌شدنه و به‌زودی اضافه می‌شه.
+              </p>
+              <form method="dialog">
+                <button class="destination-action" autofocus>بستن</button>
+              </form>
+            </dialog>
+          </section>
+          <section
+            class="destination destination-human-history"
+            aria-labelledby="human-history-title"
+          >
+            <div class="destination-copy">
+              <h2 id="human-history-title">تاریخ ملل</h2>
+              <p>آشنایی با اتفاقات و سرگذشت انسان‌ها</p>
+            </div>
+            <button
+              type="button"
+              class="destination-action"
+              data-preview="human-history"
+              aria-haspopup="dialog"
+              aria-controls="human-history-dialog"
+            >
+              <span>دربارهٔ این بخش</span
+              ><span class="destination-arrow" aria-hidden="true">←</span>
+            </button>
+            <dialog
+              class="section-preview"
+              id="human-history-dialog"
+              aria-labelledby="human-history-dialog-title"
+              aria-describedby="human-history-dialog-description"
+            >
+              <h2 id="human-history-dialog-title">تاریخ ملل</h2>
+              <p id="human-history-dialog-description">
+                اینجا قراره دربارهٔ تمدن‌ها، سرزمین‌ها و زندگی مردم در دوره‌های
+                مختلف بخونیم و با نقشه و خط زمان، ارتباط اتفاق‌ها رو بهتر
+                ببینیم.
+              </p>
+              <p class="section-preview-status">
+                این بخش در حال آماده‌شدنه و به‌زودی اضافه می‌شه.
+              </p>
+              <form method="dialog">
+                <button class="destination-action" autofocus>بستن</button>
+              </form>
+            </dialog>
+          </section>
+          <section
+            class="destination destination-save-earth"
+            aria-labelledby="save-earth-title"
+          >
+            <div class="destination-copy">
+              <h2 id="save-earth-title" lang="en">Save the Earth</h2>
+              <p>قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن.</p>
+            </div>
+            <a
+              class="destination-action"
+              data-save-earth-link
+              aria-haspopup="dialog"
+              aria-controls="save-earth-desktop-dialog"
+              href="./fa/save-the-earth/"
+              ><span>ورود به بازی</span
+              ><span class="destination-arrow" aria-hidden="true">←</span></a
+            >
+            <dialog
+              id="save-earth-desktop-dialog"
+              class="desktop-required-dialog"
+              aria-labelledby="desktop-required-title"
+              aria-describedby="desktop-required-message"
+            >
+              <svg
+                class="desktop-required-icon"
+                viewBox="0 0 48 48"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <rect x="5" y="7" width="38" height="27" rx="3" />
+                <path d="M17 42h14M24 34v8" />
+              </svg>
+              <h2 id="desktop-required-title">با کامپیوتر بازی کن</h2>
+              <p
+                id="desktop-required-message"
+                data-access-message
+                data-error="صحنهٔ سه‌بعدی بارگذاری نشد. صفحه را دوباره بارگذاری کن."
+              >
+                برای بازی Save the Earth به کامپیوتر یا لپ‌تاپ با صفحه‌کلید و
+                موس نیاز داری. این صفحه را روی کامپیوتر باز کن.
+              </p>
+              <form method="dialog">
+                <button class="desktop-required-action" autofocus>
+                  متوجه شدم
+                </button>
+              </form>
+            </dialog>
+          </section>
+        </div>
       </div>
       <section class="intro" hidden>
         <h1>دوست داری کجا بازی کنی؟</h1>

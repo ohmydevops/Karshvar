@@ -1,0 +1,12 @@
+Ambient game music
+
+Original short ambient score authored for this project in save-earth-music.js.
+This music is synthesized by Web Audio sine/triangle oscillators; it is not a
+recording, a sampled commercial track, or an imitation of a named composer.
+No third-party music assets or licenses are used.
+
+A slow D-minor-centered four-chord cycle uses four-second chord crossfades,
+sparse high notes, quiet filtered harmonics and a short feedback delay.
+The score ducks under radio speech. Its timing uses AudioContext.currentTime
+and the existing game audio tick, so pause suspends its musical timeline and
+the sound/mute control applies to it with the rest of the game audio.
