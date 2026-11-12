@@ -320,7 +320,7 @@ export function buildSaveEarth() {
     ] = labels;
     const dir = lang === "fa" || lang === "ar" ? "rtl" : "ltr";
     const canonical = `${origin}${lang}/save-the-earth/`;
-    const imagePath = `social/karshvar-${lang}.png`;
+    const imagePath = `social/save-earth-${lang}.png`;
     const hash = createHash("sha256")
       .update(readFileSync(new URL(`../public/${imagePath}`, import.meta.url)))
       .digest("hex")
@@ -353,6 +353,7 @@ ${alternates}
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${description}">
   <meta property="og:image" content="${image}">
+  <meta property="og:image:alt" content="${description}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="${image}">
   <link rel="stylesheet" href="../../save-earth.css">
