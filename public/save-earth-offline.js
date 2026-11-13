@@ -127,7 +127,8 @@ export function prepareGameOffline() {
       complete = true;
       show("ready", t[1]);
       window.removeEventListener("online", download);
-    } catch {
+    } catch (error) {
+      console.warn("[offline] Game preparation failed", error);
       show("error", t[2]);
       const retry = document.createElement("button");
       retry.textContent = t[3];

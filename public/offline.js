@@ -201,11 +201,11 @@ async function setupOffline() {
       downloads.hide();
       activationNotice?.close();
       const copy = updateCopy[document.documentElement.lang] || updateCopy.en;
-      const dialog = document.createElement("aside");
-      dialog.className = "update-download update-activation";
-      activationNotice = dialog;
-      dialog.setAttribute("aria-labelledby", "updateTitle");
-      dialog.setAttribute("aria-describedby", "updateDescription");
+      const notice = document.createElement("aside");
+      notice.className = "update-download update-activation";
+      activationNotice = notice;
+      notice.setAttribute("aria-labelledby", "updateTitle");
+      notice.setAttribute("aria-describedby", "updateDescription");
       const title = document.createElement("h2");
       title.id = "updateTitle";
       title.textContent = copy[0];
@@ -222,14 +222,14 @@ async function setupOffline() {
       const update = document.createElement("button");
       update.className = "primary";
       update.textContent = copy[2];
-      later.onclick = () => dialog.close();
+      later.onclick = () => notice.close();
       let activationTimer;
       const restoreUpdate = () => {
         approved = false;
         window.clearTimeout(activationTimer);
         update.disabled = false;
         later.disabled = false;
-        dialog.setAttribute("data-state", "error");
+        notice.setAttribute("data-state", "error");
         update.setAttribute("aria-busy", "false");
         update.textContent =
           {
@@ -258,12 +258,12 @@ async function setupOffline() {
         } else if (worker.state === "redundant" && approved) restoreUpdate();
       };
       worker.addEventListener?.("statechange", activated);
-      dialog.close = () => {
-        dialog.hidden = true;
+      notice.close = () => {
+        notice.hidden = true;
         approved = false;
         window.clearTimeout(activationTimer);
         worker.removeEventListener?.("statechange", activated);
-        dialog.remove();
+        notice.remove();
       };
       update.onclick = async () => {
         if (registration.active === worker && worker.state === "activated") {
@@ -274,7 +274,7 @@ async function setupOffline() {
         approved = true;
         update.disabled = true;
         update.setAttribute("aria-busy", "true");
-        dialog.setAttribute("data-state", "updating");
+        notice.setAttribute("data-state", "updating");
         description.textContent = copy[4];
         update.textContent = copy[4];
         activationTimer = window.setTimeout(() => {
@@ -305,9 +305,9 @@ async function setupOffline() {
         }
       };
       actions.append(later, update);
-      dialog.append(title, description, actions);
-      document.body.append(dialog);
-      dialog.hidden = false;
+      notice.append(title, description, actions);
+      document.body.append(notice);
+      notice.hidden = false;
       if (activate) update.onclick();
     };
     const downloads = createDownloadManager({

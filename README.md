@@ -27,3 +27,9 @@ npm run build
 ```
 
 Output: `output/site/`. Set `PYTHON` to your Python executable path if it is not on PATH.
+
+### CDN caching for offline updates
+
+Keep `/sw.js`, `/build-info.json`, and `/update-manifest.json` outside the CDN cache. In Cloudflare, use a Cache Rule with `Bypass cache` for these three URI paths, after any broader caching rules. Purge these URLs once when enabling the rule. A cached worker from an older deployment combined with current build metadata causes integrity validation to reject updates.
+
+Keep integrity checks enabled. Do not clear browser storage or saved game progress to repair a CDN mismatch. Verify that the worker's expected `build-info.json` hash matches the deployed file before considering a client cache reset. Models and textures can continue using CDN caching.
