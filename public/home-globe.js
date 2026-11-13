@@ -158,7 +158,9 @@ export async function mountHomeGlobe(host) {
     }
     // Compressed orbit keeps both bodies readable within the homepage artwork.
     const moonOrbit = new THREE.Group();
-    system.add(moonOrbit);
+    // Keep the Moon on the opposite side of the astronaut, including when
+    // the user rotates Earth. Its decorative orbit stays in the scene frame.
+    scene.add(moonOrbit);
     const moon = new THREE.Mesh(
       new THREE.SphereGeometry(0.22, 40, 28),
       new THREE.ShaderMaterial({
@@ -428,8 +430,9 @@ export async function mountHomeGlobe(host) {
     let speechStartedAt = null;
     let speechCycle = -1;
     speech.hidden = true;
-    document.body.append(speech);
+    host.append(speech);
     const speechAnchor = new THREE.Vector3();
+    const speechBounds = [];
     const meteorOnScreen = new THREE.Vector3();
     const meteorLowerEdge = new THREE.Vector3();
     let meteorRadius = 0;
@@ -468,6 +471,17 @@ export async function mountHomeGlobe(host) {
           const bounds = new THREE.Box3().setFromObject(model);
           const size = bounds.getSize(new THREE.Vector3());
           const center = bounds.getCenter(new THREE.Vector3());
+          // Include room for the shader's helmet turn and limb movement.
+          for (const x of [-1, 1])
+            for (const y of [-1, 1])
+              for (const z of [-1, 1])
+                speechBounds.push(
+                  new THREE.Vector3(
+                    x * (size.x / size.y / 2 + 0.08),
+                    y * 0.58,
+                    z * (size.z / size.y / 2 + 0.08),
+                  ),
+                );
           model.updateMatrixWorld(true);
           const parts = [];
           model.traverse((part) => {
@@ -699,6 +713,8 @@ export async function mountHomeGlobe(host) {
         left: bounds?.left ?? 0,
         pageTop: (bounds?.top ?? 0) + (globalThis.scrollY || 0),
         skyBottom: sky.bottom,
+        hostLeft: r.left,
+        hostPageTop: r.top + (globalThis.scrollY || 0),
       };
       // Project the atmospheric limb once on resize, never during a flight.
       const atmosphericRadius = atmosphereRadius;
@@ -911,22 +927,38 @@ export async function mountHomeGlobe(host) {
         );
       }
       if (!speech.hidden) {
-        speechAnchor.set(0, 0.58, 0);
-        astronaut.localToWorld(speechAnchor);
-        speechAnchor.project(camera);
-        const halfWidth = Math.min(140, globalThis.innerWidth * 0.36);
+        astronaut.updateWorldMatrix(true, false);
+        let top = Infinity;
+        for (const corner of speechBounds) {
+          speechAnchor
+            .copy(corner)
+            .applyMatrix4(astronaut.matrixWorld)
+            .project(camera);
+          top = Math.min(
+            top,
+            ((1 - speechAnchor.y) * sceneViewport.height) / 2,
+          );
+        }
+        speechAnchor
+          .set(0, 0.4, 0)
+          .applyMatrix4(astronaut.matrixWorld)
+          .project(camera);
+        const halfWidth = Math.min(
+          compact ? 110 : 140,
+          globalThis.innerWidth * 0.36,
+        );
         const left =
           sceneViewport.left + ((speechAnchor.x + 1) * sceneViewport.width) / 2;
-        speech.style.left =
-          Math.max(
-            halfWidth + 12,
-            Math.min(globalThis.innerWidth - halfWidth - 12, left),
-          ) + "px";
-        speech.style.top =
-          Math.max(
-            105,
-            canvasTop + ((1 - speechAnchor.y) * sceneViewport.height) / 2 - 14,
-          ) + "px";
+        const bubbleLeft = Math.max(
+          halfWidth + 12,
+          Math.min(globalThis.innerWidth - halfWidth - 12, left),
+        );
+        speech.style.width = `${halfWidth * 2}px`;
+        speech.style.transform = `translate3d(${bubbleLeft - sceneViewport.hostLeft}px, ${sceneViewport.pageTop - sceneViewport.hostPageTop + top - 10}px, 0) translate(-50%, -100%)`;
+        speech.style.setProperty(
+          "--speech-tail-x",
+          `${Math.max(18, Math.min(halfWidth * 2 - 24, halfWidth + left - bubbleLeft))}px`,
+        );
       }
       const moonPhase = time * 0.27;
       moon.position.set(

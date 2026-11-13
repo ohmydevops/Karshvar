@@ -10,29 +10,18 @@
   --accent-ink: #12264d;
   --land: #718caf;
   --ocean: #132c4b;
-  --radius: 8px;
+  --radius: var(--radius-control);
   color-scheme: light;
-  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font-ui);
 }
 @font-face {
   font-family: "Karshvar Flags";
   src: url("./fonts/NotoColorEmoji-flagsonly.ttf") format("truetype");
   font-display: block;
 }
-@font-face {
-  font-family: Vazir;
-  src: url("./fonts/Vazir-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-display: swap;
-}
-@font-face {
-  font-family: Vazir;
-  src: url("./fonts/Vazir-Bold.woff2") format("woff2");
-  font-weight: 600 900;
-  font-display: swap;
-}
+
 html[lang="fa"] {
-  font-family: Vazir, Tahoma, sans-serif;
+  font-family: var(--font-persian);
 }
 * {
   box-sizing: border-box;
@@ -77,9 +66,21 @@ html:not([data-theme="dark"]) {
 }
 button,
 input,
+select,
+textarea,
 summary {
   font: inherit;
   border-radius: var(--radius);
+}
+button {
+  min-height: var(--control-height);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-control);
+  font-weight: 600;
+  line-height: var(--line-control);
 }
 button,
 summary {
@@ -94,6 +95,8 @@ summary {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
 summary:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -121,7 +124,7 @@ button:disabled {
   overflow: auto;
   padding: 14px;
   border: 1px solid var(--muted);
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--ocean);
   color: var(--text);
   font-size: 13px;
@@ -137,7 +140,7 @@ button:disabled {
   border-radius: 14px;
   background: var(--surface);
   box-shadow: 0 6px 24px #0002;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .antipode-panel[hidden] {
   display: none;
@@ -201,7 +204,7 @@ button:disabled {
 .antipode-endpoint-label {
   font-family: inherit;
   font-weight: 600;
-  font-size: 12px;
+  font-size: var(--text-small);
   fill: var(--text);
   stroke: var(--bg);
   stroke-width: 4px;
@@ -284,7 +287,7 @@ button:disabled {
     right: 8px;
     width: min(270px, calc(100vw - 16px));
     padding: 10px;
-    font-size: 12px;
+    font-size: var(--text-small);
     max-height: 32dvh;
   }
   .compare-panel p {
@@ -372,10 +375,10 @@ header {
 .header-actions .language-picker summary {
   min-height: 44px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: inherit;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .header-actions .language-picker summary:hover {
   background: color-mix(in srgb, currentColor 10%, transparent);
@@ -471,7 +474,7 @@ html[dir="rtl"] h2 {
   font-size: clamp(27px, 3vw, 38px);
 }
 .intro p {
-  font-size: 14px;
+  font-size: var(--text-control);
   margin-bottom: 0;
 }
 
@@ -485,14 +488,14 @@ html[dir="rtl"] h2 {
   color: var(--accent-ink);
   border: 0;
   width: 100%;
-  min-height: 50px;
-  padding: 14px 20px;
+  min-height: var(--control-height-large);
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
   font-weight: 700;
   text-decoration: none;
   transition:
-    transform 0.18s ease,
-    filter 0.18s ease;
+    transform var(--motion-fast) var(--ease-standard),
+    filter var(--motion-fast) var(--ease-standard);
 }
 .primary:hover {
   filter: brightness(1.07);
@@ -555,7 +558,7 @@ html[dir="rtl"] h2 {
   max-width: 260px;
   padding: 12px 20px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   color: var(--text);
   background: var(--surface);
   font-weight: 700;
@@ -643,7 +646,7 @@ html[dir="rtl"] h2 {
   box-shadow: 0 12px 24px #1d469b12;
 }
 .continent-card strong {
-  font-size: 22px;
+  font-size: var(--text-heading);
   z-index: 1;
 }
 .continent-card span {
@@ -828,7 +831,7 @@ html[data-page="continents"] .continent-card:not(.image-ready) .continent-art {
   justify-content: space-between;
   gap: 8px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .progress-track {
   height: 4px;
@@ -849,7 +852,7 @@ html[data-page="continents"] .continent-card:not(.image-ready) .continent-art {
 
 label {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-small);
   margin-bottom: 8px;
 }
 input {
@@ -859,7 +862,7 @@ input {
   color: var(--text);
   border: 1px solid var(--line);
   padding: 14px;
-  font-size: 16px;
+  font-size: var(--text-body);
   margin-bottom: 10px;
 }
 #answer:focus-visible {
@@ -915,24 +918,27 @@ footer a:hover {
   text-underline-offset: 3px;
 }
 dialog {
-  width: min(460px, calc(100% - 32px));
-  max-height: calc(100dvh - 32px);
-  padding: 24px;
+  width: min(var(--dialog-width), calc(100% - var(--space-8)));
+  max-height: calc(100dvh - var(--space-8));
+  padding: var(--dialog-padding);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-dialog);
   background: var(--bg);
   color: var(--text);
   font: inherit;
+  box-shadow: var(--shadow-dialog);
 }
 dialog::backdrop {
-  background: #081329aa;
-  backdrop-filter: blur(3px);
+  background: var(--overlay);
 }
 dialog h2 {
-  font-size: 24px;
+  font-size: var(--text-heading);
+  line-height: var(--line-control);
+  margin: 0 0 var(--space-4);
 }
 dialog p {
-  font-size: 15px;
+  font-size: var(--text-body);
+  line-height: var(--line-body);
 }
 .dialog-actions {
   display: flex;
@@ -963,7 +969,7 @@ dialog p {
   font-size: 36px;
 }
 .content-page p {
-  font-size: 16px;
+  font-size: var(--text-body);
 }
 .content-page .primary {
   margin-top: 24px;
@@ -1016,7 +1022,7 @@ dialog p {
     padding: 2px 18px;
   }
   .brand {
-    font-size: 22px;
+    font-size: var(--text-heading);
   }
   main {
     width: calc(100% - 32px);
@@ -1047,7 +1053,7 @@ dialog p {
     margin-bottom: 12px;
   }
   .welcome-copy p {
-    font-size: 14px;
+    font-size: var(--text-control);
     margin: 0 auto 22px;
     max-width: 300px;
   }
@@ -1122,7 +1128,7 @@ dialog p {
   }
   #feedback {
     margin: 8px 0;
-    font-size: 14px;
+    font-size: var(--text-control);
   }
 
   footer {
@@ -1136,7 +1142,7 @@ dialog p {
     font-size: 29px;
   }
   .content-page p {
-    font-size: 14px;
+    font-size: var(--text-control);
   }
   .content-page .primary {
     max-width: none;
@@ -1166,7 +1172,7 @@ dialog p {
     padding: 12px;
   }
   .continent-card strong {
-    font-size: 16px;
+    font-size: var(--text-body);
   }
   .continent-art {
     height: 72px;
@@ -1216,7 +1222,7 @@ dialog p {
     font-size: clamp(28px, 4vw, 44px);
   }
   .welcome-copy p {
-    font-size: 14px;
+    font-size: var(--text-control);
     margin: 0 0 18px;
   }
   .welcome-copy .primary {
@@ -1256,7 +1262,7 @@ dialog p {
   }
 
   .question h2 {
-    font-size: 22px;
+    font-size: var(--text-heading);
     margin: 8px 0;
   }
   .progress-track {
@@ -1281,7 +1287,7 @@ dialog p {
     padding: 20px;
   }
   .content-page p {
-    font-size: 14px;
+    font-size: var(--text-control);
   }
   .results-score {
     margin: 8px 0;
@@ -1320,7 +1326,7 @@ dialog p {
 }
 
 html[lang="fa"] .brand {
-  font-family: Vazir, Tahoma, sans-serif;
+  font-family: var(--font-persian);
   letter-spacing: 0;
 }
 
@@ -1400,7 +1406,7 @@ html[data-page="explore"] .globe-panel {
   padding: 7px 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  font-size: 12px;
+  font-size: var(--text-small);
   text-decoration: none;
 }
 #exploreContinents a[aria-current] {
@@ -1745,7 +1751,7 @@ html[data-page="explore"] .explore-heading > p {
 }
 #explorePanel summary {
   padding: 10px;
-  font-size: 12px;
+  font-size: var(--text-small);
   font-weight: 600;
 }
 #explorePanel #exploreContinents {
@@ -1771,7 +1777,7 @@ html[data-page="explore"] .explore-heading > p {
   padding: 10px;
   margin-top: 6px;
   border-top: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--text-control);
   cursor: pointer;
   min-height: 44px;
 }
@@ -1844,7 +1850,7 @@ html[data-page="explore"] .map-controls {
   height: 44px;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -1894,13 +1900,13 @@ dialog.app-drawer[open] {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  animation: drawer-enter 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: drawer-enter var(--motion-enter) var(--ease-enter) both;
 }
 [dir="rtl"] dialog.app-drawer {
   --drawer-offset: -100%;
 }
 dialog.app-drawer.is-closing {
-  animation: drawer-exit 180ms ease-in both;
+  animation: drawer-exit var(--motion-exit) ease-in both;
 }
 .app-drawer::backdrop {
   background: #07101e80;
@@ -1971,10 +1977,10 @@ dialog.app-drawer.is-closing {
   align-items: center;
   min-height: 48px;
   padding: 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   color: var(--text);
   text-decoration: none;
-  font-size: 14px;
+  font-size: var(--text-control);
 }
 .app-drawer .site-menu a:hover,
 .app-drawer .site-menu a[aria-current="page"] {
@@ -1990,7 +1996,7 @@ dialog.app-drawer.is-closing {
   padding-top: 20px;
 }
 .drawer-settings h2 {
-  font-size: 12px;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--muted);
   margin: 0 12px 4px;
@@ -2002,12 +2008,12 @@ dialog.app-drawer.is-closing {
   min-height: 48px;
   padding: 12px;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--text);
   justify-content: flex-start;
   gap: 12px;
-  font-size: 14px;
+  font-size: var(--text-control);
   text-align: start;
 }
 .app-drawer .drawer-settings button:hover,
@@ -2028,7 +2034,7 @@ dialog.app-drawer.is-closing {
 }
 .app-drawer #languageLabel {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .app-drawer .language-options {
   position: static;
@@ -2266,7 +2272,7 @@ html[data-page="about"] main {
   margin-bottom: 24px;
 }
 .about-page p {
-  font-size: 16px;
+  font-size: var(--text-body);
   line-height: 1.9;
   margin-bottom: 22px;
 }
@@ -2343,13 +2349,13 @@ main:has(.map-loading) {
 }
 .map-loading p {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-control);
   color: var(--text);
   max-width: 30ch;
 }
 .map-loading a {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--text-small);
   padding: 10px 16px;
   min-height: 44px;
 }
@@ -2404,7 +2410,7 @@ html:is([data-page="about"], [data-page="sources"]) main {
   line-height: 1.4;
 }
 .info-page .info-intro {
-  font-size: 14px;
+  font-size: var(--text-control);
   margin: 0;
   line-height: 1.8;
 }
@@ -2413,7 +2419,7 @@ html:is([data-page="about"], [data-page="sources"]) main {
   max-width: 76ch;
 }
 .info-page #aboutBody p {
-  font-size: 15px;
+  font-size: var(--text-body);
   line-height: 2;
   margin: 0 0 20px;
 }
@@ -2468,7 +2474,7 @@ html:is([data-page="about"], [data-page="sources"]) main {
   margin: 0 0 12px;
 }
 .sources-page .source-cards p {
-  font-size: 14px;
+  font-size: var(--text-body);
   line-height: 1.9;
   margin: 0 0 12px;
 }
@@ -2489,13 +2495,13 @@ html:is([data-page="about"], [data-page="sources"]) main {
     margin-bottom: 6px;
   }
   .info-page .info-intro {
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .info-content {
     padding: 0 4px 16px;
   }
   .info-page #aboutBody p {
-    font-size: 14px;
+    font-size: var(--text-body);
     line-height: 1.95;
   }
   .source-cards {
@@ -2520,7 +2526,7 @@ html:is([data-page="about"], [data-page="sources"]) main {
   min-height: 54px;
   padding: 14px 16px;
   font: inherit;
-  font-size: 16px;
+  font-size: var(--text-body);
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--line);
@@ -2771,7 +2777,7 @@ dialog.app-drawer[open] {
   padding-inline: 8px;
 }
 .drawer-heading strong {
-  font-size: 16px;
+  font-size: var(--text-body);
 }
 .app-drawer .site-menu nav {
   gap: 2px;
@@ -2860,7 +2866,7 @@ html[data-page="blog"] main {
 .blog-eyebrow,
 .blog-number {
   color: var(--accent);
-  font-size: 12px;
+  font-size: var(--text-small);
   letter-spacing: 0.08em;
   font-weight: 700;
 }
@@ -2887,12 +2893,12 @@ html[data-page="blog"] main {
   font-size: 25px;
 }
 .blog-place p {
-  font-size: 18px;
+  font-size: var(--text-prose);
   line-height: 1.95;
   max-width: 70ch;
 }
 .blog-source {
-  font-size: 14px;
+  font-size: var(--text-control);
 }
 .blog-note {
   margin-block: 24px;
@@ -2931,16 +2937,16 @@ html[data-page="blog"] main {
   background: var(--surface);
 }
 .blog-card span {
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 .blog-card h2 {
-  font-size: 22px;
+  font-size: var(--text-heading);
   line-height: 1.5;
   margin-top: 12px;
 }
 .blog-card p {
-  font-size: 14px;
+  font-size: var(--text-control);
   margin-bottom: 0;
 }
 
@@ -2977,13 +2983,13 @@ html[data-page="blog"] main {
 }
 .blog-card .blog-card-language {
   display: block;
-  font-size: 12px;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--muted);
 }
 .blog-card .blog-card-copy h2 {
   margin: 10px 0 12px;
-  font-size: 22px;
+  font-size: var(--text-heading);
   line-height: 1.45;
   color: var(--text);
 }
@@ -3047,7 +3053,7 @@ html[data-page="blog"] #selectionStatus:empty {
   border: 0;
   background: transparent;
   color: var(--text);
-  font-size: 14px;
+  font-size: var(--text-control);
   text-align: start;
 }
 .app-drawer .site-menu .history-open:hover {
@@ -3057,14 +3063,14 @@ html[data-page="blog"] #selectionStatus:empty {
   border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
 .history-dialog {
-  width: min(620px, calc(100% - 32px));
-  max-height: 85dvh;
+  width: min(620px, calc(100% - var(--space-8)));
+  max-height: calc(100dvh - var(--space-8));
   overflow-y: auto;
   background: var(--bg);
   color: var(--text);
-  padding: 24px;
+  padding: var(--dialog-padding);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-dialog);
 }
 .history-heading {
   display: flex;
@@ -3074,7 +3080,7 @@ html[data-page="blog"] #selectionStatus:empty {
 }
 .history-heading h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: var(--text-heading);
 }
 .history-note {
   margin-top: 16px;
@@ -3099,7 +3105,7 @@ html[data-page="blog"] #selectionStatus:empty {
   overflow-wrap: anywhere;
 }
 .history-row time {
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 .history-status {
@@ -3175,7 +3181,7 @@ html[data-page="blog"] #selectionStatus:empty {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 
 html[data-page="history"] {
@@ -3213,7 +3219,7 @@ html[data-page="history"] main {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   font: inherit;
 }
 .history-page .primary {
@@ -3248,7 +3254,7 @@ html[data-page="history"] #selectionStatus:empty {
   border-radius: 999px;
 }
 #historyProgressLabel {
-  font-size: 14px;
+  font-size: var(--text-control);
   margin-bottom: 8px;
 }
 
@@ -3353,7 +3359,7 @@ html:not([data-theme="dark"]) .journey-light {
   margin-block: 16px 24px;
 }
 .mode-card {
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   border-color: var(--line);
   padding: 24px;
   gap: 12px;
@@ -3493,12 +3499,12 @@ html:is([data-page="about"], [data-page="sources"]) main {
     height: 44px;
     min-height: 44px;
     padding: 8px 10px;
-    font-size: 14px;
+    font-size: var(--text-control);
   }
   html[data-page="play"] .answer-panel #skip {
     min-height: 36px;
     padding: 4px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
 }
 
@@ -3528,12 +3534,12 @@ html:is([data-page="about"], [data-page="sources"]) main {
     padding: 8px 10px;
   }
   html[data-page="play"] .answer-panel #answer {
-    font-size: 16px;
+    font-size: var(--text-body);
   }
   html[data-page="play"] .answer-panel #skip {
     min-height: 44px;
     padding: 6px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   html[data-page="play"].keyboard-open .answer-panel {
     padding: 8px;
@@ -3580,7 +3586,7 @@ html[data-page="play"] .answer-panel.has-feedback .feedback-message {
   font-size: 13px;
 }
 html[data-page="play"] .answer-panel.has-feedback .feedback-country {
-  font-size: 22px;
+  font-size: var(--text-heading);
   margin-top: 3px;
 }
 @media (max-width: 760px) {
@@ -3608,7 +3614,7 @@ html[data-page="play"] .answer-panel .question {
 html[data-page="play"] .answer-panel .question h2 {
   flex: 1 0 auto;
   white-space: nowrap;
-  font-size: 16px;
+  font-size: var(--text-body);
 }
 html[data-page="play"] .answer-panel .question #skip {
   flex: 0 1 auto;
@@ -3922,7 +3928,7 @@ html[data-loading] .page-skeleton[data-layout="home"] {
   padding-block: 24px;
 }
 #pageLoadingStatus {
-  font-size: 14px;
+  font-size: var(--text-control);
   text-align: center;
 }
 html[data-loading="true"] #pageLoadingStatus {
@@ -4077,7 +4083,7 @@ html[data-page="play"] .map-controls button {
     min-height: 34px;
     padding: 5px 9px;
     border: 1px solid var(--line);
-    border-radius: 8px;
+    border-radius: var(--radius-control);
     background: var(--surface);
     box-shadow: 0 2px 8px #0002;
     white-space: nowrap;
@@ -4127,7 +4133,7 @@ html[data-page="play"] .map-controls button {
 .population-legend strong {
   display: block;
   margin-bottom: 8px;
-  font-size: 12px;
+  font-size: var(--text-small);
 }
 .population-ramp {
   height: 7px;
@@ -4170,7 +4176,7 @@ html[data-page="play"] .map-controls button {
   max-width: 230px;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   background: var(--bg);
   color: var(--text);
   box-shadow: 0 4px 16px #0002;
@@ -4294,12 +4300,12 @@ html[data-page="play"] .satellite-download {
   }
 }
 .explore-mobile-dialog {
-  width: min(440px, calc(100% - 32px));
-  max-height: calc(100dvh - 48px);
+  width: min(var(--dialog-width), calc(100% - var(--space-8)));
+  max-height: calc(100dvh - var(--space-8));
   overflow: hidden;
-  padding: 24px;
+  padding: var(--dialog-padding);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-dialog);
   background: var(--bg);
   color: var(--text);
 }
@@ -4317,12 +4323,12 @@ html[data-page="play"] .satellite-download {
   flex-shrink: 0;
 }
 .explore-mobile-dialog::backdrop {
-  background: #07122499;
+  background: var(--overlay);
 }
 .explore-mobile-dialog h2 {
   margin: 0 0 20px;
   padding-inline-end: 36px;
-  font-size: 20px;
+  font-size: var(--text-heading);
 }
 .explore-dialog-close {
   position: absolute;
@@ -4344,14 +4350,18 @@ html[data-page="play"] .satellite-download {
 .explore-mobile-dialog #exploreContinents a {
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   text-decoration: none;
 }
 .explore-mobile-dialog .population-switch {
   display: flex;
   width: 100%;
-  min-height: 48px;
-  margin: 8px 0;
+  min-height: var(--control-height-large);
+  font-size: var(--text-control);
+  font-weight: 600;
+  border: 0;
+  margin: var(--space-1) 0;
+  padding: var(--space-2);
 }
 .explore-dialog-footer {
   padding: 16px 0 0;
@@ -4512,7 +4522,7 @@ html[data-page="home"] main > .space-traffic {
 }
 .destination p {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-body);
   line-height: 1.9;
   color: #eee6dc;
 }
@@ -4585,7 +4595,7 @@ html[dir="ltr"] .destination-arrow {
   content: none;
 }
 .upcoming-section h2 {
-  font-size: 22px;
+  font-size: var(--text-heading);
   line-height: 1.6;
   margin: 0;
 }
@@ -4596,7 +4606,7 @@ html[dir="ltr"] .destination-arrow {
   border-radius: 999px;
   background: #344252;
   color: #d3d8df;
-  font-size: 14px;
+  font-size: var(--text-control);
   opacity: 1;
   cursor: default;
   white-space: nowrap;
@@ -4617,7 +4627,7 @@ html[dir="ltr"] .destination-arrow {
     margin: -4px auto -12px;
   }
   .home-introduction {
-    font-size: 16px;
+    font-size: var(--text-body);
     line-height: 1.9;
     max-width: 38ch;
   }
@@ -4758,32 +4768,34 @@ html[data-page="continents"] .journey-art img {
   --destination-color: #bca0df;
 }
 .section-preview {
-  width: min(520px, calc(100% - 40px));
-  max-height: 85dvh;
-  padding: 28px;
-  border: 1px solid var(--destination-color);
-  border-radius: 24px;
-  background: #10202d;
-  color: #f4eadc;
+  width: min(560px, calc(100% - var(--space-8)));
+  max-height: calc(100dvh - var(--space-8));
+  padding: var(--dialog-padding);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-dialog);
+  background: var(--bg);
+  color: var(--text);
   text-align: start;
 }
 .section-preview h2 {
   color: var(--destination-color);
 }
 .section-preview p {
-  line-height: 2;
+  line-height: var(--line-body);
 }
 .section-preview::backdrop {
-  background: #020912bb;
+  background: var(--overlay);
 }
 .section-preview .destination-action {
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   justify-content: center;
   width: 100%;
 }
 
 .astronaut-speech {
-  position: fixed;
+  position: absolute;
+  left: 0;
+  top: 0;
   z-index: 8;
   width: min(280px, 72vw);
   box-sizing: border-box;
@@ -4803,7 +4815,7 @@ html[data-page="continents"] .journey-art img {
   content: "";
   position: absolute;
   bottom: -7px;
-  left: 50%;
+  left: var(--speech-tail-x, 50%);
   width: 12px;
   height: 12px;
   background: #102232;
@@ -4858,6 +4870,27 @@ html[data-page="continents"] .journey-art img {
 @media (prefers-reduced-motion: reduce) {
   html[data-page="home"] .welcome::after {
     animation: none;
+  }
+}
+/* Touch targets stay usable when dense desktop/short-screen rules apply. */
+@media (pointer: coarse) {
+  .settings button,
+  .language-picker summary,
+  .text-button,
+  .game-navigation .text-button,
+  .map-controls button,
+  .dialog-actions button {
+    min-height: var(--control-height);
+  }
+  .settings button,
+  .map-controls button {
+    min-width: var(--control-height);
+    height: var(--control-height);
+  }
+}
+@media (pointer: coarse), (max-width: 600px) {
+  html[data-page="play"] .answer-panel .question #skip {
+    min-height: var(--control-height);
   }
 }
 

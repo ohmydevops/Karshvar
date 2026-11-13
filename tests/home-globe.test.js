@@ -87,6 +87,7 @@ async function fixture({
   };
   const host = {
     style: {},
+    append() {},
     getBoundingClientRect: () => ({
       top: 0,
       left: 0,
@@ -407,11 +408,21 @@ test("reduced motion renders a still globe that remains draggable", async () => 
   assert.equal(f.pending.size, 0);
   const moon = f.scene().getObjectByName("home-moon");
   const before = moon.getWorldPosition(new THREE.Vector3());
+  let earth;
+  f.scene().traverse((object) => {
+    if (object.material?.uniforms?.dayMap) earth = object;
+  });
+  const orientation = earth.getWorldQuaternion(new THREE.Quaternion());
   f.canvasEvents.pointerdown({ clientX: 0, clientY: 0, pointerId: 1 });
   f.canvasEvents.pointermove({ clientX: 10, clientY: 5 });
   assert.equal(f.draws(), 2);
+  assert.equal(
+    moon.getWorldPosition(new THREE.Vector3()).distanceTo(before),
+    0,
+  );
   assert.ok(
-    moon.getWorldPosition(new THREE.Vector3()).distanceTo(before) > 0.1,
+    earth.getWorldQuaternion(new THREE.Quaternion()).angleTo(orientation) >
+      0.01,
   );
   f.motion.matches = false;
   f.events.motion();

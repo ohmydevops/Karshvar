@@ -1,6 +1,14 @@
+@import url("./design-tokens.css");
+
 :root {
   color-scheme: dark;
-  font-family: system-ui, sans-serif;
+  --bg: #070e19;
+  --surface: #15273a;
+  --text: #edf4ff;
+  --muted: #b9ccdf;
+  --line: #365371;
+  --accent: #93ddff;
+  --accent-ink: #07131c;
   background: #070e19;
   color: #edf4ff;
 }
@@ -32,7 +40,7 @@ h1 {
 .mission-stats span {
   padding: 8px 12px;
   background: #15273a;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 .mission-stats strong {
   margin-inline-start: 6px;
@@ -70,11 +78,14 @@ canvas {
 }
 button {
   font: inherit;
-  font-weight: 650;
+  font-weight: 600;
+  min-height: var(--control-height);
+  font-size: var(--text-control);
+  line-height: var(--line-control);
   color: #07131c;
   background: #93ddff;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   padding: 10px 16px;
   cursor: pointer;
 }
@@ -204,7 +215,7 @@ h1 {
   max-width: 65%;
   background: #0308129c;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 .desktop-note {
   position: fixed;
@@ -253,7 +264,7 @@ h1 {
   padding: 14px 16px;
   background: linear-gradient(125deg, #102334db, #050d19d9);
   border: 1px solid #6095b344;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   box-shadow: 0 8px 30px #0005;
   pointer-events: none;
   direction: ltr;
@@ -568,7 +579,7 @@ h1 {
 }
 .mission-briefing {
   width: min(470px, calc(100vw - 48px));
-  font-family: Arial, Tahoma, sans-serif;
+  font-family: inherit;
   font-size: 15px;
   line-height: 1.75;
 }

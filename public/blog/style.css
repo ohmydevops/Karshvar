@@ -17,12 +17,12 @@
 }
 .conversation-phrases .conversation-meaning {
   margin: 3px 0;
-  font-size: 14px;
+  font-size: var(--text-control);
   color: var(--muted);
 }
 .conversation-pronunciation {
   margin-top: 6px;
-  font-size: 12px;
+  font-size: var(--text-small);
   color: var(--muted);
 }
 .conversation-pronunciation summary {
@@ -39,11 +39,11 @@
   display: none;
 }
 .blog-place:has(.conversation-phrases) > h2 {
-  font-size: 22px;
+  font-size: var(--text-heading);
   margin-block: 0 10px;
 }
 .blog-place:has(.conversation-phrases) > p {
-  font-size: 14px;
+  font-size: var(--text-control);
   line-height: 1.8;
   margin-bottom: 12px;
 }
@@ -79,7 +79,7 @@
   max-width: 82%;
   padding: 10px 16px;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-panel);
   background: var(--surface);
 }
 .conversation-dialogue .conversation-message-self {
@@ -98,7 +98,7 @@
 }
 .conversation-dialogue .conversation-original {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--text-body);
   font-weight: 500;
   line-height: 1.65;
 }
@@ -111,7 +111,7 @@
 
 .blog-page > .blog-section-title {
   margin-block: 40px 20px;
-  font-size: 22px;
+  font-size: var(--text-heading);
   line-height: 1.6;
 }
 .blog-page .conversation-grid {
@@ -129,5 +129,5 @@
 .conversation-grid .blog-card .blog-card-copy p {
   display: block;
   overflow: visible;
-  font-size: 14px;
+  font-size: var(--text-control);
 }
