@@ -17,8 +17,8 @@ const modes = {
     minimum: 0.5,
     ramp: 30,
     randomSalvo: true,
-    defense: 12,
-    defenseSpread: 8,
+    defense: 9,
+    defenseSpread: 6,
   },
 };
 export function missionDifficulty(mode) {
