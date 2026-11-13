@@ -8,7 +8,7 @@ const copy = {
     "Downloading update",
     "Update ready",
     "Apply and reload",
-    "Download interrupted. Completed files will be reused.",
+    "Update download interrupted. Your current version is still available. Retry to resume.",
     "Retry",
     "Close",
   ],
@@ -20,7 +20,7 @@ const copy = {
     "در حال دانلود به‌روزرسانی",
     "به‌روزرسانی آماده است",
     "اعمال و بارگیری مجدد",
-    "دانلود متوقف شد. فایل‌های دریافت‌شده در تلاش بعدی استفاده می‌شوند.",
+    "دانلود به‌روزرسانی متوقف شد؛ نسخهٔ فعلی همچنان قابل استفاده است. برای ادامه دوباره تلاش کنید.",
     "تلاش مجدد",
     "بستن",
   ],
@@ -349,7 +349,15 @@ export function createDownloadManager({
       if (!/^[a-f0-9]{20}$/.test(latest.version))
         throw Error("Invalid release");
       const active = await workerStatus(registration.active);
-      if (active?.version === latest.version) return 1;
+      if (active?.version === latest.version) {
+        // A retry can discover that the release already activated elsewhere.
+        // Do not leave a stale failure banner over a working offline game.
+        if (banner) banner.hidden = true;
+        displayedPhase = undefined;
+        ownDownload = false;
+        stopWatch();
+        return 1;
+      }
       if (!active) {
         const local = await (
           await fetch(new URL("build-info.json", scope))

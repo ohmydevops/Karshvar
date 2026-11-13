@@ -28,6 +28,7 @@ function worker({
   delayed = false,
   stalled = false,
   stale,
+  staleHttpCache = false,
   missingHash,
   sharedStores,
   version,
@@ -136,7 +137,12 @@ function worker({
     },
     fetch: async (url, options = {}) => {
       if (url instanceof Request)
-        options = { integrity: url.integrity, signal: url.signal, ...options };
+        options = {
+          integrity: url.integrity,
+          signal: url.signal,
+          cache: url.cache,
+          ...options,
+        };
       active++;
       peak = Math.max(peak, active);
       try {
@@ -159,7 +165,7 @@ function worker({
           "/game/".length,
         );
         const body =
-          asset === stale
+          asset === stale || (staleHttpCache && options.cache !== "reload")
             ? Buffer.from("old CDN release: " + asset)
             : releaseBodies.get(asset) || Buffer.from("missing asset");
         // Exercise native Fetch integrity validation, without an external server.
@@ -313,6 +319,13 @@ test("failed optional download preserves the site and can resume verified game f
   assert.equal((await w.request("en/")).status, 200);
   const retry = worker({ sharedStores: w.stores });
   assert.equal((await retry.gamePack()).phase, "ready");
+});
+
+test("optional pack revalidates stale HTTP cache entries before integrity checks", async () => {
+  const w = worker({ staleHttpCache: true });
+  await w.lifecycle("install");
+  await w.lifecycle("activate");
+  assert.equal((await w.gamePack()).phase, "ready");
 });
 test("generated integrity manifest matches every final file byte-for-byte", async () => {
   assert.deepEqual(Object.keys(integrity), assets);

@@ -73,12 +73,29 @@ export function prepareGameOffline() {
     try {
       const { offlineReady } = await import("./offline.js");
       await offlineReady;
-      const registration = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) =>
-          setTimeout(() => reject(Error("Worker unavailable")), 30000),
-        ),
-      ]);
+      const workerURL = new URL("./sw.js", import.meta.url);
+      const existing = await navigator.serviceWorker.getRegistration(workerURL);
+      // A failed first installation leaves no active worker. Importing the
+      // already evaluated offline module again does not restart installation.
+      if (!existing?.active && !existing?.installing && navigator.onLine)
+        await navigator.serviceWorker.register(workerURL, {
+          updateViaCache: "none",
+        });
+      let readyTimer;
+      let registration;
+      try {
+        registration = await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise((_, reject) => {
+            readyTimer = setTimeout(
+              () => reject(Error("Worker unavailable")),
+              60000,
+            );
+          }),
+        ]);
+      } finally {
+        clearTimeout(readyTimer);
+      }
       await new Promise((resolve, reject) => {
         const channel = new MessageChannel();
         let timer;

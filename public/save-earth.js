@@ -3,6 +3,7 @@ import { createMagazineHUD } from "./save-earth-magazine.js";
 import { DESKTOP_MEDIA } from "./save-earth-access.js";
 import { createGameAudio } from "./save-earth-audio.js";
 import { createEarthDefense } from "./save-earth-defense.js";
+import { constrainMeteorContact } from "./save-earth-collisions.js";
 import {
   missionDifficulty,
   meteorSpawnInterval,
@@ -282,6 +283,7 @@ function fire() {
 }
 function advance(dt) {
   flyPilot(player, keys, dt);
+  constrainMeteorContact(player, meteors);
   view?.constrainPilot?.(player);
   sound.thrust(player.velocity.length());
   if (reloadIn > 0) {
@@ -375,6 +377,9 @@ function advance(dt) {
       }
     }
   }
+  // Moving rocks must also resolve contact after their own flight step.
+  constrainMeteorContact(player, meteors);
+  view?.constrainPilot?.(player);
 }
 
 function scheduleFrame() {

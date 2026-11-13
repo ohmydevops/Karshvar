@@ -267,3 +267,15 @@ test("stalled progress becomes retryable and a completed worker can still recove
     f.nodes.some((n) => n.textContent === "Apply and reload" && !n.hidden),
   );
 });
+
+test("retry hides an obsolete error after the latest worker activated", async () => {
+  const f = fixture({ fail: true });
+  await f.manager.check();
+  await f.nodes.find((n) => n.textContent === "Download").onclick();
+  const banner = f.nodes.find((n) => n.tag === "aside");
+  assert.equal(banner.hidden, false);
+  f.registration.active.postMessage = (_, ports) =>
+    ports[0].postMessage({ version: nextVersion });
+  assert.equal(await f.manager.check(true), 1);
+  assert.equal(banner.hidden, true);
+});

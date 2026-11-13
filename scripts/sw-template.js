@@ -62,7 +62,9 @@ async function cacheAsset(asset, event) {
         event,
         request: new Request(url, {
           integrity: INTEGRITY[asset],
-          cache: gameAssets.has(asset) ? "default" : "reload",
+          // Revisioned Workbox entries already reuse unchanged files. A miss
+          // must revalidate HTTP cache bytes, including optional game scripts.
+          cache: "reload",
           credentials: "same-origin",
         }),
         params: {
