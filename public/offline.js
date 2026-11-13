@@ -201,7 +201,7 @@ async function setupOffline() {
       downloads.hide();
       activationNotice?.close();
       const copy = updateCopy[document.documentElement.lang] || updateCopy.en;
-      const notice = document.createElement("aside");
+      const notice = document.createElement("dialog");
       notice.className = "update-download update-activation";
       activationNotice = notice;
       notice.setAttribute("aria-labelledby", "updateTitle");
@@ -222,7 +222,10 @@ async function setupOffline() {
       const update = document.createElement("button");
       update.className = "primary";
       update.textContent = copy[2];
-      later.onclick = () => notice.close();
+      later.onclick = () => {
+        notice.close();
+        closeNotice();
+      };
       let activationTimer;
       const restoreUpdate = () => {
         approved = false;
@@ -258,7 +261,7 @@ async function setupOffline() {
         } else if (worker.state === "redundant" && approved) restoreUpdate();
       };
       worker.addEventListener?.("statechange", activated);
-      notice.close = () => {
+      const closeNotice = () => {
         notice.hidden = true;
         approved = false;
         window.clearTimeout(activationTimer);
@@ -308,6 +311,8 @@ async function setupOffline() {
       notice.append(title, description, actions);
       document.body.append(notice);
       notice.hidden = false;
+      notice.addEventListener("cancel", closeNotice);
+      notice.showModal();
       if (activate) update.onclick();
     };
     const downloads = createDownloadManager({

@@ -101,7 +101,7 @@ export function createDownloadManager({
   function show(phase, completed = 0, total = 0) {
     if (suspended) return;
     if (!banner) {
-      banner = make("aside");
+      banner = make("dialog");
       banner.className = "update-download";
       banner.setAttribute("aria-label", t[4]);
       label = make("span");
@@ -116,12 +116,34 @@ export function createDownloadManager({
         try {
           sessionStorage.setItem(dismissKey, latest?.version);
         } catch {}
+        banner.close();
         banner.hidden = true;
       };
-      banner.append(label, progress, later, action);
+      const hint = make(
+        "p",
+        {
+          fa: "هنگام دانلود بهتر است این صفحه را باز نگه دارید و رفرش نکنید. اگر دانلود قطع شد، فایل‌های کامل‌شده در تلاش بعدی دوباره استفاده می‌شوند.",
+          en: "While downloading, keep this page open and avoid refreshing. If interrupted, completed files will be reused on retry.",
+          ar: "أبقِ الصفحة مفتوحة أثناء التنزيل وتجنب تحديثها. عند الانقطاع، ستُستخدم الملفات المكتملة عند إعادة المحاولة.",
+          tr: "İndirirken bu sayfayı açık tutun ve yenilemeyin. Kesilirse tamamlanan dosyalar tekrar kullanılır.",
+          fr: "Gardez cette page ouverte pendant le téléchargement. En cas d’interruption, les fichiers terminés seront réutilisés.",
+          ru: "Во время загрузки оставьте страницу открытой и не обновляйте её. Готовые файлы будут использованы при повторной попытке.",
+        }[document.documentElement.lang] ||
+          "Keep this page open while downloading. Completed files will be reused on retry.",
+      );
+      hint.className = "update-hint";
+      const buttons = make("div");
+      buttons.className = "dialog-actions";
+      buttons.append(later, action);
+      banner.append(label, hint, progress, buttons);
+      banner.addEventListener("cancel", (event) => {
+        if (displayedPhase === "downloading") event.preventDefault();
+        else later.onclick();
+      });
       document.body.append(banner);
     }
     banner.hidden = false;
+    if (!banner.open) banner.showModal();
     progress.hidden = phase !== "downloading";
     if (total) {
       progress.max = total;

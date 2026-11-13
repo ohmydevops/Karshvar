@@ -284,7 +284,7 @@ test("update checks run on return and reconnect, with throttling and hidden-tab 
   await app.events.online();
   assert.equal(app.checks, 3);
   assert.equal(app.reloads, 0);
-  assert.equal(app.nodes.filter((n) => n.tag === "aside").length, 1);
+  assert.equal(app.nodes.filter((n) => n.tag === "dialog").length, 1);
 });
 
 test("manual menu check bypasses throttle and reports no update", async () => {
@@ -301,7 +301,7 @@ test("manual check can offer a previously dismissed update", async () => {
   app.nodes.find((n) => n.textContent === "Later").onclick();
   await app.menuButton.onclick();
   assert.equal(
-    app.nodes.filter((n) => n.tag === "aside" && !n.hidden).length,
+    app.nodes.filter((n) => n.tag === "dialog" && !n.hidden).length,
     1,
   );
   assert.equal(app.sent.length, 0);
@@ -397,7 +397,7 @@ test("existing waiting update is offered without registering again", async () =>
     false,
     true,
   );
-  assert.ok(app.nodes.some((node) => node.tag === "aside" && !node.hidden));
+  assert.ok(app.nodes.some((node) => node.tag === "dialog" && !node.hidden));
 });
 
 test("manual check reports an in-progress download without starting another request", async () => {

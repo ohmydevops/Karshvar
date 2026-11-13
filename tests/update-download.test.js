@@ -142,7 +142,7 @@ test("discovery asks before downloading or authorizing any release", async () =>
   assert.equal(f.requests, 1);
   assert.equal(f.downloads, 0);
   assert.equal(f.shared.size, 0);
-  assert(f.nodes.some((n) => n.tag === "aside" && !n.hidden));
+  assert(f.nodes.some((n) => n.tag === "dialog" && !n.hidden));
 });
 test("up-to-date release checks only metadata without a prompt", async () => {
   const f = fixture({ latest: oldVersion });
@@ -155,9 +155,15 @@ test("Later survives page navigation but manual check can reopen the prompt", as
   await f.manager.check();
   f.nodes.find((n) => n.textContent === "Later").onclick();
   await f.create().check();
-  assert.equal(f.nodes.filter((n) => n.tag === "aside" && !n.hidden).length, 0);
+  assert.equal(
+    f.nodes.filter((n) => n.tag === "dialog" && !n.hidden).length,
+    0,
+  );
   await f.manager.check(true);
-  assert.equal(f.nodes.filter((n) => n.tag === "aside" && !n.hidden).length, 1);
+  assert.equal(
+    f.nodes.filter((n) => n.tag === "dialog" && !n.hidden).length,
+    1,
+  );
   assert.equal(f.downloads, 0);
 });
 test("approval persists and a new page shows the same worker download", async () => {
@@ -189,7 +195,7 @@ test("simultaneous checks share discovery and create only one prompt", async () 
   const f = fixture();
   await Promise.all([f.manager.check(), f.manager.check(true)]);
   assert.equal(f.requests, 1);
-  assert.equal(f.nodes.filter((n) => n.tag === "aside").length, 1);
+  assert.equal(f.nodes.filter((n) => n.tag === "dialog").length, 1);
 });
 test("failed start offers retry without throwing or claiming success", async () => {
   const f = fixture({ fail: true });
@@ -272,7 +278,7 @@ test("retry hides an obsolete error after the latest worker activated", async ()
   const f = fixture({ fail: true });
   await f.manager.check();
   await f.nodes.find((n) => n.textContent === "Download").onclick();
-  const banner = f.nodes.find((n) => n.tag === "aside");
+  const banner = f.nodes.find((n) => n.tag === "dialog");
   assert.equal(banner.hidden, false);
   f.registration.active.postMessage = (_, ports) =>
     ports[0].postMessage({ version: nextVersion });
