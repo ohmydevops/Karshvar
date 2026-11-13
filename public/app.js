@@ -1,3 +1,5 @@
+import "./map-sky.js";
+import { createSettingsDialog } from "./settings-dialog.js";
 import { toggleComparison, compareCopy } from "./compare.js";
 import { brandName } from "./brand.js";
 import { revealPage } from "./page-ready.js";
@@ -6,6 +8,7 @@ import { interiorLabelPoint } from "./label-anchor.js";
 import { bindHighlightSwitch, bindLabelsSwitch } from "./explore-settings.js";
 import { mountAntipode } from "./antipode.js";
 import "./footer-version.js";
+import "./menu-destinations.js";
 import { answerFill, bindHistory } from "./history.js";
 import { bindKeyboardViewport } from "./keyboard-viewport.js";
 bindKeyboardViewport(window, document);
@@ -421,6 +424,7 @@ shade
   .attr("offset", "100%")
   .attr("stop-color", "#000")
   .attr("stop-opacity", 0.5);
+let fossilLayer = null;
 const projection = d3.geoOrthographic().translate([300, 267]).clipAngle(90);
 // A tenth of a viewBox unit is below a screen pixel at normal display sizes.
 // Avoid serializing three decimal places for every coastline point each frame.
@@ -466,7 +470,8 @@ const activeLabelBackground = countryLabels
   .attr("class", "active-country-label-background")
   .attr("display", "none");
 const drawMarineLabels =
-  page === "explore"
+  page === "explore" &&
+  !document.documentElement.hasAttribute("data-natural-history")
     ? mountMarineLabels(svg, lang, () => landFeatures, queueDraw)
     : null;
 const marker = svg
@@ -605,6 +610,7 @@ function draw(animating = false) {
     : { x: 600, y: 530 };
   measureLabels();
   projection.rotate(rotation).scale(220 * zoom);
+  fossilLayer?.draw(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
   sphere.attr("opacity", antipodeMode?.active ? 0.12 : 1);
   shadow.attr("opacity", antipodeMode?.active ? 0.08 : 1);
   const northNeedle = document.querySelector("#north svg");
@@ -702,7 +708,8 @@ function draw(animating = false) {
       );
   const labelsVisible =
     !antipodeMode?.active &&
-    (page !== "explore" || $("showLabels")?.checked !== false);
+    (page !== "explore" || $("showLabels")?.checked !== false) &&
+    !document.documentElement.hasAttribute("data-natural-history");
   countryLabels.attr("display", labelsVisible ? null : "none");
   labelLeaders.attr("display", labelsVisible ? null : "none");
   const labelSize = Math.max(14, Math.min(18, 13 + zoom));
@@ -909,6 +916,7 @@ bindGlobeGestures($("globe"), {
   },
   onTap: ({ target, x, y }) => {
     if (page !== "explore") return;
+    if (fossilLayer?.tap(x, y)) return;
     if (antipodeMode?.active) {
       antipodeMode.tap(x, y);
       return;
@@ -1060,7 +1068,11 @@ function localize() {
   $("center").title = t("center");
   for (const id of ["globe", "theme", "zoomIn", "zoomOut", "center"])
     $(id).setAttribute("aria-label", t(id));
-  if (page !== "blog" && page !== "history")
+  if (
+    page !== "blog" &&
+    page !== "history" &&
+    !document.documentElement.hasAttribute("data-natural-history")
+  )
     document.title =
       page === "home"
         ? seoCopy[lang][0]
@@ -1551,7 +1563,9 @@ function openExplore(continent = "All") {
   const labelsInput = document.createElement("input");
   labelsInput.type = "checkbox";
   labelsInput.id = "showLabels";
-  labelsInput.checked = true;
+  labelsInput.checked = !document.documentElement.hasAttribute(
+    "data-natural-history",
+  );
   labelsInput.setAttribute("role", "switch");
   const labelsText = document.createElement("span");
   labelsText.textContent = {
@@ -1606,26 +1620,21 @@ function openExplore(continent = "All") {
   );
   const panel = $("explorePanel");
   const heading = panel.closest(".explore-heading");
-  const mobileDialog = document.createElement("dialog");
-  mobileDialog.className = "explore-mobile-dialog";
-  const dialogTitle = document.createElement("h2");
-  dialogTitle.id = "exploreDialogTitle";
-  dialogTitle.textContent = {
-    en: "Continents & settings",
-    fa: "قاره‌ها و تنظیمات",
-    ar: "القارات والإعدادات",
-    tr: "Kıtalar ve ayarlar",
-    fr: "Continents et réglages",
-    ru: "Континенты и настройки",
-  }[lang];
-  mobileDialog.setAttribute("aria-labelledby", dialogTitle.id);
-  const closeDialog = document.createElement("button");
-  closeDialog.type = "button";
-  closeDialog.className = "explore-dialog-close";
-  closeDialog.textContent = "×";
-  closeDialog.setAttribute(
-    "aria-label",
-    {
+  const {
+    dialog: mobileDialog,
+    heading: dialogTitle,
+    content: dialogContent,
+  } = createSettingsDialog({
+    id: "exploreDialogTitle",
+    title: {
+      en: "Continents & settings",
+      fa: "قاره‌ها و تنظیمات",
+      ar: "القارات والإعدادات",
+      tr: "Kıtalar ve ayarlar",
+      fr: "Continents et réglages",
+      ru: "Континенты и настройки",
+    }[lang],
+    closeLabel: {
       en: "Close",
       fa: "بستن",
       ar: "إغلاق",
@@ -1633,20 +1642,7 @@ function openExplore(continent = "All") {
       fr: "Fermer",
       ru: "Закрыть",
     }[lang],
-  );
-  closeDialog.onclick = () => mobileDialog.close();
-  const dialogContent = document.createElement("div");
-  dialogContent.className = "explore-dialog-content";
-  const dialogFooter = document.createElement("div");
-  dialogFooter.className = "explore-dialog-footer";
-  const doneButton = document.createElement("button");
-  doneButton.type = "button";
-  doneButton.className = "primary";
-  doneButton.textContent = closeDialog.getAttribute("aria-label");
-  doneButton.onclick = () => mobileDialog.close();
-  dialogFooter.append(doneButton);
-  mobileDialog.append(dialogTitle, closeDialog, dialogContent, dialogFooter);
-  document.body.append(mobileDialog);
+  });
   const summary = panel.querySelector("summary");
   const originalSummary = summary.textContent;
   summary.addEventListener(
@@ -1658,17 +1654,6 @@ function openExplore(continent = "All") {
     },
     { signal: settingsEvents.signal },
   );
-  mobileDialog.addEventListener("click", (event) => {
-    const r = mobileDialog.getBoundingClientRect();
-    if (
-      event.target === mobileDialog &&
-      (event.clientX < r.left ||
-        event.clientX > r.right ||
-        event.clientY < r.top ||
-        event.clientY > r.bottom)
-    )
-      mobileDialog.close();
-  });
   const arrangeSettings = () => {
     const desktop = matchMedia("(min-width: 761px)").matches;
     while (comparedCountries.size > comparisonLimit())
@@ -2245,6 +2230,20 @@ appMenu.addEventListener("click", (event) => {
     closeMenu();
 });
 localize();
+if (document.documentElement.hasAttribute("data-natural-history")) {
+  const { mountNaturalHistory } = await import("./natural-history.js");
+  fossilLayer = mountNaturalHistory({
+    svg,
+    projection,
+    lang,
+    redraw: queueDraw,
+    focus: (point) => {
+      rotation = [-point[0], -point[1], 0];
+      zoom = 1.7;
+      queueDraw();
+    },
+  });
+}
 $("resetOpen").disabled = false;
 if (["continents", "play", "results", "explore"].includes(page)) {
   const mapLoading = $("mapLoading");

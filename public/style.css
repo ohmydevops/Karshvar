@@ -1,3 +1,5 @@
+@import url("./design-tokens.css");
+
 :root {
   --bg: #0d1528;
   --surface: #16243e;
@@ -4856,5 +4858,39 @@ html[data-page="continents"] .journey-art img {
 @media (prefers-reduced-motion: reduce) {
   html[data-page="home"] .welcome::after {
     animation: none;
+  }
+}
+
+/* Shared astronomical backdrop for the Explore globe and fossil atlas. */
+html[data-page="explore"] .globe-panel {
+  background-color: #030711;
+  background-image:
+    linear-gradient(180deg, #03071188, #03071144 45%, #030711aa),
+    url("./art/andromeda.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.map-sky-credit {
+  position: absolute;
+  inset-inline-start: 8px;
+  top: auto;
+  bottom: 7px;
+  z-index: 2;
+  max-width: calc(100% - 16px);
+  color: #c5ccd8;
+  font-size: 10px;
+  line-height: 1.4;
+  text-shadow: 0 1px 3px #000;
+}
+.map-sky-credit a {
+  color: inherit;
+}
+html[data-page="explore"] .satellite-credit {
+  bottom: 24px;
+}
+@media (max-width: 600px) {
+  html[data-page="explore"] .globe-panel {
+    background-position: 38% center;
   }
 }

@@ -173,7 +173,7 @@ for (const [lang, c] of Object.entries(copy)) {
     const actionContent = `<span>${planned ? preview[0] : action}</span><span class="destination-arrow" aria-hidden="true">←</span>`;
     const control = planned
       ? `<button type="button" class="destination-action" data-preview="${id}" aria-haspopup="dialog" aria-controls="${dialogId}">${actionContent}</button>`
-      : `<a ${id === "geography" ? 'id="startGame"' : ""} class="destination-action ${id === "atlas" ? "home-explore" : ""}" href="./${lang}/${id === "atlas" ? "explore" : "modes"}/">${actionContent}</a>`;
+      : `<a ${id === "geography" ? 'id="startGame"' : ""} class="destination-action ${id === "atlas" ? "home-explore" : ""}" href="./${lang}/${id === "atlas" ? "explore" : id === "natural-history" ? "natural-history" : "modes"}/">${actionContent}</a>`;
     const dialog = planned
       ? `<dialog class="section-preview" id="${dialogId}" aria-labelledby="${dialogId}-title" aria-describedby="${dialogId}-description">
       <h2 id="${dialogId}-title">${title}</h2>
@@ -197,7 +197,7 @@ for (const [lang, c] of Object.entries(copy)) {
     ${row("atlas", c[2], c[3], c[4])}
     ${row("geography", c[5], c[6], c[7])}
 
-    ${row("natural-history", c[8], c[9], "", true)}
+    ${row("natural-history", c[8], c[9], c[8])}
     ${row("human-history", c[10], c[11], "", true)}
     ${saveEarthCard(lang)}
     </div>

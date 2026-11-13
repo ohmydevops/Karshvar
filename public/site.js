@@ -1,6 +1,7 @@
 import { bindSaveEarthLink } from "./save-earth-access.js";
 import { pagePath } from "./navigation.js";
 import "./footer-version.js";
+import "./menu-destinations.js";
 import { setUpdateLoading, withUpdateTimeout } from "./update-loading.js";
 import { resetCopy } from "./reset.js";
 import { bindHistory } from "./history.js";

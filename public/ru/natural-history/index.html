@@ -1,0 +1,553 @@
+<!doctype html>
+<html
+  lang="ru"
+  dir="ltr"
+  data-locale="ru"
+  data-page="explore"
+  data-natural-history="true"
+>
+  <head>
+    <base href="../../" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f9ff" />
+    <meta
+      name="description"
+      content="Исследуйте находки динозавров и гоминин на современной Земле: предполагаемый возраст, изображения и научные источники."
+    />
+    <title>Естественная история — Karshvar</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <script>
+      // Apply the saved theme before styles or page content can paint.
+      (() => {
+        let theme = "light";
+        try {
+          if (localStorage.getItem("atlas-theme") === "dark") theme = "dark";
+        } catch {}
+        document.documentElement.dataset.theme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute("content", theme === "dark" ? "#0d1528" : "#f7f9ff");
+      })();
+    </script>
+    <script data-page-loading>
+      // Inlined in each page's head so loading starts before the first paint.
+      (() => {
+        const root = document.documentElement;
+        root.dataset.loading = "true";
+        const copy = {
+          en: ["Loading…", "This page could not finish loading.", "Try again"],
+          fa: ["در حال بارگذاری…", "بارگذاری صفحه کامل نشد.", "تلاش دوباره"],
+          ar: ["جارٍ التحميل…", "تعذّر إكمال تحميل الصفحة.", "حاول مجددًا"],
+          tr: ["Yükleniyor…", "Sayfa yüklenemedi.", "Tekrar dene"],
+          fr: [
+            "Chargement…",
+            "Le chargement de la page a échoué.",
+            "Réessayer",
+          ],
+          ru: ["Загрузка…", "Не удалось загрузить страницу.", "Повторить"],
+        }[root.lang] || [
+          "Loading…",
+          "This page could not finish loading.",
+          "Try again",
+        ];
+        const initialize = () => {
+          if (root.dataset.loading !== "true") return;
+          document.querySelector("main")?.setAttribute("aria-busy", "true");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[0];
+        };
+        document.addEventListener("DOMContentLoaded", initialize, {
+          once: true,
+        });
+        const timeout = setTimeout(() => {
+          if (root.dataset.loading !== "true") return;
+          root.dataset.loading = "failed";
+          document.querySelector("main")?.setAttribute("aria-busy", "false");
+          const status = document.getElementById("pageLoadingStatus");
+          if (status) status.textContent = copy[1];
+          const retry = document.getElementById("pageLoadingRetry");
+          if (retry) {
+            retry.textContent = copy[2];
+            retry.href = location.href;
+            retry.hidden = false;
+          }
+        }, 15000);
+        document.addEventListener(
+          "page-ready",
+          () => {
+            clearTimeout(timeout);
+            delete root.dataset.loading;
+            document.querySelector("main")?.setAttribute("aria-busy", "false");
+          },
+          { once: true },
+        );
+      })();
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="preload"
+      href="./data/countries.json"
+      as="fetch"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="./data/names.json"
+      as="fetch"
+      crossorigin="anonymous"
+    />
+
+    <script type="module" src="./entry.js"></script>
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Karshvar" />
+    <meta property="og:title" content="Естественная история — Karshvar" />
+    <meta
+      property="og:description"
+      content="Исследуйте находки динозавров и гоминин на современной Земле: предполагаемый возраст, изображения и научные источники."
+    />
+    <meta property="og:locale" content="ru_RU" />
+    <meta
+      property="og:image"
+      content="https://karshvar.ir/social/explore-ru.png?v=2afe470a6301"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Изучить карту" />
+    <meta name="twitter:image:alt" content="Изучить карту" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Естественная история — Karshvar" />
+    <meta
+      name="twitter:description"
+      content="Исследуйте находки динозавров и гоминин на современной Земле: предполагаемый возраст, изображения и научные источники."
+    />
+    <meta
+      name="twitter:image"
+      content="https://karshvar.ir/social/explore-ru.png?v=2afe470a6301"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Естественная история — Karshvar",
+        "description": "Исследуйте находки динозавров и гоминин на современной Земле: предполагаемый возраст, изображения и научные источники.",
+        "url": "https://karshvar.ir/ru/natural-history/",
+        "inLanguage": "ru",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true
+      }
+    </script>
+    <link rel="canonical" href="https://karshvar.ir/ru/natural-history/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://karshvar.ir/en/natural-history/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fa"
+      href="https://karshvar.ir/fa/natural-history/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ar"
+      href="https://karshvar.ir/ar/natural-history/"
+    />
+    <link
+      rel="alternate"
+      hreflang="tr"
+      href="https://karshvar.ir/tr/natural-history/"
+    />
+    <link
+      rel="alternate"
+      hreflang="fr"
+      href="https://karshvar.ir/fr/natural-history/"
+    />
+    <link
+      rel="alternate"
+      hreflang="ru"
+      href="https://karshvar.ir/ru/natural-history/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://karshvar.ir/en/natural-history/"
+    />
+    <meta property="og:url" content="https://karshvar.ir/ru/natural-history/" />
+    <link rel="stylesheet" href="./natural-history.css" />
+  </head>
+  <body class="light">
+    <header>
+      <a class="brand" href="./ru/"
+        ><img
+          class="brand-icon"
+          src="./favicon.svg"
+          width="36"
+          height="36"
+          alt=""
+          aria-hidden="true"
+        /><span class="brand-name">Karshvar</span></a
+      >
+      <div class="header-actions">
+        <details class="language-picker" id="languagePicker">
+          <summary id="language" aria-label="Язык">
+            <span id="languageMenuLabel" hidden></span
+            ><span id="languageLabel">RU</span
+            ><svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+            >
+              <path d="m3 4.5 3 3 3-3" />
+            </svg>
+          </summary>
+          <nav class="language-options" aria-label="Язык">
+            <a
+              href="./en/natural-history/"
+              lang="en"
+              hreflang="en"
+              data-language="en"
+              >EN</a
+            ><a
+              href="./fa/natural-history/"
+              lang="fa"
+              hreflang="fa"
+              data-language="fa"
+              >FA</a
+            ><a
+              href="./ar/natural-history/"
+              lang="ar"
+              hreflang="ar"
+              data-language="ar"
+              >AR</a
+            ><a
+              href="./tr/natural-history/"
+              lang="tr"
+              hreflang="tr"
+              data-language="tr"
+              >TR</a
+            ><a
+              href="./fr/natural-history/"
+              lang="fr"
+              hreflang="fr"
+              data-language="fr"
+              >FR</a
+            ><a
+              href="./ru/natural-history/"
+              lang="ru"
+              hreflang="ru"
+              data-language="ru"
+              aria-current="page"
+              >RU</a
+            >
+          </nav>
+        </details>
+        <button
+          id="menuOpen"
+          class="menu-toggle"
+          aria-label="Меню"
+          aria-controls="appMenu"
+          aria-expanded="false"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <dialog id="appMenu" class="app-drawer" aria-labelledby="menuTitle">
+      <div class="drawer-heading">
+        <strong id="menuTitle">Меню</strong
+        ><button id="menuClose" class="menu-toggle" aria-label="Закрыть меню">
+          ×
+        </button>
+      </div>
+      <div class="site-menu">
+        <nav aria-label="Меню">
+          <a id="footerHome" href="./ru/">Главная</a>
+          <a class="explore-link" href="./ru/explore/">Изучить карту</a>
+          <a id="aboutOpen" class="footer-about" href="./ru/about/"
+            >О Karshvar</a
+          ><a class="sources-link" href="./ru/sources/">Источники</a>
+        </nav>
+      </div>
+      <section class="drawer-settings settings" aria-labelledby="settingsTitle">
+        <h2 id="settingsTitle">Настройки</h2>
+
+        <button id="theme" aria-label="Theme">
+          <span aria-hidden="true">◐</span><span data-text="theme"></span>
+        </button>
+        <button id="checkUpdates" hidden>
+          <span aria-hidden="true">↻</span><span>Проверить обновления</span>
+        </button>
+        <p
+          id="updateCheckStatus"
+          class="update-check-status"
+          role="status"
+          hidden
+        ></p>
+        <button id="resetOpen" disabled>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" />
+          </svg>
+          <span id="resetMenuLabel"></span>
+        </button>
+      </section>
+      <div class="drawer-footer">Karshvar</div>
+    </dialog>
+    <main aria-busy="true">
+      <!-- page-skeleton:start -->
+      <div id="pageSkeleton" class="page-skeleton" data-layout="explore">
+        <div aria-hidden="true" class="page-skeleton-shapes">
+          <div
+            class="page-skeleton-block page-skeleton-line page-skeleton-heading short"
+          ></div>
+          <div class="page-skeleton-block page-skeleton-line medium"></div>
+          <div class="page-skeleton-block page-skeleton-map"></div>
+        </div>
+        <p id="pageLoadingStatus" role="status"></p>
+        <a id="pageLoadingRetry" hidden></a>
+      </div>
+      <!-- page-skeleton:end -->
+      <section id="mapLoading" class="map-loading" aria-label="Загрузка карты…">
+        <div class="map-skeleton" aria-hidden="true"></div>
+        <p id="mapLoadingMessage" role="status" hidden></p>
+        <a hidden id="mapRetry" href="./ru/natural-history/">Повторить</a>
+      </section>
+      <section class="explore-heading">
+        <h1>Изучить карту</h1>
+        <p>
+          Выберите континент и познакомьтесь с его странами. Перетаскивайте
+          карту и приближайте небольшие страны.
+        </p>
+        <details id="explorePanel">
+          <summary>Континенты</summary>
+          <nav id="exploreContinents" aria-label="Изучить карту"></nav>
+          <label class="population-switch"
+            ><input id="showPopulation" type="checkbox" role="switch" />
+            <span>Население</span></label
+          ><label class="population-switch"
+            ><input
+              id="highlightCountries"
+              type="checkbox"
+              role="switch"
+            /><span>Подсветка</span></label
+          >
+        </details>
+      </section>
+      <p id="selectionStatus" role="status"></p>
+      <section id="welcomePage" class="welcome" hidden>
+        <div class="welcome-copy">
+          <h1 id="welcomeTitle">Как хорошо ты знаешь мир?</h1>
+          <p id="welcomeDescription">
+            Угадай страну на карте. Каждый ход — новый уголок мира.
+          </p>
+          <a id="startGame" class="primary" href="./ru/continents/"
+            >Начать игру</a
+          >
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <img
+            src="./art/earth.svg"
+            class="home-earth"
+            alt=""
+            hidden
+            loading="lazy"
+          />
+        </div>
+      </section>
+      <section class="intro" hidden>
+        <h1>Где хотите сыграть?</h1>
+        <p>Выберите континент и угадывайте выделенные страны в нём.</p>
+      </section>
+      <section id="continentSelection" aria-labelledby="chooseTitle" hidden>
+        <h2 id="chooseTitle" tabindex="-1">Выберите приключение</h2>
+        <div id="continentChoices" class="continent-choices"></div>
+      </section>
+      <div id="gameNavigation" class="game-navigation" hidden>
+        <strong id="activeContinent"></strong
+        ><button id="changeContinent" class="text-button"></button>
+      </div>
+      <section class="game" id="gameSection" hidden>
+        <div class="globe-panel">
+          <svg
+            id="globe"
+            role="img"
+            tabindex="0"
+            aria-label="Interactive globe"
+          ></svg>
+          <div class="map-controls">
+            <button id="zoomOut" aria-label="Zoom out">−</button
+            ><button id="center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="6" />
+                <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+              </svg></button
+            ><button id="zoomIn" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+        <div class="answer-panel">
+          <div class="progress">
+            <span id="position"></span><span id="score"></span>
+          </div>
+          <div class="progress-track"><div id="bar"></div></div>
+          <div class="question">
+            <h2 data-text="question"></h2>
+            <button
+              class="skip-outline"
+              id="skip"
+              data-text="skip"
+              disabled
+            ></button>
+          </div>
+          <form id="answerForm">
+            <div class="answer-entry">
+              <label
+                class="visually-hidden"
+                for="answer"
+                data-text="label"
+              ></label
+              ><input
+                id="answer"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="countrySuggestions"
+                autocomplete="off"
+                autocapitalize="words"
+                spellcheck="false"
+                required
+                disabled
+              />
+              <div
+                id="countrySuggestions"
+                class="country-suggestions"
+                role="listbox"
+                hidden
+              ></div>
+            </div>
+            <button
+              class="primary"
+              id="check"
+              type="submit"
+              data-text="check"
+              disabled
+            ></button>
+          </form>
+          <div id="feedback" role="status" aria-live="polite"></div>
+          <button class="primary" id="next" hidden data-text="next"></button>
+          <div class="session-note" hidden role="status"></div>
+        </div>
+      </section>
+      <article
+        id="aboutPage"
+        class="about-page"
+        aria-labelledby="aboutTitle"
+        hidden
+      >
+        <h1 id="aboutTitle">О Karshvar</h1>
+        <div id="aboutBody">
+          <h2>Что такое Karshvar?</h2>
+          <p>
+            Я создаю и развиваю Karshvar в свободное время, чтобы людям,
+            которые, как и я, любят читать об истории и доисторическом прошлом
+            человечества, а также о естественной истории Земли, было проще и
+            интереснее открывать для себя мир. Главной трудностью для меня
+            всегда было находить места на карте: от Анатолии до Кавказа, от
+            Иранского нагорья до Америки я терял представление о том, где
+            происходили важные события, и путался в названиях, которые менялись
+            от эпохи к эпохе.
+          </p>
+          <p>
+            Поэтому мне пришлось изучать географию, и эта игра/энциклопедия
+            стала плодом этого обучения. Это и повод проверить себя, и шаг к
+            увлекательному инструменту, который работает без интернета и всегда
+            под рукой, когда хочется попутешествовать по миру.
+          </p>
+          <p>
+            Моя конечная цель — создать наглядный инструмент для изучения
+            истории народов мира, естественной истории Земли и доисторического
+            прошлого человечества. Инструмент, который покажет мне, каким был
+            мир, даже когда самосознания на Земле ещё не существовало! Для меня
+            открывать прошлое интереснее, чем предсказывать будущее.
+          </p>
+          <h2>Почему именно Karshvar?</h2>
+          <p>
+            Я иранец из Хорасана, привязан к иранской культуре, культуре Ир, и
+            чувствую себя её частью. Название Karshvar происходит от древнего
+            слова иранских языков, связанного с современным персидским словом
+            «страна». В авестийской космологии мир состоял из семи областей.
+            Если хотите узнать больше, можно прочитать об этом в Википедии по
+            ссылке ниже.
+          </p>
+        </div>
+        <a
+          class="source-link"
+          id="aboutSource"
+          href="https://en.wikipedia.org/wiki/Karshvar"
+          target="_blank"
+          rel="noreferrer"
+        ></a>
+      </article>
+      <section id="resultsPage" class="content-page results-page" hidden>
+        <div class="results-badge" aria-hidden="true">✦</div>
+        <h1 id="resultsTitle">Ваши открытия</h1>
+        <p id="resultsContinent"></p>
+        <strong id="resultsScore" class="results-score"></strong>
+        <p id="resultsMessage"></p>
+        <button id="restartContinent" class="primary">
+          Сыграть на этом континенте снова</button
+        ><a id="chooseAgain" class="text-button" href="./ru/continents/"
+          >Выбрать другой континент</a
+        >
+      </section>
+    </main>
+    <footer class="simple-footer">Karshvar</footer>
+
+    <dialog
+      id="resetDialog"
+      aria-labelledby="resetTitle"
+      aria-describedby="resetBody"
+    >
+      <h2 id="resetTitle"></h2>
+      <p id="resetBody"></p>
+      <form method="dialog" class="dialog-actions">
+        <button id="resetCancel" value="cancel" autofocus></button
+        ><button id="resetConfirm" value="confirm" class="primary"></button>
+      </form>
+    </dialog>
+  </body>
+</html>

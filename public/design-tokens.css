@@ -1,0 +1,89 @@
+:root {
+  /* Shared interface tokens. Section palettes can override semantic colours. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --text-small: 12px;
+  --text-control: 14px;
+  --text-body: 16px;
+  --text-prose: 18px;
+  --text-heading: 22px;
+  --line-body: 1.7;
+  --line-control: 1.4;
+  --control-height: 44px;
+  --control-height-large: 48px;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  --radius-dialog: 16px;
+  --dialog-width: 460px;
+  --dialog-width-wide: 740px;
+  --dialog-padding: 24px;
+  --overlay: #07122499;
+  --shadow-panel: 0 4px 16px #0002;
+  --shadow-dialog: 0 16px 48px #0004;
+  --motion-fast: 160ms;
+  --motion-enter: 240ms;
+  --motion-exit: 180ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-ui: "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-persian: Vazir, Tahoma, sans-serif;
+}
+
+@font-face {
+  font-family: Vazir;
+  src: url("./fonts/Vazir-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Vazir;
+  src: url("./fonts/Vazir-Bold.woff2") format("woff2");
+  font-weight: 600 900;
+  font-display: swap;
+}
+:root {
+  font-family: var(--font-ui);
+}
+html[lang="fa"] {
+  font-family: var(--font-persian);
+}
+
+/* Shared modal motion and control rhythm across all sections. */
+@keyframes ui-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes ui-overlay-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog:not(.app-drawer)[open] {
+    animation: ui-dialog-enter var(--motion-enter) var(--ease-enter) both;
+  }
+  dialog:not(.app-drawer)[open]::backdrop {
+    animation: ui-overlay-enter var(--motion-enter) var(--ease-standard) both;
+  }
+  .population-switch input::before {
+    transition: transform var(--motion-fast) var(--ease-standard);
+  }
+}
+@media (max-width: 600px) {
+  :root {
+    --dialog-padding: 16px;
+  }
+}
