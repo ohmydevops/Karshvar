@@ -103,7 +103,18 @@ async function setupOffline() {
   const showCheckStatus = (index) => {
     if (!checkStatus) return;
     checkStatus.hidden = false;
-    checkStatus.textContent = messages[index];
+    checkStatus.textContent =
+      index === 6
+        ? {
+            fa: "نسخهٔ جدید برای دانلود موجود است.",
+            en: "A new version is available to download.",
+            ar: "إصدار جديد متاح للتنزيل.",
+            tr: "İndirilebilir yeni bir sürüm var.",
+            fr: "Une nouvelle version est disponible au téléchargement.",
+            ru: "Новая версия доступна для загрузки.",
+          }[document.documentElement.lang] ||
+          "A new version is available to download."
+        : messages[index];
   };
   if (
     typeof location !== "undefined" &&
@@ -300,6 +311,8 @@ async function setupOffline() {
     const downloads = createDownloadManager({
       registration,
       requestUpdate: updateRegistration,
+      onState: (phase) =>
+        showCheckStatus(phase === "ready" ? 5 : phase === "error" ? 4 : 2),
       onReady: () => {
         offeredWorker = undefined;
         offerUpdate();

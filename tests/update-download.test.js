@@ -17,9 +17,11 @@ function fixture({
   shared = new Map(),
   installing = null,
   fail = false,
+  noInstall = false,
 } = {}) {
   const nodes = [],
     session = new Map();
+  let now = 1000;
   let requests = 0,
     downloads = 0,
     polls;
@@ -80,7 +82,7 @@ function fixture({
     AbortController,
     MessageChannel,
     Intl,
-    Date,
+    Date: { now: () => now },
     document,
     caches,
     sessionStorage: {
@@ -110,7 +112,7 @@ function fixture({
     requestUpdate: async () => {
       downloads++;
       if (fail) throw Error("network");
-      registration.installing = {};
+      if (!noInstall) registration.installing = {};
     },
     onReady() {},
   };
@@ -118,6 +120,9 @@ function fixture({
   const manager = create();
   return {
     manager,
+    advance(ms) {
+      now += ms;
+    },
     create,
     nodes,
     registration,
@@ -204,4 +209,61 @@ test("automatic script discovery does not pretend an unapproved pack is download
   await f.manager.poll();
   assert.equal(f.nodes.length, 0);
   assert.equal(f.downloads, 0);
+});
+
+test("available is not ready, and a no-op browser update offers retry instead of spinning forever", async () => {
+  const f = fixture({ noInstall: true });
+  assert.equal(await f.manager.check(), 6);
+  await f.nodes.find((n) => n.textContent === "Download").onclick();
+  f.advance(6000);
+  await f.manager.poll();
+  assert(f.nodes.some((n) => n.textContent === "Retry" && !n.hidden));
+  assert(!f.nodes.some((n) => n.tag === "progress" && !n.hidden));
+});
+test("waiting worker wins over an earlier asynchronous downloading poll", async () => {
+  const f = fixture({
+    installing: {
+      postMessage(message, ports) {
+        f.registration.waiting = {};
+        f.registration.installing = null;
+        ports[0].postMessage({ version: nextVersion, phase: "downloading" });
+      },
+    },
+  });
+  await f.manager.poll();
+  assert(
+    f.nodes.some((n) => n.textContent === "Apply and reload" && !n.hidden),
+  );
+  assert(!f.nodes.some((n) => n.tag === "progress" && !n.hidden));
+});
+test("stalled progress becomes retryable and a completed worker can still recover", async () => {
+  const shared = new Map([
+    [
+      "https://example.test/.update-state",
+      JSON.stringify({
+        phase: "downloading",
+        version: nextVersion,
+        completed: 4,
+        total: 20,
+      }),
+    ],
+  ]);
+  const f = fixture({
+    shared,
+    installing: {
+      postMessage(message, ports) {
+        ports[0].postMessage({ version: nextVersion, phase: "downloading" });
+      },
+    },
+  });
+  await f.manager.poll();
+  f.advance(46000);
+  await f.manager.poll();
+  assert(f.nodes.some((n) => n.textContent === "Retry" && !n.hidden));
+  f.registration.waiting = {};
+  f.registration.installing = null;
+  await f.manager.poll();
+  assert(
+    f.nodes.some((n) => n.textContent === "Apply and reload" && !n.hidden),
+  );
 });

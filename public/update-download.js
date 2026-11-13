@@ -77,6 +77,7 @@ export function createDownloadManager({
   registration,
   requestUpdate,
   onReady,
+  onState = () => {},
 }) {
   const t = copy[document.documentElement.lang] || copy.en;
   const scope = registration.scope || new URL("./", import.meta.url).href;
@@ -85,6 +86,10 @@ export function createDownloadManager({
   const approvalURL = new URL(".update-approval", scope).href;
   const dismissKey = "karshvar:update-dismissed:" + scope;
   let latest, discovery, dialog, banner, label, progress, action, pollTimer;
+  let polling,
+    starting = false,
+    lastProgressAt = Date.now(),
+    lastProgress;
   let displayedPhase,
     ownDownload = false;
   const make = (tag, text) => {
@@ -133,8 +138,20 @@ export function createDownloadManager({
         ? onReady
         : () => check(true).catch(() => show("error"));
     displayedPhase = phase;
+    onState(phase);
   }
-  async function poll() {
+  function stopWatch() {
+    window.clearInterval(pollTimer);
+    pollTimer = undefined;
+  }
+  function poll() {
+    if (!polling)
+      polling = runPoll().finally(() => {
+        polling = undefined;
+      });
+    return polling;
+  }
+  async function runPoll() {
     try {
       if (registration.waiting) {
         show("ready");
@@ -145,13 +162,42 @@ export function createDownloadManager({
       const state = await (
         await (await caches.open(cacheName)).match(stateURL)
       )?.json();
+      const progressKey = JSON.stringify([
+        state?.version,
+        state?.phase,
+        state?.completed,
+      ]);
+      if (progressKey !== lastProgress) {
+        lastProgress = progressKey;
+        lastProgressAt = Date.now();
+      }
+      if (registration.waiting) {
+        show("ready");
+        stopWatch();
+        return;
+      }
       if (registration.installing) {
         // Automatic script checks can be rejected by the consent gate. Only
         // display progress once that worker actually starts an approved pack.
         const installing = await workerStatus(registration.installing);
-        if (installing && !["downloading", "ready"].includes(installing.phase))
+        if (registration.waiting) {
+          show("ready");
+          stopWatch();
+          return;
+        }
+        if (
+          installing &&
+          !["downloading", "ready"].includes(installing.phase)
+        ) {
+          if (ownDownload && !starting && Date.now() - lastProgressAt > 5000)
+            show("error");
           return false;
+        }
         if (!installing && state?.phase !== "downloading") return false;
+        if (Date.now() - lastProgressAt > 45000) {
+          show("error");
+          return false;
+        }
         show("downloading", state?.completed, state?.total);
         return true;
       } else if (
@@ -164,11 +210,20 @@ export function createDownloadManager({
       } else if (displayedPhase === "downloading" && !registration.installing) {
         // Installation may finish while every old page is navigating away.
         const active = await workerStatus(registration.active);
+        if (registration.waiting) {
+          show("ready");
+          stopWatch();
+          return;
+        }
+        if (registration.installing || starting) return;
         if (active?.version === state?.version && state?.phase === "active") {
           show("ready");
           action.onclick = () => location.reload();
           window.clearInterval(pollTimer);
           pollTimer = undefined;
+        } else if (Date.now() - lastProgressAt > 5000) {
+          show("error");
+          stopWatch();
         }
       }
     } catch {
@@ -198,13 +253,18 @@ export function createDownloadManager({
       ),
     );
     ownDownload = true;
+    starting = true;
+    lastProgressAt = Date.now();
+    lastProgress = undefined;
     dialog?.close();
     show("downloading");
     watch();
     try {
       await requestUpdate();
     } catch {
-      if (!registration.installing) show("error");
+      if (!registration.installing && !registration.waiting) show("error");
+    } finally {
+      starting = false;
     }
     await poll();
   }
@@ -297,7 +357,7 @@ export function createDownloadManager({
         if (local.version === latest.build) return 1;
       }
       offer(manual);
-      return 5;
+      return 6;
     } finally {
       window.clearTimeout(timer);
     }
