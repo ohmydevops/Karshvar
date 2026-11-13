@@ -106,6 +106,7 @@ async function setup(
     timeoutSource +
       source
         .replace(/^import .*withUpdateTimeout.*\n/, "")
+        .replace(/^import .*createDownloadManager.*\n/m, "")
         .replace("export const offlineReady", "const offlineReady")
         .replaceAll(
           "import.meta.url",
@@ -113,6 +114,15 @@ async function setup(
         ),
     {
       document,
+      // Activation UI tests isolate discovery; its consent/download flow has
+      // separate tests with real browser and CacheStorage fixtures.
+      createDownloadManager: ({ requestUpdate }) => ({
+        check: async () => {
+          await requestUpdate();
+          return 1;
+        },
+        poll() {},
+      }),
       navigator: { serviceWorker },
       window: {
         isSecureContext: true,

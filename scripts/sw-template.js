@@ -1,85 +1,149 @@
-const PREFIX = "karshvar-" + encodeURIComponent(self.registration.scope) + "-";
-const CACHE = PREFIX + VERSION;
-self.addEventListener("install", (event) =>
-  event.waitUntil(
-    (async () => {
-      const cache = await caches.open(CACHE);
-      try {
-        // Overlap network latency while bounding downloads and cache writes.
-        let next = 0;
-        let failed = false;
-        const download = async () => {
-          while (!failed && next < ASSETS.length) {
-            const asset = ASSETS[next++];
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 20000);
-            try {
-              const integrity = INTEGRITY[asset];
-              if (!integrity)
-                throw new Error("Missing offline integrity: " + asset);
-              const url = new URL(asset, self.registration.scope);
-              const requestUrl = new URL(url);
-              if (url.pathname.endsWith(".css")) requestUrl.search = "?direct";
-              const response = await fetch(requestUrl, {
-                cache: "reload",
-                signal: controller.signal,
-                // Fetch rejects stale or modified bytes before cache.put can
-                // write them, including successful (200) responses from a CDN.
-                integrity,
-              });
-              if (!response.ok)
-                throw new Error("Offline download failed: " + asset);
-              await cache.put(url, response);
-            } catch (error) {
-              failed = true;
-              throw error;
-            } finally {
-              clearTimeout(timer);
-            }
-          }
-        };
-        // Settle every in-flight write before deleting an incomplete cache.
-        const results = await Promise.allSettled(
-          Array.from({ length: Math.min(6, ASSETS.length) }, download),
+import { PrecacheController } from "workbox-precaching/PrecacheController.js";
+
+const scope = self.registration.scope;
+const legacyPrefix = "karshvar-" + encodeURIComponent(scope) + "-";
+const stateName = "karshvar-update-state-" + encodeURIComponent(scope);
+const stateURL = new URL(".update-state", scope).href;
+const approvalURL = new URL(".update-approval", scope).href;
+const activeURL = new URL(".update-active", scope).href;
+let status = {
+  version: VERSION,
+  phase: "idle",
+  completed: 0,
+  total: ASSETS.length,
+};
+async function publish(phase) {
+  status.phase = phase;
+  const state = await caches.open(stateName);
+  await state.put(stateURL, new Response(JSON.stringify(status)));
+}
+const timers = new Map();
+const precache = new PrecacheController({
+  cacheName: "karshvar-workbox-" + encodeURIComponent(scope),
+  fallbackToNetwork: false,
+  plugins: [
+    {
+      requestWillFetch: async ({ request }) => {
+        const controller = new AbortController();
+        timers.set(
+          request.url,
+          setTimeout(() => controller.abort(), 20000),
         );
-        const failure = results.find((result) => result.status === "rejected");
-        if (failure) throw failure.reason;
-      } catch (error) {
-        await caches.delete(CACHE);
-        throw error;
-      }
-      // Wait for user approval or until all existing tabs have closed.
-    })(),
-  ),
+        return new Request(request, { signal: controller.signal });
+      },
+      fetchDidSucceed: async ({ request, response }) => {
+        clearTimeout(timers.get(request.url));
+        timers.delete(request.url);
+        return response;
+      },
+      fetchDidFail: async ({ request }) => {
+        clearTimeout(timers.get(request.url));
+        timers.delete(request.url);
+      },
+    },
+  ],
+});
+precache.addToCacheList(
+  ASSETS.map((url) => {
+    if (!INTEGRITY[url]) throw new Error("Missing offline integrity: " + url);
+    return { url, revision: INTEGRITY[url], integrity: INTEGRITY[url] };
+  }),
 );
-self.addEventListener("activate", (event) =>
+self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      // Take control before old-cache cleanup, so slow storage cannot leave the
-      // approved update dialog waiting for controllerchange.
-      await self.clients.claim();
-      for (const key of await caches.keys())
-        if (key.startsWith(PREFIX) && key !== CACHE) await caches.delete(key);
+      const state = await caches.open(stateName);
+      const approval = await state.match(approvalURL);
+      // Browsers also discover workers autonomously. Only download approved packs.
+      if (
+        self.registration.active &&
+        (await state.match(activeURL)) &&
+        (await approval?.json())?.version !== VERSION
+      )
+        throw new Error("Download approval required");
+      await publish("downloading");
+      let next = 0;
+      let failed = false;
+      const download = async () => {
+        while (!failed && next < ASSETS.length) {
+          const asset = ASSETS[next++];
+          const url = new URL(asset, scope).href;
+          try {
+            // Workbox reuses unchanged revisions and completed files on retries.
+            await Promise.all(
+              precache.strategy.handleAll({
+                event,
+                request: new Request(url, {
+                  integrity: INTEGRITY[asset],
+                  cache: "reload",
+                  credentials: "same-origin",
+                }),
+                params: {
+                  cacheKey: precache.getCacheKeyForURL(url),
+                  integrity: INTEGRITY[asset],
+                },
+              }),
+            );
+            status.completed++;
+            if (status.completed % 10 === 0) await publish("downloading");
+          } catch (error) {
+            failed = true;
+            throw error;
+          }
+        }
+      };
+      const results = await Promise.allSettled(
+        Array.from({ length: Math.min(6, ASSETS.length) }, download),
+      );
+      if (results.some((result) => result.status === "rejected")) {
+        await publish("error");
+        throw results.find((result) => result.status === "rejected").reason;
+      }
+      await publish("ready");
     })(),
-  ),
-);
+  );
+});
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      await precache.activate(event);
+      await self.clients.claim();
+      await (
+        await caches.open(stateName)
+      ).put(activeURL, new Response(VERSION));
+      await publish("active");
+      // Migrate legacy caches only after the replacement is completely installed.
+      for (const key of await caches.keys())
+        if (key.startsWith(legacyPrefix)) await caches.delete(key);
+    })(),
+  );
+});
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (
     event.request.method !== "GET" ||
     url.origin !== self.location.origin ||
-    !url.href.startsWith(self.registration.scope)
+    !url.href.startsWith(scope)
   )
     return;
-  // During local development, let Vite serve current assets rather than mixing
-  // new styles with JavaScript from a previously installed offline version.
-  if (["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) return;
-  // Keep the root entry point pointed at the English page, including offline.
-  const scope = new URL(self.registration.scope);
+  const relative = url.pathname.slice(new URL(scope).pathname.length);
+  // The project's Vite preview must always show the current working files.
+  if (
+    url.port === "5174" &&
+    ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
+  )
+    return;
+  if (
+    relative === "update-manifest.json" ||
+    /(?:^|\/)blog(?:\/|$)|^social\//i.test(relative) ||
+    /(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
+      relative,
+    )
+  )
+    return;
   if (
     event.request.mode === "navigate" &&
-    (url.pathname === scope.pathname ||
-      url.pathname === new URL("index.html", scope).pathname)
+    ["", "index.html"].includes(relative)
   ) {
     const destination = new URL("en/", scope);
     destination.search = url.search;
@@ -87,41 +151,37 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(Response.redirect(destination.href, 302));
     return;
   }
-  // Blog pages/images and crawler metadata always use the browser network path.
-  const relativePath = url.pathname.slice(
-    new URL(self.registration.scope).pathname.length,
-  );
-  if (/(?:^|\/)blog(?:\/|$)|^social\//i.test(relativePath)) return;
-  if (
-    /(?:^|\/)(?:sitemap[^/]*\.xml|robots\.txt|google[^/]*\.html|BingSiteAuth\.xml)$|\.map$/i.test(
-      relativePath,
-    )
-  )
-    return;
   event.respondWith(
     (async () => {
-      const cache = await caches.open(CACHE);
       const key = new URL(url);
       if (event.request.mode === "navigate") {
         key.search = "";
         if (key.pathname.endsWith("/")) key.pathname += "index.html";
       }
-      // Queries on assets keep their identity; navigation parameters only select game state.
-      const cached = await cache.match(key.href);
+      const cached = await precache.matchPrecache(key.href);
       if (cached) return cached;
+      // Never combine new route HTML with JS belonging to an older app release.
+      if (
+        event.request.mode === "navigate" &&
+        /^(en|fa|ar|tr|fr|ru)\//.test(relative)
+      ) {
+        const home = new URL(relative.split("/")[0] + "/", scope);
+        home.searchParams.set("update", "1");
+        return Response.redirect(home.href, 302);
+      }
       try {
         return await fetch(event.request);
       } catch {
         return new Response("This page is not available offline.", {
           status: 503,
-          headers: { "Content-Type": "text/plain; charset=utf-8" },
         });
       }
     })(),
   );
 });
-
 self.addEventListener("message", (event) => {
   if (event.data?.type === "ACTIVATE_UPDATE")
     event.waitUntil(self.skipWaiting());
+  if (event.data?.type === "UPDATE_STATUS")
+    event.ports?.[0]?.postMessage(status);
 });

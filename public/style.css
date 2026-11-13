@@ -1,3 +1,4 @@
+@import url("./update.css");
 @import url("./design-tokens.css");
 
 :root {
@@ -2582,39 +2583,6 @@ html:is([data-page="about"], [data-page="sources"]) main {
   text-decoration: none;
 }
 
-.update-dialog {
-  max-width: min(440px, calc(100vw - 40px));
-}
-.update-dialog[data-state="updating"] .primary::before {
-  content: "";
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-inline-end: 8px;
-  vertical-align: middle;
-  border: 2px solid currentColor;
-  border-inline-end-color: transparent;
-  border-radius: 50%;
-  animation: satellite-spin 0.8s linear infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .update-dialog[data-state="updating"] .primary::before {
-    animation: none;
-  }
-}
-.update-dialog p {
-  line-height: 1.6;
-}
-.update-dialog .dialog-actions {
-  flex-wrap: wrap;
-}
-.update-dialog .dialog-actions button {
-  flex: 1 0 max-content;
-  white-space: nowrap;
-  font-size: 13px;
-  padding-inline: 12px;
-}
-
 .answer-panel.has-feedback .question[hidden] {
   /* Reserve the question's space while showing feedback in the same area. */
   display: block !important;
@@ -4444,7 +4412,7 @@ html[data-page="home"] .welcome-art {
 .home-introduction {
   position: relative;
   z-index: 2;
-  max-width: 720px;
+  max-width: 100%;
   margin: 0 auto;
   font-size: 18px;
   line-height: 2;

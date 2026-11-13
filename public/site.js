@@ -208,7 +208,12 @@ if (page === "home") {
     window.requestIdleCallback(start, { timeout: 1500 });
   else setTimeout(start, 0);
 }
-// Public pages only initialize offline downloads on an explicit update request.
+// Existing offline users discover releases on every page, including the home.
+// New visitors do not download the offline pack just to read a public page.
+if (navigator.serviceWorker?.controller)
+  import("./offline.js").catch((error) =>
+    console.warn("Update discovery unavailable", error),
+  );
 const updateButton = $("checkUpdates");
 if (updateButton) {
   updateButton.hidden = false;

@@ -611,3 +611,7 @@ function toggleSound() {
   button.textContent = muted ? button.dataset.off : button.dataset.on;
 }
 document.querySelector("#sound-toggle").addEventListener("click", toggleSound);
+if (navigator.serviceWorker?.controller)
+  import("./offline.js").catch((error) =>
+    console.warn("Update discovery unavailable", error),
+  );

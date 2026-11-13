@@ -30,6 +30,7 @@ function worker({
   missingHash,
   sharedStores,
   version,
+  installedWorker = false,
 } = {}) {
   const events = {},
     stores = sharedStores || new Map();
@@ -40,17 +41,24 @@ function worker({
     peak = 0;
   const timers = new Map();
   let timerId = 0;
+  const key = (input) => input.url || String(input);
   const caches = {
     async open(name) {
       if (!stores.has(name)) stores.set(name, new Map());
       const store = stores.get(name);
       return {
         async put(url, response) {
-          writes.push(String(url));
-          store.set(String(url), response.clone());
+          writes.push(key(url));
+          store.set(key(url), response.clone());
         },
         async match(url) {
-          return store.get(String(url))?.clone();
+          return store.get(key(url))?.clone();
+        },
+        async keys() {
+          return [...store.keys()].map((url) => new Request(url));
+        },
+        async delete(url) {
+          return store.delete(key(url));
         },
       };
     },
@@ -60,8 +68,22 @@ function worker({
     async delete(name) {
       return stores.delete(name);
     },
+    async match(url, options) {
+      return (await this.open(options.cacheName)).match(url);
+    },
   };
-  const expected = { ...fixtureIntegrity };
+  const releaseBodies =
+    version === "previous"
+      ? new Map(
+          [...bodies].map(([asset]) => [
+            asset,
+            Buffer.from("release 1: " + asset),
+          ]),
+        )
+      : bodies;
+  const expected = Object.fromEntries(
+    [...releaseBodies].map(([asset, bytes]) => [asset, sri(bytes)]),
+  );
   if (missingHash) delete expected[missingHash];
   let workerSource = source.replace(
     /const INTEGRITY=\{.*?\};/s,
@@ -74,9 +96,16 @@ function worker({
     );
   vm.runInNewContext(workerSource, {
     URL,
+    Request,
     Response,
+    FetchEvent: class {},
+    location: new URL("https://example.test/game/sw.js"),
     AbortController,
-    setTimeout(handler) {
+    setTimeout(handler, milliseconds) {
+      if (milliseconds === 0) {
+        queueMicrotask(handler);
+        return 0;
+      }
       const id = ++timerId;
       timers.set(id, handler);
       return id;
@@ -86,7 +115,11 @@ function worker({
     },
     caches,
     self: {
-      registration: { scope: "https://example.test/game/" },
+      registration: {
+        scope: "https://example.test/game/",
+        active: installedWorker,
+      },
+      caches,
       location: { origin: "https://example.test" },
       clients: {
         async claim() {
@@ -98,6 +131,8 @@ function worker({
       },
     },
     fetch: async (url, options = {}) => {
+      if (url instanceof Request)
+        options = { integrity: url.integrity, signal: url.signal, ...options };
       active++;
       peak = Math.max(peak, active);
       try {
@@ -114,7 +149,7 @@ function worker({
         }
         if (delayed) await new Promise((resolve) => setImmediate(resolve));
         if (!online) throw Error("offline");
-        if (fail && String(url).includes("names.json"))
+        if (fail && key(url).includes("names.json"))
           return new Response("", { status: 500 });
         const asset = new URL(url.url || String(url)).pathname.slice(
           "/game/".length,
@@ -122,7 +157,7 @@ function worker({
         const body =
           asset === stale
             ? Buffer.from("old CDN release: " + asset)
-            : bodies.get(asset) || Buffer.from("missing asset");
+            : releaseBodies.get(asset) || Buffer.from("missing asset");
         // Exercise native Fetch integrity validation, without an external server.
         // A 200 response containing old bytes must reject before cache.put.
         const verified = await fetch(
@@ -134,7 +169,7 @@ function worker({
         );
         return new Response(verified.body, {
           headers: {
-            "Content-Type": String(url).includes(".css")
+            "Content-Type": key(url).includes(".css")
               ? "text/css"
               : "text/plain",
           },
@@ -161,13 +196,15 @@ function worker({
       online = false;
     },
     async lifecycle(name) {
-      let task;
+      const tasks = [];
       events[name]({
+        type: name,
         waitUntil(p) {
-          task = p;
+          tasks.push(p);
+          p.catch(() => {});
         },
       });
-      await task;
+      for (let i = 0; i < tasks.length; i++) await tasks[i];
     },
     async request(path, mode = "navigate") {
       let task;
@@ -218,23 +255,27 @@ for (const stale of [
         sharedStores: previous.stores,
       });
       await assert.rejects(update.lifecycle("install"));
-      assert(!update.writes.includes("https://example.test/game/" + stale));
+      assert(
+        !update.writes.some(
+          (url) => new URL(url).pathname === "/game/" + stale,
+        ),
+      );
       assert.deepEqual([...previous.stores.keys()], oldKeys);
       assert.equal(update.claimed, false);
       previous.offline();
       assert.equal((await previous.request("fa/")).status, 200);
       assert.equal(
         await (await previous.request("app.js", "cors")).text(),
-        bodies.get("app.js").toString(),
+        "release 1: app.js",
       );
     },
   );
 
 test("missing file integrity fails installation instead of accepting unverified data", async () => {
-  const w = worker({ missingHash: "app.js" });
-  await assert.rejects(w.lifecycle("install"), /Missing offline integrity/);
-  assert.equal(w.stores.size, 0);
-  assert(!w.writes.includes("https://example.test/game/app.js"));
+  assert.throws(
+    () => worker({ missingHash: "app.js" }),
+    /Missing offline integrity/,
+  );
 });
 
 test("offline downloads overlap with a maximum of six requests", async () => {
@@ -244,14 +285,67 @@ test("offline downloads overlap with a maximum of six requests", async () => {
   assert.equal(w.active, 0);
 });
 
-test("failed parallel installation settles requests before cleaning its cache", async () => {
+test("browser-discovered updates require consent after Workbox migration", async () => {
+  const current = worker();
+  await current.lifecycle("install");
+  await current.lifecycle("activate");
+  const next = worker({
+    version: "next",
+    installedWorker: true,
+    sharedStores: current.stores,
+  });
+  await assert.rejects(next.lifecycle("install"), /Download approval required/);
+  assert.equal(next.writes.length, 0);
+  const state = await next.caches.open(
+    "karshvar-update-state-" + encodeURIComponent("https://example.test/game/"),
+  );
+  await state.put(
+    "https://example.test/game/.update-approval",
+    new Response(JSON.stringify({ version: "next" })),
+  );
+  await next.lifecycle("install");
+  assert.equal(
+    next.writes.filter((url) => url.includes("__WB_REVISION__")).length,
+    0,
+    "unchanged files require no download",
+  );
+});
+
+test("legacy installed users can migrate using their existing update button", async () => {
+  const w = worker({ installedWorker: true });
+  const old =
+    "karshvar-" + encodeURIComponent("https://example.test/game/") + "-legacy";
+  await w.caches.open(old);
+  await w.lifecycle("install");
+  assert(w.stores.has(old));
+  await w.lifecycle("activate");
+  assert(!w.stores.has(old));
+});
+
+test("new uncached app routes return to update discovery rather than mixing releases", async () => {
+  const w = worker();
+  await w.lifecycle("install");
+  const response = await w.request("fa/future-feature/");
+  assert.equal(response.status, 302);
+  assert.equal(
+    response.headers.get("Location"),
+    "https://example.test/game/fa/?update=1",
+  );
+  assert.equal(
+    await w.request("update-manifest.json?check=1", "cors"),
+    undefined,
+  );
+});
+
+test("failed installation settles requests and retains verified files for retry", async () => {
   const w = worker({ delayed: true, fail: true });
   await assert.rejects(w.lifecycle("install"));
   assert.equal(w.active, 0);
-  assert.equal(w.stores.size, 0);
+  assert(w.writes.some((url) => url.includes("__WB_REVISION__")));
+  assert.equal(w.claimed, false);
 });
 
-test("stalled offline downloads abort and discard only the incomplete update", async () => {
+test("stalled downloads abort without touching the existing release", async () => {
   const w = worker({ stalled: true });
   w.stores.set("existing-offline-version", new Map());
   const installing = w.lifecycle("install");
@@ -261,7 +355,6 @@ test("stalled offline downloads abort and discard only the incomplete update", a
   w.expireTimers();
   await rejected;
   assert.equal(w.active, 0);
-  assert.equal(w.stores.size, 1);
   assert(w.stores.has("existing-offline-version"));
 });
 test("installed worker serves all game routes and assets without network", async () => {
@@ -295,10 +388,17 @@ test("installed worker serves all game routes and assets without network", async
   );
   assert.equal((await w.request("missing/")).status, 503);
 });
-test("failed install discards incomplete cache", async () => {
+test("retry reuses completed files and finishes the pack", async () => {
   const w = worker({ fail: true });
   await assert.rejects(w.lifecycle("install"));
-  assert.equal(w.stores.size, 0);
+  const completed = w.writes.filter((url) => url.includes("__WB_REVISION__"));
+  const retry = worker({ sharedStores: w.stores });
+  await retry.lifecycle("install");
+  assert(completed.length > 0);
+  assert(completed.every((url) => !retry.writes.includes(url)));
+  await retry.lifecycle("activate");
+  retry.offline();
+  assert.equal((await retry.request("fa/")).status, 200);
 });
 
 test("root navigation redirects to English online and offline while localized pages stay available", async () => {
@@ -334,7 +434,7 @@ test("activation removes only older caches belonging to this scope", async () =>
   await w.lifecycle("install");
   await w.lifecycle("activate");
   assert.ok(w.stores.has("unrelated-cache"));
-  assert.equal(w.stores.size, 2);
+  assert.equal(w.stores.size, 3);
 });
 
 test("offline asset list excludes deployment-only dotfiles", () => {

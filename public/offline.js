@@ -1,4 +1,5 @@
 import { withUpdateTimeout } from "./update-loading.js";
+import { createDownloadManager } from "./update-download.js";
 
 const checkCopy = {
   en: [
@@ -296,13 +297,21 @@ async function setupOffline() {
       document.body.append(dialog);
       dialog.showModal();
     };
+    const downloads = createDownloadManager({
+      registration,
+      requestUpdate: updateRegistration,
+      onReady: () => {
+        offeredWorker = undefined;
+        offerUpdate();
+      },
+    });
     const watch = () => {
       const worker = registration.installing;
       if (worker && manualCheck) showCheckStatus(2);
       worker?.addEventListener("statechange", () => {
         if (worker.state === "installed") {
           if (manualCheck) showCheckStatus(5);
-          offerUpdate();
+          downloads.poll();
         } else if (worker.state === "redundant" && manualCheck)
           showCheckStatus(4);
       });
@@ -327,12 +336,12 @@ async function setupOffline() {
         checkButton.setAttribute?.("aria-busy", "true");
         showCheckStatus(0);
         try {
-          await updateRegistration();
+          const result = await downloads.check(true);
           if (registration.waiting) {
             offeredWorker = undefined;
             showCheckStatus(5);
             offerUpdate();
-          } else showCheckStatus(registration.installing ? 2 : 1);
+          } else showCheckStatus(result);
         } catch {
           showCheckStatus(
             registration.waiting ? 5 : registration.installing ? 2 : 4,
@@ -355,7 +364,7 @@ async function setupOffline() {
       checking = true;
       lastCheck = Date.now();
       try {
-        await updateRegistration();
+        await downloads.check();
         offerUpdate();
       } catch {
         // A failed connection must not interrupt offline play or delay a retry.
