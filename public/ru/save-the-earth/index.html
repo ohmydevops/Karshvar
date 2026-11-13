@@ -101,63 +101,68 @@
           aria-describedby="controls"
         ></canvas>
         <div id="round-overlay" class="round-overlay">
-          <p
-            id="round-status"
-            data-paused="Пауза. Продолжи для управления мышью."
-            data-lock="Нажми «Продолжить» для управления мышью."
-            data-desktop="Только для компьютера с клавиатурой и мышью."
-            data-loading="Загрузка 3D-сцены…"
-            data-error="Не удалось загрузить сцену. Обнови страницу."
-            data-lost="В этот раз мы проиграли, но в следующий раз постараемся лучше!"
-            data-ended="Раунд завершён."
-            role="status"
-          >
-            Перехватывай метеоры, пока они не достигли Земли.
-          </p>
-          <div id="launch-options">
-            <fieldset id="launch-location">
-              <legend>1 · Выбери место старта</legend>
-              <label
-                ><input
-                  type="radio"
-                  name="launch-location"
-                  value="space"
-                />Космос</label
-              ><label
-                ><input
-                  type="radio"
-                  name="launch-location"
-                  value="moon"
-                />Орбита Луны</label
-              >
-            </fieldset>
-            <fieldset id="launch-difficulty" hidden disabled>
-              <legend>2 · Выбери сложность</legend>
-              <label
-                ><input
-                  type="radio"
-                  name="launch-difficulty"
-                  value="normal"
-                />Обычная</label
-              ><label
-                ><input
-                  type="radio"
-                  name="launch-difficulty"
-                  value="hard"
-                />Сложная</label
-              >
-            </fieldset>
-          </div>
-          <div class="difficulty-buttons">
-            <button
-              id="start"
-              disabled
-              type="button"
-              data-resume="Продолжить"
-              data-normal="Начать игру"
+          <div class="launch-card">
+            <p
+              id="round-status"
+              data-paused="Пауза. Продолжи для управления мышью."
+              data-lock="Нажми «Продолжить» для управления мышью."
+              data-desktop="Только для компьютера с клавиатурой и мышью."
+              data-loading="Подготовка к полёту…"
+              data-error="Не удалось загрузить сцену. Обнови страницу."
+              data-lost="В этот раз мы проиграли, но в следующий раз постараемся лучше!"
+              data-ended="Раунд завершён."
+              role="status"
             >
-              Начать игру
-            </button>
+              Перехватывай метеоры, пока они не достигли Земли.
+            </p>
+            <p class="scene-loading-hint">
+              Выберите место старта и сложность, пока игра загружается.
+            </p>
+            <div id="launch-options">
+              <fieldset id="launch-location">
+                <legend>1 · Выбери место старта</legend>
+                <label
+                  ><input
+                    type="radio"
+                    name="launch-location"
+                    value="space"
+                  />Космос</label
+                ><label
+                  ><input
+                    type="radio"
+                    name="launch-location"
+                    value="moon"
+                  />Орбита Луны</label
+                >
+              </fieldset>
+              <fieldset id="launch-difficulty" hidden disabled>
+                <legend>2 · Выбери сложность</legend>
+                <label
+                  ><input
+                    type="radio"
+                    name="launch-difficulty"
+                    value="normal"
+                  />Обычная</label
+                ><label
+                  ><input
+                    type="radio"
+                    name="launch-difficulty"
+                    value="hard"
+                  />Сложная</label
+                >
+              </fieldset>
+            </div>
+            <div class="difficulty-buttons">
+              <button
+                id="start"
+                disabled
+                type="button"
+                data-resume="Продолжить"
+                data-normal="Начать игру"
+              >
+                Начать игру
+              </button>
+            </div>
           </div>
         </div>
       </div>

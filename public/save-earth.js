@@ -710,6 +710,7 @@ async function prepare() {
   }
   if (preparing) return;
   preparing = true;
+  document.body.classList.add("scene-loading");
   status.textContent = status.dataset.loading;
   try {
     const { createSpaceRenderer } = await import("./save-earth-scene.js");
@@ -731,6 +732,7 @@ async function prepare() {
     console.error(error);
     status.textContent = status.dataset.error;
   } finally {
+    document.body.classList.remove("scene-loading");
     preparing = false;
   }
 }

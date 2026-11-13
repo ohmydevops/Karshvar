@@ -773,22 +773,159 @@ h1 {
   font-size: 15px;
   cursor: pointer;
 }
+
+.round-overlay {
+  isolation: isolate;
+  overflow: auto;
+  padding: 100px 24px 80px;
+  box-sizing: border-box;
+  background: #07111f;
+}
+.round-overlay::before,
+.round-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.round-overlay::before {
+  background: url("./art/lunar-vista.webp") center / cover no-repeat;
+  filter: blur(5px) brightness(1.3);
+}
+.round-overlay::after {
+  background:
+    linear-gradient(120deg, #07111f70, #07111f30 45%, #07111f99),
+    radial-gradient(ellipse at center, transparent 20%, #07111f99);
+}
+.launch-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  width: min(460px, calc(100vw - 100px));
+  padding: 28px;
+  border: 1px solid #7db2d04d;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #102438f5, #071321f5);
+  box-shadow:
+    0 24px 90px #0008,
+    inset 0 1px #c1e7ff12;
+  text-align: start;
+}
+.round-overlay .launch-card p {
+  margin: 0;
+}
+#round-status {
+  font-size: 20px;
+  line-height: 1.55;
+  font-weight: 650;
+  color: #f4faff;
+}
+.scene-loading #round-status::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #93ddff40;
+  border-top-color: #93ddff;
+  border-radius: 50%;
+  margin-inline-end: 12px;
+  animation: scene-spinner 1s linear infinite;
+}
+@keyframes scene-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.scene-loading-hint {
+  display: none;
+  color: #c7d8e7;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.scene-loading .scene-loading-hint {
+  display: block;
+}
 .game-download-status {
-  position: fixed;
-  top: 4.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 60vw;
-  z-index: 12;
-  padding: 0.4rem 0.7rem;
-  border-radius: 0.5rem;
-  background: #091523e6;
-  color: #c3d7e4;
-  font-size: 0.75rem;
+  order: -1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #82cef557;
+  border-radius: 14px;
+  background: #18394c;
+  color: #f0faff;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.game-download-status strong {
+  font-weight: 600;
+}
+.game-download-status span {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #a8e6ff;
+}
+.game-download-status progress {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 9px;
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  accent-color: #a1e3ff;
+}
+.game-download-status progress::-webkit-progress-bar {
+  background: #071727;
+}
+.game-download-status progress::-webkit-progress-value {
+  background: linear-gradient(90deg, #65baff, #a7eee6);
+  border-radius: 20px;
+}
+.game-download-status[data-state="ready"] {
+  background: #11352e;
+  border-color: #76dcb155;
+  color: #bbf5da;
+}
+.game-download-status[data-state="error"] {
+  background: #472b25;
+  border-color: #efad8255;
 }
 .game-download-status button {
-  padding: 0.2rem 0.4rem;
+  padding: 8px 14px;
   font: inherit;
+}
+.launch-card #launch-options {
+  width: 100%;
+}
+.launch-card .difficulty-buttons {
+  margin: 0;
+}
+.launch-card #start {
+  width: 100%;
+  min-height: 48px;
+}
+body:not(.playing) .ammo-hud {
+  opacity: 0.35;
+}
+@media (max-height: 760px) {
+  .round-overlay {
+    align-content: start;
+    padding-top: 96px;
+  }
+  .launch-card {
+    padding: 20px;
+    gap: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-loading #round-status::before {
+    animation: none;
+  }
 }
 #launch-options {
   display: grid;

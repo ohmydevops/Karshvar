@@ -101,63 +101,68 @@
           aria-describedby="controls"
         ></canvas>
         <div id="round-overlay" class="round-overlay">
-          <p
-            id="round-status"
-            data-paused="En pause. Reprends pour contrôler la souris."
-            data-lock="Clique sur Reprendre pour activer la souris."
-            data-desktop="Sur ordinateur uniquement, avec clavier et souris."
-            data-loading="Chargement de la scène 3D…"
-            data-error="Échec du chargement. Recharge la page."
-            data-lost="Nous avons perdu cette fois, mais nous ferons mieux la prochaine fois !"
-            data-ended="Partie terminée."
-            role="status"
-          >
-            Intercepte les météores avant qu’ils ne frappent la Terre.
-          </p>
-          <div id="launch-options">
-            <fieldset id="launch-location">
-              <legend>1 · Choisir le point de départ</legend>
-              <label
-                ><input
-                  type="radio"
-                  name="launch-location"
-                  value="space"
-                />Espace</label
-              ><label
-                ><input
-                  type="radio"
-                  name="launch-location"
-                  value="moon"
-                />Orbite lunaire</label
-              >
-            </fieldset>
-            <fieldset id="launch-difficulty" hidden disabled>
-              <legend>2 · Choisir la difficulté</legend>
-              <label
-                ><input
-                  type="radio"
-                  name="launch-difficulty"
-                  value="normal"
-                />Normal</label
-              ><label
-                ><input
-                  type="radio"
-                  name="launch-difficulty"
-                  value="hard"
-                />Difficile</label
-              >
-            </fieldset>
-          </div>
-          <div class="difficulty-buttons">
-            <button
-              id="start"
-              disabled
-              type="button"
-              data-resume="Reprendre"
-              data-normal="Jouer"
+          <div class="launch-card">
+            <p
+              id="round-status"
+              data-paused="En pause. Reprends pour contrôler la souris."
+              data-lock="Clique sur Reprendre pour activer la souris."
+              data-desktop="Sur ordinateur uniquement, avec clavier et souris."
+              data-loading="Préparation du vol…"
+              data-error="Échec du chargement. Recharge la page."
+              data-lost="Nous avons perdu cette fois, mais nous ferons mieux la prochaine fois !"
+              data-ended="Partie terminée."
+              role="status"
             >
-              Jouer
-            </button>
+              Intercepte les météores avant qu’ils ne frappent la Terre.
+            </p>
+            <p class="scene-loading-hint">
+              Choisissez le lieu et la difficulté pendant le chargement.
+            </p>
+            <div id="launch-options">
+              <fieldset id="launch-location">
+                <legend>1 · Choisir le point de départ</legend>
+                <label
+                  ><input
+                    type="radio"
+                    name="launch-location"
+                    value="space"
+                  />Espace</label
+                ><label
+                  ><input
+                    type="radio"
+                    name="launch-location"
+                    value="moon"
+                  />Orbite lunaire</label
+                >
+              </fieldset>
+              <fieldset id="launch-difficulty" hidden disabled>
+                <legend>2 · Choisir la difficulté</legend>
+                <label
+                  ><input
+                    type="radio"
+                    name="launch-difficulty"
+                    value="normal"
+                  />Normal</label
+                ><label
+                  ><input
+                    type="radio"
+                    name="launch-difficulty"
+                    value="hard"
+                  />Difficile</label
+                >
+              </fieldset>
+            </div>
+            <div class="difficulty-buttons">
+              <button
+                id="start"
+                disabled
+                type="button"
+                data-resume="Reprendre"
+                data-normal="Jouer"
+              >
+                Jouer
+              </button>
+            </div>
           </div>
         </div>
       </div>

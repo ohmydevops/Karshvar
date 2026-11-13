@@ -45,16 +45,31 @@ export function prepareGameOffline() {
   )
     return;
   const t = copy[document.documentElement.lang] || copy.en;
-  const notice = document.createElement("p");
+  const notice = document.createElement("section");
   notice.className = "game-download-status";
   notice.setAttribute("role", "status");
-  document.querySelector(".mission").append(notice);
+  const label = document.createElement("strong");
+  const percentage = document.createElement("span");
+  const progress = document.createElement("progress");
+  progress.max = 100;
+  progress.setAttribute("aria-label", t[0]);
+  notice.append(label, percentage, progress);
+  document.querySelector(".launch-card").append(notice);
+  function show(state, text, value) {
+    notice.dataset.state = state;
+    label.textContent = text;
+    percentage.textContent = value === undefined ? "" : `${value}%`;
+    if (value === undefined) progress.removeAttribute("value");
+    else progress.value = value;
+    progress.hidden = state !== "downloading";
+  }
   let busy = false,
     complete = false;
   async function download() {
     if (busy || complete) return;
     busy = true;
-    notice.textContent = t[0];
+    notice.querySelector("button")?.remove();
+    show("downloading", t[0]);
     try {
       const { offlineReady } = await import("./offline.js");
       await offlineReady;
@@ -81,7 +96,11 @@ export function prepareGameOffline() {
           if (data.phase === "ready") finish();
           else if (data.phase === "error") finish(Error("Download incomplete"));
           else
-            notice.textContent = `${t[0]} ${Math.round((data.completed / data.total) * 100)}%`;
+            show(
+              "downloading",
+              t[0],
+              Math.round((data.completed / data.total) * 100),
+            );
         };
         renew();
         registration.active.postMessage({ type: "CACHE_SAVE_EARTH" }, [
@@ -89,11 +108,10 @@ export function prepareGameOffline() {
         ]);
       });
       complete = true;
-      notice.textContent = t[1];
-      setTimeout(() => notice.remove(), 5000);
+      show("ready", t[1]);
       window.removeEventListener("online", download);
     } catch {
-      notice.textContent = t[2] + " · ";
+      show("error", t[2]);
       const retry = document.createElement("button");
       retry.textContent = t[3];
       retry.addEventListener("click", download);
