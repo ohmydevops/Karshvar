@@ -29,6 +29,7 @@ function worker({
   stalled = false,
   stale,
   staleHttpCache = false,
+  failOnce = false,
   missingHash,
   sharedStores,
   version,
@@ -164,6 +165,10 @@ function worker({
         const asset = new URL(url.url || String(url)).pathname.slice(
           "/game/".length,
         );
+        if (failOnce && asset === "art/game-moon.glb") {
+          failOnce = false;
+          throw Error("temporary connection failure");
+        }
         const body =
           asset === stale || (staleHttpCache && options.cache !== "reload")
             ? Buffer.from("old CDN release: " + asset)
@@ -327,6 +332,13 @@ test("optional pack revalidates stale HTTP cache entries before integrity checks
   await w.lifecycle("activate");
   assert.equal((await w.gamePack()).phase, "ready");
 });
+
+test("a temporary game download failure retries and completes without user intervention", async () => {
+  const w = worker({ failOnce: true });
+  await w.lifecycle("install");
+  await w.lifecycle("activate");
+  assert.equal((await w.gamePack()).phase, "ready");
+});
 test("generated integrity manifest matches every final file byte-for-byte", async () => {
   assert.deepEqual(Object.keys(integrity), assets);
   for (const asset of assets) {
@@ -454,6 +466,8 @@ test("stalled downloads abort without touching the existing release", async () =
   const rejected = assert.rejects(installing, /timeout/);
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(w.active, 6);
+  w.expireTimers();
+  await new Promise((resolve) => setImmediate(resolve));
   w.expireTimers();
   await rejected;
   assert.equal(w.active, 0);

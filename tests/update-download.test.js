@@ -142,7 +142,7 @@ test("discovery asks before downloading or authorizing any release", async () =>
   assert.equal(f.requests, 1);
   assert.equal(f.downloads, 0);
   assert.equal(f.shared.size, 0);
-  assert(f.nodes.some((n) => n.tag === "dialog" && n.open));
+  assert(f.nodes.some((n) => n.tag === "aside" && !n.hidden));
 });
 test("up-to-date release checks only metadata without a prompt", async () => {
   const f = fixture({ latest: oldVersion });
@@ -155,9 +155,9 @@ test("Later survives page navigation but manual check can reopen the prompt", as
   await f.manager.check();
   f.nodes.find((n) => n.textContent === "Later").onclick();
   await f.create().check();
-  assert.equal(f.nodes.filter((n) => n.tag === "dialog" && n.open).length, 0);
+  assert.equal(f.nodes.filter((n) => n.tag === "aside" && !n.hidden).length, 0);
   await f.manager.check(true);
-  assert.equal(f.nodes.filter((n) => n.tag === "dialog" && n.open).length, 1);
+  assert.equal(f.nodes.filter((n) => n.tag === "aside" && !n.hidden).length, 1);
   assert.equal(f.downloads, 0);
 });
 test("approval persists and a new page shows the same worker download", async () => {
@@ -189,7 +189,7 @@ test("simultaneous checks share discovery and create only one prompt", async () 
   const f = fixture();
   await Promise.all([f.manager.check(), f.manager.check(true)]);
   assert.equal(f.requests, 1);
-  assert.equal(f.nodes.filter((n) => n.tag === "dialog").length, 1);
+  assert.equal(f.nodes.filter((n) => n.tag === "aside").length, 1);
 });
 test("failed start offers retry without throwing or claiming success", async () => {
   const f = fixture({ fail: true });
@@ -257,7 +257,7 @@ test("stalled progress becomes retryable and a completed worker can still recove
     },
   });
   await f.manager.poll();
-  f.advance(46000);
+  f.advance(151000);
   await f.manager.poll();
   assert(f.nodes.some((n) => n.textContent === "Retry" && !n.hidden));
   f.registration.waiting = {};

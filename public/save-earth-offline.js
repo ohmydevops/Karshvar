@@ -106,7 +106,7 @@ export function prepareGameOffline() {
         };
         const renew = () => {
           clearTimeout(timer);
-          timer = setTimeout(() => finish(Error("Download stalled")), 60000);
+          timer = setTimeout(() => finish(Error("Download stalled")), 150000);
         };
         channel.port1.onmessage = ({ data }) => {
           renew();

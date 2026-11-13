@@ -1,20 +1,4 @@
-.update-dialog {
-  max-width: min(440px, calc(100vw - 40px));
-  padding: var(--dialog-padding, 24px);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-dialog, 16px);
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-}
-.update-dialog::backdrop {
-  background: #07101e99;
-}
-.update-dialog .dialog-actions {
-  display: flex;
-  gap: 10px;
-}
-.update-dialog button,
+.update-activation button,
 .update-download button {
   font: inherit;
   min-height: 44px;
@@ -23,7 +7,7 @@
   background: var(--surface);
   color: var(--text);
 }
-.update-dialog .primary {
+.update-activation .primary {
   background: var(--accent);
   color: var(--accent-ink);
 }
@@ -33,7 +17,7 @@
   bottom: max(16px, env(safe-area-inset-bottom));
   z-index: 100;
   margin-inline: auto;
-  width: min(480px, calc(100% - 32px));
+  width: min(640px, calc(100% - 32px));
   padding: 14px 18px;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
@@ -57,7 +41,7 @@
 .update-download button {
   margin-inline-start: auto;
 }
-.update-dialog[data-state="updating"] .primary::before {
+.update-activation[data-state="updating"] .primary::before {
   content: "";
   display: inline-block;
   width: 12px;
@@ -70,19 +54,33 @@
   animation: satellite-spin 0.8s linear infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .update-dialog[data-state="updating"] .primary::before {
+  .update-activation[data-state="updating"] .primary::before {
     animation: none;
   }
 }
-.update-dialog p {
+.update-activation p {
   line-height: 1.6;
 }
-.update-dialog .dialog-actions {
+.update-activation .dialog-actions {
   flex-wrap: wrap;
 }
-.update-dialog .dialog-actions button {
+.update-activation .dialog-actions button {
   flex: 1 0 max-content;
   white-space: nowrap;
   font-size: 13px;
   padding-inline: 12px;
+}
+
+.update-activation h2 {
+  font-size: 16px;
+  margin: 0;
+  width: 100%;
+}
+.update-activation p {
+  margin: 0;
+}
+.update-activation .dialog-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
 }

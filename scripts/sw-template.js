@@ -28,10 +28,11 @@ const precache = new PrecacheController({
   plugins: [
     {
       requestWillFetch: async ({ request }) => {
+        console.info("[offline] Downloading", request.url);
         const controller = new AbortController();
         timers.set(
           request.url,
-          setTimeout(() => controller.abort(), 20000),
+          setTimeout(() => controller.abort(), 60000),
         );
         return new Request(request, { signal: controller.signal });
       },
@@ -57,22 +58,37 @@ const pendingAssets = new Map();
 async function cacheAsset(asset, event) {
   if (!pendingAssets.has(asset)) {
     const url = new URL(asset, scope).href;
-    const task = Promise.all(
-      precache.strategy.handleAll({
-        event,
-        request: new Request(url, {
-          integrity: INTEGRITY[asset],
-          // Revisioned Workbox entries already reuse unchanged files. A miss
-          // must revalidate HTTP cache bytes, including optional game scripts.
-          cache: "reload",
-          credentials: "same-origin",
+    const attempt = (retry = false) =>
+      Promise.all(
+        precache.strategy.handleAll({
+          event,
+          request: new Request(
+            retry
+              ? url + "?revision=" + encodeURIComponent(INTEGRITY[asset])
+              : url,
+            {
+              integrity: INTEGRITY[asset],
+              // Revisioned Workbox entries already reuse unchanged files. A miss
+              // must revalidate HTTP cache bytes, including optional game scripts.
+              cache: "reload",
+              credentials: "same-origin",
+            },
+          ),
+          params: {
+            cacheKey: precache.getCacheKeyForURL(url),
+            integrity: INTEGRITY[asset],
+          },
         }),
-        params: {
-          cacheKey: precache.getCacheKeyForURL(url),
-          integrity: INTEGRITY[asset],
-        },
-      }),
-    ).then(([response]) => response);
+      ).then(([response]) => response);
+    const task = attempt()
+      .catch((error) => {
+        console.warn("[offline] Retrying", asset, error);
+        return attempt(true);
+      })
+      .catch((error) => {
+        console.error("[offline] Download failed", asset, error);
+        throw error;
+      });
     pendingAssets.set(asset, task);
     task.finally(() => pendingAssets.delete(asset)).catch(() => {});
   }

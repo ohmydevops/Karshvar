@@ -85,7 +85,8 @@ export function createDownloadManager({
   const stateURL = new URL(".update-state", scope).href;
   const approvalURL = new URL(".update-approval", scope).href;
   const dismissKey = "karshvar:update-dismissed:" + scope;
-  let latest, discovery, dialog, banner, label, progress, action, pollTimer;
+  let latest, discovery, banner, label, progress, action, later, pollTimer;
+  let suspended = false;
   let polling,
     starting = false,
     lastProgressAt = Date.now(),
@@ -98,6 +99,7 @@ export function createDownloadManager({
     return node;
   };
   function show(phase, completed = 0, total = 0) {
+    if (suspended) return;
     if (!banner) {
       banner = make("aside");
       banner.className = "update-download";
@@ -108,7 +110,15 @@ export function createDownloadManager({
       progress.setAttribute("aria-label", t[4]);
       action = make("button");
       action.type = "button";
-      banner.append(label, progress, action);
+      later = make("button", t[3]);
+      later.type = "button";
+      later.onclick = () => {
+        try {
+          sessionStorage.setItem(dismissKey, latest?.version);
+        } catch {}
+        banner.hidden = true;
+      };
+      banner.append(label, progress, later, action);
       document.body.append(banner);
     }
     banner.hidden = false;
@@ -119,24 +129,30 @@ export function createDownloadManager({
     } else progress.removeAttribute("value");
     const percent = total ? Math.floor((completed / total) * 100) : null;
     label.textContent =
-      phase === "ready"
-        ? t[5]
-        : phase === "error"
-          ? t[7]
-          : t[4] +
-            (percent === null
-              ? "…"
-              : " · " +
-                new Intl.NumberFormat(document.documentElement.lang).format(
-                  percent,
-                ) +
-                "%");
+      phase === "available"
+        ? t[0]
+        : phase === "ready"
+          ? t[5]
+          : phase === "error"
+            ? t[7]
+            : t[4] +
+              (percent === null
+                ? "…"
+                : " · " +
+                  new Intl.NumberFormat(document.documentElement.lang).format(
+                    percent,
+                  ) +
+                  "%");
     action.hidden = phase === "downloading";
-    action.textContent = phase === "ready" ? t[6] : t[8];
+    later.hidden = phase !== "available";
+    action.textContent =
+      phase === "available" ? t[2] : phase === "ready" ? t[6] : t[8];
     action.onclick =
-      phase === "ready"
-        ? onReady
-        : () => check(true).catch(() => show("error"));
+      phase === "available"
+        ? () => start().catch(() => show("error"))
+        : phase === "ready"
+          ? onReady
+          : () => check(true).catch(() => show("error"));
     displayedPhase = phase;
     onState(phase);
   }
@@ -194,7 +210,7 @@ export function createDownloadManager({
           return false;
         }
         if (!installing && state?.phase !== "downloading") return false;
-        if (Date.now() - lastProgressAt > 45000) {
+        if (Date.now() - lastProgressAt > 150000) {
           show("error");
           return false;
         }
@@ -256,8 +272,8 @@ export function createDownloadManager({
     starting = true;
     lastProgressAt = Date.now();
     lastProgress = undefined;
-    dialog?.close();
-    show("downloading");
+
+    show("downloading", 0, latest.files);
     watch();
     try {
       await requestUpdate();
@@ -269,43 +285,17 @@ export function createDownloadManager({
     await poll();
   }
   function offer(manual) {
-    if (dialog?.open) return;
     try {
       if (!manual && sessionStorage.getItem(dismissKey) === latest.version)
         return;
     } catch {}
-    dialog = make("dialog");
-    dialog.className = "update-dialog";
-    const heading = make("h2", t[0]);
-    heading.id = "update-download-title";
-    dialog.setAttribute("aria-labelledby", heading.id);
-    const description = make("p", t[1]);
-    const actions = make("div");
-    actions.className = "dialog-actions";
-    const later = make("button", t[3]);
-    later.autofocus = true;
-    later.onclick = () => dialog.close();
-    const download = make("button", t[2]);
-    download.className = "primary";
-    download.onclick = () =>
-      start().catch(() => {
-        dialog.close();
-        show("error");
-      });
-    actions.append(later, download);
-    dialog.append(heading, description, actions);
-    dialog.addEventListener(
-      "close",
-      () => {
-        try {
-          sessionStorage.setItem(dismissKey, latest.version);
-        } catch {}
-        dialog.remove();
-      },
-      { once: true },
-    );
-    document.body.append(dialog);
-    dialog.showModal();
+    show("available");
+  }
+  function hide() {
+    suspended = true;
+    stopWatch();
+    banner?.remove();
+    banner = undefined;
   }
   function workerStatus(worker) {
     if (!worker) return Promise.resolve(null);
@@ -333,6 +323,7 @@ export function createDownloadManager({
     if (registration.installing) {
       watch();
       if (await poll()) return 2;
+      if (ownDownload) return 2;
     }
     const controller = new AbortController();
     const timer = window.setTimeout(() => controller.abort(), 10000);
@@ -371,6 +362,8 @@ export function createDownloadManager({
     }
   }
   function check(manual = false) {
+    if (manual) suspended = false;
+    if (suspended) return Promise.resolve(registration.waiting ? 5 : 1);
     if (!discovery)
       discovery = discover(manual).finally(() => {
         discovery = null;
@@ -379,5 +372,5 @@ export function createDownloadManager({
   }
   registration.addEventListener("updatefound", watch);
   if (registration.installing) watch();
-  return { check, poll };
+  return { check, poll, hide };
 }

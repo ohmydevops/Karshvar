@@ -177,6 +177,7 @@ async function setupOffline() {
     let approved = false;
     let reloaded = false;
     let offeredWorker;
+    let activationNotice;
     const reloadIfApproved = () => {
       if (approved && !reloaded) {
         reloaded = true;
@@ -187,7 +188,7 @@ async function setupOffline() {
       "controllerchange",
       reloadIfApproved,
     );
-    const offerUpdate = () => {
+    const offerUpdate = (activate = false) => {
       let worker = registration.waiting;
       // Initial installation is silent; only offer a fully downloaded replacement.
       if (
@@ -197,9 +198,12 @@ async function setupOffline() {
       )
         return;
       offeredWorker = worker;
+      downloads.hide();
+      activationNotice?.close();
       const copy = updateCopy[document.documentElement.lang] || updateCopy.en;
-      const dialog = document.createElement("dialog");
-      dialog.className = "update-dialog";
+      const dialog = document.createElement("aside");
+      dialog.className = "update-download update-activation";
+      activationNotice = dialog;
       dialog.setAttribute("aria-labelledby", "updateTitle");
       dialog.setAttribute("aria-describedby", "updateDescription");
       const title = document.createElement("h2");
@@ -254,16 +258,13 @@ async function setupOffline() {
         } else if (worker.state === "redundant" && approved) restoreUpdate();
       };
       worker.addEventListener?.("statechange", activated);
-      dialog.addEventListener(
-        "close",
-        () => {
-          approved = false;
-          window.clearTimeout(activationTimer);
-          worker.removeEventListener?.("statechange", activated);
-          dialog.remove();
-        },
-        { once: true },
-      );
+      dialog.close = () => {
+        dialog.hidden = true;
+        approved = false;
+        window.clearTimeout(activationTimer);
+        worker.removeEventListener?.("statechange", activated);
+        dialog.remove();
+      };
       update.onclick = async () => {
         if (registration.active === worker && worker.state === "activated") {
           approved = true;
@@ -306,7 +307,8 @@ async function setupOffline() {
       actions.append(later, update);
       dialog.append(title, description, actions);
       document.body.append(dialog);
-      dialog.showModal();
+      dialog.hidden = false;
+      if (activate) update.onclick();
     };
     const downloads = createDownloadManager({
       registration,
@@ -315,7 +317,7 @@ async function setupOffline() {
         showCheckStatus(phase === "ready" ? 5 : phase === "error" ? 4 : 2),
       onReady: () => {
         offeredWorker = undefined;
-        offerUpdate();
+        offerUpdate(true);
       },
     });
     const watch = () => {
