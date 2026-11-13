@@ -9,7 +9,16 @@ for (const lang of ["en", "fa", "ar", "fr", "ru", "tr"]) {
       new URL(`../public/${lang}/save-the-earth/index.html`, import.meta.url),
       "utf8",
     );
-    for (const label of missionUI[lang]) assert.ok(html.includes(label), label);
+    const sources = await readFile(
+      new URL(`../public/${lang}/sources/index.html`, import.meta.url),
+      "utf8",
+    );
+    for (const label of missionUI[lang].slice(0, 5))
+      assert.ok(html.includes(label), label);
+    for (const label of missionUI[lang].slice(5))
+      assert.ok(sources.includes(label), label);
+    assert.ok(html.includes("../sources/#save-earth-credits"));
+    assert.ok(sources.includes('id="save-earth-credits"'));
     assert.ok(!html.includes("undefined"));
     if (translatedBriefings[lang])
       for (const line of translatedBriefings[lang])

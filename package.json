@@ -7,7 +7,7 @@
     "build": "node scripts/build-site.mjs",
     "build:blog": "node scripts/build-blog.mjs && prettier --write \"public/*/blog/**/*.html\" && npm run build:offline",
     "dev": "vite --host 127.0.0.1 --port 5174",
-    "test": "node --test",
+    "test": "node --test tests/*.test.js",
     "format": "prettier --write \"public/**/*.html\" \"public/**/*.css\" public/*.js tests/*.js scripts/*.mjs scripts/*.js package.json README.md .github/workflows/*.yml vite.config.js",
     "format:check": "prettier --check \"public/**/*.html\" \"public/**/*.css\" public/*.js tests/*.js scripts/*.mjs scripts/*.js package.json README.md .github/workflows/*.yml vite.config.js",
     "build:offline": "node scripts/build-offline.mjs",

@@ -70,7 +70,7 @@
         </div>
         <div class="mission-stats">
           <span>النقاط <strong id="score">0</strong></span>
-          <span>درع الأرض <strong id="shield">8</strong></span>
+          <span>درع الأرض <strong id="shield">5</strong></span>
           <button
             id="sound-toggle"
             type="button"
@@ -102,23 +102,53 @@
             data-desktop="للحاسوب فقط؛ يلزم استخدام لوحة المفاتيح والفأرة."
             data-loading="جارٍ تحميل المشهد ثلاثي الأبعاد…"
             data-error="تعذّر تحميل المشهد. أعد تحميل الصفحة."
-            data-lost="انهار درع الأرض."
+            data-lost="خسرنا هذه المرة، لكن سنبذل جهدًا أكبر في المرة القادمة!"
             data-ended="انتهت الجولة."
             role="status"
           >
             اعترض الشهب قبل أن تصطدم بالأرض.
           </p>
+          <div id="launch-options">
+            <fieldset id="launch-location">
+              <legend>1 · اختر موقع البداية</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="space"
+                />الفضاء</label
+              ><label
+                ><input type="radio" name="launch-location" value="moon" />مدار
+                القمر</label
+              >
+            </fieldset>
+            <fieldset id="launch-difficulty" hidden disabled>
+              <legend>2 · اختر مستوى الصعوبة</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="normal"
+                />عادي</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="hard"
+                />صعب</label
+              >
+            </fieldset>
+          </div>
           <div class="difficulty-buttons">
             <button
               id="start"
               disabled
               type="button"
               data-resume="استئناف"
-              data-normal="عادي"
+              data-normal="ابدأ اللعب"
             >
-              عادي
+              ابدأ اللعب
             </button>
-            <button id="start-hard" disabled type="button">صعب</button>
           </div>
         </div>
       </div>
@@ -140,10 +170,10 @@
           الأيسر لإطلاق النار، وعلى الأيمن للتكبير. الحركة: W للأمام وS للخلف؛ A
           لليسار وD لليمين. Space للصعود وShift للهبوط. إعادة التلقيم: اضغط R
           لاستبدال المخزن الذي يتسع لـ٣٠ طلقة. الطيران: Q وE لتدوير الجسم حول
-          محوره. اضغط مطولًا على F لإبطاء الانجراف. الكاميرا: V لتبديل المنظور.
-          اضغط مطولًا على Ctrl وحرّك الفأرة للنظر حول رائد الفضاء؛ يمكنك إطلاق
-          النار في هذا الوضع أيضًا. التحكم: Esc للإيقاف المؤقت، وM لتبديل الصوت،
-          وH لعرض المساعدة.
+          محوره. استخدم الدفع المعاكس لتقليل السرعة أو التوقف. الكاميرا: V
+          لتبديل المنظور. اضغط مطولًا على Ctrl وحرّك الفأرة للنظر حول رائد
+          الفضاء؛ يمكنك إطلاق النار في هذا الوضع أيضًا. التحكم: Esc للإيقاف
+          المؤقت، وM لتبديل الصوت، وH لعرض المساعدة.
         </p>
         <p class="briefing-typed" aria-hidden="true"></p>
       </aside>
@@ -224,8 +254,8 @@
           المساعدة · H
         </button>
         <p id="controls" hidden>
-          WASD: طيران · الفأرة: نظر · Space / Shift: صعود / هبوط · Q / E: دوران
-          · F: فرملة · V: كاميرا · Esc: إيقاف
+          WASD: طيران · الفأرة: نظر · Space / Shift: صعود / هبوط · Q / E: دوران·
+          V: كاميرا · Esc: إيقاف
         </p>
         <button id="end" type="button" hidden>أنه الجولة</button>
       </div>
@@ -244,42 +274,7 @@
         </nav>
       </details>
       <p class="scene-credits">
-        <a href="../sources/#home-scene-credits"
-          >الأرض · رائد الفضاء · النيزك</a
-        >
-        ·
-        <a
-          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
-          >رشاش خفيف — Drus</a
-        >
-        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-        <a href="../../audio/nasa-radio-SOURCE.txt">راديو ناسا · المصادر</a> ·
-        <a href="../../audio/helmet-breathing-SOURCE.txt">صوت التنفس · CC0</a> ·
-        <a
-          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
-          >أندروميدا: R. Gendler</a
-        >
-        · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · بتصرّف</a> ·
-        <a href="https://www.solarsystemscope.com/textures/"
-          >خامات الكواكب: Solar System Scope / INOVE</a
-        >
-        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> ·
-        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> ·
-        <a href="../../art/rocket-SOURCE.txt"
-          >Test Rocket — Joe_Y · CC BY-NC 4.0</a
-        >
-        ·
-        <a href="../../art/explosion-SOURCE.txt"
-          >Sparks/explosion — OPREXT · CC BY 4.0</a
-        >
-        ·
-        <a href="../../audio/meteor-explosions-SOURCE.txt"
-          >Explosion audio · CC0</a
-        >
-        ·
-        <a href="../../audio/rocket-engine-SOURCE.txt"
-          >Rocket launch — Félix Blume · CC0</a
-        >
+        <a href="../sources/#save-earth-credits">المصادر</a>
       </p>
     </main>
     <dialog

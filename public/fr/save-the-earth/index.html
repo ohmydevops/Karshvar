@@ -76,7 +76,7 @@
         </div>
         <div class="mission-stats">
           <span>Score <strong id="score">0</strong></span>
-          <span>Bouclier terrestre <strong id="shield">8</strong></span>
+          <span>Bouclier terrestre <strong id="shield">5</strong></span>
           <button
             id="sound-toggle"
             type="button"
@@ -108,23 +108,56 @@
             data-desktop="Sur ordinateur uniquement, avec clavier et souris."
             data-loading="Chargement de la scène 3D…"
             data-error="Échec du chargement. Recharge la page."
-            data-lost="Le bouclier terrestre a cédé."
+            data-lost="Nous avons perdu cette fois, mais nous ferons mieux la prochaine fois !"
             data-ended="Partie terminée."
             role="status"
           >
             Intercepte les météores avant qu’ils ne frappent la Terre.
           </p>
+          <div id="launch-options">
+            <fieldset id="launch-location">
+              <legend>1 · Choisir le point de départ</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="space"
+                />Espace</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="moon"
+                />Orbite lunaire</label
+              >
+            </fieldset>
+            <fieldset id="launch-difficulty" hidden disabled>
+              <legend>2 · Choisir la difficulté</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="normal"
+                />Normal</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="hard"
+                />Difficile</label
+              >
+            </fieldset>
+          </div>
           <div class="difficulty-buttons">
             <button
               id="start"
               disabled
               type="button"
               data-resume="Reprendre"
-              data-normal="Normal"
+              data-normal="Jouer"
             >
-              Normal
+              Jouer
             </button>
-            <button id="start-hard" disabled type="button">Difficile</button>
           </div>
         </div>
       </div>
@@ -147,10 +180,11 @@
           W pour avancer, S pour reculer, A pour aller à gauche et D à droite.
           Espace pour monter, Maj pour descendre. RECHARGEMENT : Appuie sur R
           pour remplacer le chargeur de 30 cartouches. VOL : Q et E font pivoter
-          ton corps sur son axe. Maintiens F pour freiner ta dérive. CAMÉRA : V
-          change la vue. Maintiens Ctrl et déplace la souris pour regarder
-          autour de l’astronaute ; tu peux aussi tirer dans cette vue. COMMANDES
-          : Échap met en pause, M active ou coupe le son et H affiche l’aide.
+          ton corps sur son axe. Utilise la poussée opposée pour ralentir ou
+          t’arrêter. CAMÉRA : V change la vue. Maintiens Ctrl et déplace la
+          souris pour regarder autour de l’astronaute ; tu peux aussi tirer dans
+          cette vue. COMMANDES : Échap met en pause, M active ou coupe le son et
+          H affiche l’aide.
         </p>
         <p class="briefing-typed" aria-hidden="true"></p>
       </aside>
@@ -232,7 +266,7 @@
         </button>
         <p id="controls" hidden>
           WASD : vol · Souris : regard · Espace / Maj : monter / descendre · Q /
-          E : roulis · F : frein · V : caméra · Échap : pause
+          E : roulis· V : caméra · Échap : pause
         </p>
         <button id="end" type="button" hidden>Terminer la partie</button>
       </div>
@@ -253,43 +287,7 @@
         </nav>
       </details>
       <p class="scene-credits">
-        <a href="../sources/#home-scene-credits"
-          >Terre · Astronaute · Météorite</a
-        >
-        ·
-        <a
-          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
-          >Pistolet-mitrailleur — Drus</a
-        >
-        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-        <a href="../../audio/nasa-radio-SOURCE.txt">Radio NASA · sources</a> ·
-        <a href="../../audio/helmet-breathing-SOURCE.txt">Respiration · CC0</a>
-        ·
-        <a
-          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
-          >Andromède: R. Gendler</a
-        >
-        · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · adapté</a> ·
-        <a href="https://www.solarsystemscope.com/textures/"
-          >Textures des planètes: Solar System Scope / INOVE</a
-        >
-        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> ·
-        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> ·
-        <a href="../../art/rocket-SOURCE.txt"
-          >Test Rocket — Joe_Y · CC BY-NC 4.0</a
-        >
-        ·
-        <a href="../../art/explosion-SOURCE.txt"
-          >Sparks/explosion — OPREXT · CC BY 4.0</a
-        >
-        ·
-        <a href="../../audio/meteor-explosions-SOURCE.txt"
-          >Explosion audio · CC0</a
-        >
-        ·
-        <a href="../../audio/rocket-engine-SOURCE.txt"
-          >Rocket launch — Félix Blume · CC0</a
-        >
+        <a href="../sources/#save-earth-credits">Sources</a>
       </p>
     </main>
     <dialog

@@ -1,0 +1,30 @@
+{
+  "tool": "gltfpack 1.3.0",
+  "options": "-cc -noq -kn -km -ke -kv -af 0",
+  "models": [
+    {
+      "name": "game-earth",
+      "before": 3353096,
+      "after": 2453648,
+      "triangles": 71994
+    },
+    {
+      "name": "moon-landing",
+      "before": 7665932,
+      "after": 5591172,
+      "triangles": 134787
+    },
+    {
+      "name": "astronaut",
+      "before": 1804556,
+      "after": 749304,
+      "triangles": 67998
+    },
+    {
+      "name": "game-moon",
+      "before": 9779492,
+      "after": 5385256,
+      "triangles": 90000
+    }
+  ]
+}

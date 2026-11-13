@@ -13,8 +13,11 @@ export async function mountHomeGlobe(host) {
     const settings = createHomeScene();
     // Start model downloads alongside the planet textures, so the astronaut
     // does not have to wait for the planet to finish loading first.
-    const gltfLoader = import("./vendor/GLTFLoader.js").then(
-      ({ GLTFLoader }) => new GLTFLoader(),
+    const gltfLoader = Promise.all([
+      import("./vendor/GLTFLoader.js"),
+      import("./vendor/meshopt_decoder.mjs"),
+    ]).then(([{ GLTFLoader }, { MeshoptDecoder }]) =>
+      new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),
     );
     const loadModel = (url, label) =>
       gltfLoader

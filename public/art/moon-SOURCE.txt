@@ -3,3 +3,22 @@ https://svs.gsfc.nasa.gov/4720/
 https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg
 Credit: NASA's Scientific Visualization Studio; LRO / LROC; Ernie Wright.
 2025 map derived from the LROC WAC Hapke-normalized mosaic. Downloaded unchanged.
+{
+  "author": "BlackProject (https://sketchfab.com/BlackProject)",
+  "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+  "source": "https://sketchfab.com/3d-models/moon-landing-67e8a3ea5fbe42f4a6cb6c96cf406df4",
+  "title": "🌙 Moon Landing"
+}
+{
+  "author": "Thomas Flynn (https://sketchfab.com/nebulousflynn)",
+  "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+  "source": "https://sketchfab.com/3d-models/nasa-cgi-moon-kit-1c496b3b57304526b5b9d1cf9c1087fc",
+  "title": "🌑 NASA CGI Moon Kit"
+}
+
+High-resolution color: NASA Scientific Visualization Studio / Ernie Wright, LROC / Arizona State University.
+https://svs.gsfc.nasa.gov/4720/
+https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_8k.tif
+Converted 8192x4096 TIFF to WebP (quality 93), resolution preserved.
+Downloaded GLB: welded and simplified to 90,000 faces; original UVs retained.
+Landing scene: welded and simplified; original materials retained.

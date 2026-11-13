@@ -773,3 +773,55 @@ h1 {
   font-size: 15px;
   cursor: pointer;
 }
+.game-download-status {
+  position: fixed;
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 60vw;
+  z-index: 12;
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.5rem;
+  background: #091523e6;
+  color: #c3d7e4;
+  font-size: 0.75rem;
+}
+.game-download-status button {
+  padding: 0.2rem 0.4rem;
+  font: inherit;
+}
+#launch-options {
+  display: grid;
+  gap: 14px;
+  width: min(420px, 94vw);
+}
+#launch-options[hidden],
+#launch-options fieldset[hidden] {
+  display: none;
+}
+#launch-options fieldset {
+  border: 1px solid #65839966;
+  border-radius: 12px;
+  padding: 16px;
+  background: #081522e8;
+}
+#launch-options legend {
+  padding: 0 8px;
+  color: #d6eafa;
+}
+#launch-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 10px;
+  cursor: pointer;
+}
+#launch-options input {
+  accent-color: #93ddff;
+  width: 18px;
+  height: 18px;
+}
+#start:disabled {
+  opacity: 0.45;
+  cursor: default;
+}

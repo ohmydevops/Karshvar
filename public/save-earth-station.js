@@ -147,5 +147,13 @@ export async function createSpaceStation(loader) {
     for (const box of collisionBoxes) box.translate(displacement);
     previousHeight = 0;
   }
-  return { object, constrainPilot, update, reset };
+  function place(position) {
+    displacement.copy(position).sub(object.position);
+    object.position.add(displacement);
+    broadphase.translate(displacement);
+    for (const box of collisionBoxes) box.translate(displacement);
+    previousHeight = 0;
+    solarMotion.update(0);
+  }
+  return { object, constrainPilot, update, reset, place };
 }

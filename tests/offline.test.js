@@ -10,6 +10,7 @@ const workerUrl = process.env.KARSHVAR_WORKER
   : new URL("../public/sw.js", import.meta.url);
 const source = await readFile(workerUrl, "utf8");
 const assets = JSON.parse(source.match(/const ASSETS=(\[.*?\]);/s)[1]);
+const gameAssets = JSON.parse(source.match(/const GAME_ASSETS=(\[.*?\]);/s)[1]);
 const integrity = JSON.parse(source.match(/const INTEGRITY=(\{.*?\});/s)[1]);
 const sri = (bytes) =>
   "sha256-" + createHash("sha256").update(bytes).digest("base64");
@@ -31,6 +32,7 @@ function worker({
   sharedStores,
   version,
   installedWorker = false,
+  changedAsset,
 } = {}) {
   const events = {},
     stores = sharedStores || new Map();
@@ -80,7 +82,9 @@ function worker({
             Buffer.from("release 1: " + asset),
           ]),
         )
-      : bodies;
+      : new Map(bodies);
+  if (changedAsset)
+    releaseBodies.set(changedAsset, Buffer.from("changed: " + changedAsset));
   const expected = Object.fromEntries(
     [...releaseBodies].map(([asset, bytes]) => [asset, sri(bytes)]),
   );
@@ -209,6 +213,9 @@ function worker({
     async request(path, mode = "navigate") {
       let task;
       events.fetch({
+        waitUntil(p) {
+          p.catch(() => {});
+        },
         request: {
           url: "https://example.test/game/" + path,
           mode,
@@ -220,11 +227,93 @@ function worker({
       });
       return task;
     },
+    async gamePack() {
+      const tasks = [],
+        messages = [];
+      events.message({
+        data: { type: "CACHE_SAVE_EARTH" },
+        ports: [
+          {
+            postMessage(message) {
+              messages.push({ ...message });
+            },
+          },
+        ],
+        waitUntil(p) {
+          tasks.push(p);
+        },
+      });
+      await Promise.all(tasks);
+      return messages.at(-1);
+    },
     get claimed() {
       return claimed;
     },
   };
 }
+
+test("ordinary site installation skips the optional Save Earth payload", async () => {
+  const w = worker();
+  await w.lifecycle("install");
+  const written = new Set(
+    w.writes.map((url) => new URL(url).pathname.slice("/game/".length)),
+  );
+  for (const asset of gameAssets) assert.ok(!written.has(asset), asset);
+  assert.ok(gameAssets.includes("art/moon-landing.glb"));
+  assert.ok(gameAssets.includes("audio/nasa-radio-eagle.mp3"));
+  assert.ok(written.has("home-globe.js"));
+});
+
+test("entering Save Earth saves the complete game and later offline visits reuse it", async () => {
+  const w = worker();
+  await w.lifecycle("install");
+  await w.lifecycle("activate");
+  assert.equal((await w.gamePack()).phase, "ready");
+  w.offline();
+  for (const asset of gameAssets)
+    assert.equal((await w.request(asset, "cors")).status, 200, asset);
+  const before = w.writes.length;
+  assert.equal((await w.gamePack()).phase, "ready");
+  assert.equal(
+    w.writes.length,
+    before + 1,
+    "only enrollment metadata is written again",
+  );
+});
+
+test("enrolled players download only changed game files on the next release", async () => {
+  const previous = worker();
+  await previous.lifecycle("install");
+  await previous.lifecycle("activate");
+  await previous.gamePack();
+  const next = worker({
+    sharedStores: previous.stores,
+    changedAsset: "art/game-moon.glb",
+  });
+  await next.lifecycle("install");
+  const downloads = next.writes.filter((url) =>
+    url.includes("__WB_REVISION__"),
+  );
+  assert.equal(downloads.length, 1);
+  assert.ok(downloads[0].includes("art/game-moon.glb"));
+  await next.lifecycle("activate");
+  next.offline();
+  assert.equal(
+    await (await next.request("art/game-moon.glb", "cors")).text(),
+    "changed: art/game-moon.glb",
+  );
+});
+
+test("failed optional download preserves the site and can resume verified game files", async () => {
+  const w = worker({ stale: "art/game-moon.glb" });
+  await w.lifecycle("install");
+  await w.lifecycle("activate");
+  assert.equal((await w.gamePack()).phase, "error");
+  w.offline();
+  assert.equal((await w.request("en/")).status, 200);
+  const retry = worker({ sharedStores: w.stores });
+  assert.equal((await retry.gamePack()).phase, "ready");
+});
 test("generated integrity manifest matches every final file byte-for-byte", async () => {
   assert.deepEqual(Object.keys(integrity), assets);
   for (const asset of assets) {

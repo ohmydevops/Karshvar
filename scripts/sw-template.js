@@ -6,6 +6,8 @@ const stateName = "karshvar-update-state-" + encodeURIComponent(scope);
 const stateURL = new URL(".update-state", scope).href;
 const approvalURL = new URL(".update-approval", scope).href;
 const activeURL = new URL(".update-active", scope).href;
+const gameEnabledURL = new URL(".save-earth-enabled", scope).href;
+const gameAssets = new Set(GAME_ASSETS);
 let status = {
   version: VERSION,
   phase: "idle",
@@ -20,7 +22,9 @@ async function publish(phase) {
 const timers = new Map();
 const precache = new PrecacheController({
   cacheName: "karshvar-workbox-" + encodeURIComponent(scope),
-  fallbackToNetwork: false,
+  // Only cacheAsset invokes the strategy on a miss, with a known revision and
+  // mandatory integrity. This allows the optional pack to install after entry.
+  fallbackToNetwork: true,
   plugins: [
     {
       requestWillFetch: async ({ request }) => {
@@ -49,6 +53,29 @@ precache.addToCacheList(
     return { url, revision: INTEGRITY[url], integrity: INTEGRITY[url] };
   }),
 );
+const pendingAssets = new Map();
+async function cacheAsset(asset, event) {
+  if (!pendingAssets.has(asset)) {
+    const url = new URL(asset, scope).href;
+    const task = Promise.all(
+      precache.strategy.handleAll({
+        event,
+        request: new Request(url, {
+          integrity: INTEGRITY[asset],
+          cache: gameAssets.has(asset) ? "default" : "reload",
+          credentials: "same-origin",
+        }),
+        params: {
+          cacheKey: precache.getCacheKeyForURL(url),
+          integrity: INTEGRITY[asset],
+        },
+      }),
+    ).then(([response]) => response);
+    pendingAssets.set(asset, task);
+    task.finally(() => pendingAssets.delete(asset)).catch(() => {});
+  }
+  return (await pendingAssets.get(asset)).clone();
+}
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
@@ -61,29 +88,23 @@ self.addEventListener("install", (event) => {
         (await approval?.json())?.version !== VERSION
       )
         throw new Error("Download approval required");
+      // Ordinary visitors receive only the site. An enrolled player receives
+      // the game on subsequent updates too; Workbox reuses unchanged hashes.
+      const enrolled = await state.match(gameEnabledURL);
+      const installAssets = enrolled
+        ? ASSETS
+        : ASSETS.filter((asset) => !gameAssets.has(asset));
+      status.total = installAssets.length;
+      status.completed = 0;
       await publish("downloading");
       let next = 0;
       let failed = false;
       const download = async () => {
-        while (!failed && next < ASSETS.length) {
-          const asset = ASSETS[next++];
-          const url = new URL(asset, scope).href;
+        while (!failed && next < installAssets.length) {
+          const asset = installAssets[next++];
           try {
             // Workbox reuses unchanged revisions and completed files on retries.
-            await Promise.all(
-              precache.strategy.handleAll({
-                event,
-                request: new Request(url, {
-                  integrity: INTEGRITY[asset],
-                  cache: "reload",
-                  credentials: "same-origin",
-                }),
-                params: {
-                  cacheKey: precache.getCacheKeyForURL(url),
-                  integrity: INTEGRITY[asset],
-                },
-              }),
-            );
+            await cacheAsset(asset, event);
             status.completed++;
             if (status.completed % 10 === 0) await publish("downloading");
           } catch (error) {
@@ -160,6 +181,16 @@ self.addEventListener("fetch", (event) => {
       }
       const cached = await precache.matchPrecache(key.href);
       if (cached) return cached;
+      if (gameAssets.has(relative)) {
+        try {
+          return await cacheAsset(relative, event);
+        } catch {
+          return new Response(
+            "Game download unavailable. Reconnect and retry.",
+            { status: 503 },
+          );
+        }
+      }
       // Never combine new route HTML with JS belonging to an older app release.
       if (
         event.request.mode === "navigate" &&
@@ -180,6 +211,46 @@ self.addEventListener("fetch", (event) => {
   );
 });
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "CACHE_SAVE_EARTH") {
+    const port = event.ports?.[0];
+    event.waitUntil(
+      (async () => {
+        const state = await caches.open(stateName);
+        await state.put(gameEnabledURL, new Response("true"));
+        let next = 0,
+          completed = 0,
+          failed = false;
+        const progress = (phase) =>
+          port?.postMessage({
+            phase,
+            completed,
+            total: GAME_ASSETS.length,
+            version: VERSION,
+          });
+        progress("downloading");
+        const results = await Promise.allSettled(
+          Array.from({ length: 4 }, async () => {
+            while (!failed && next < GAME_ASSETS.length) {
+              const asset = GAME_ASSETS[next++];
+              try {
+                await cacheAsset(asset, event);
+                completed++;
+                progress("downloading");
+              } catch (error) {
+                failed = true;
+                throw error;
+              }
+            }
+          }),
+        );
+        progress(
+          results.some((result) => result.status === "rejected")
+            ? "error"
+            : "ready",
+        );
+      })(),
+    );
+  }
   if (event.data?.type === "ACTIVATE_UPDATE")
     event.waitUntil(self.skipWaiting());
   if (event.data?.type === "UPDATE_STATUS")

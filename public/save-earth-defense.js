@@ -1,8 +1,12 @@
 import { Vector3 } from "./vendor/three.module.min.js";
-import { earthAnchor, planetRadius } from "./save-earth-flight.js";
+import {
+  earthAnchor,
+  planetRadius,
+  damageMeteor,
+} from "./save-earth-flight.js";
 import { missionDifficulty } from "./save-earth-difficulty.js";
 
-// Limited assistance: one launch every 28–42 seconds; when more than eight
+// Limited assistance: normal salvos every 22–32 seconds; when more than eight
 // meteors are present, launch two together from different surface positions.
 // These kills do not earn the player's score.
 export function createEarthDefense(random = Math.random) {
@@ -23,12 +27,12 @@ export function createEarthDefense(random = Math.random) {
       cooldown = 2;
       opening = true;
     },
-    update(dt, player, meteors, onHit, openingTarget, onLaunch) {
+    update(dt, player, meteors, onHit, openingTarget, onLaunch, shields = 8) {
       for (let i = trails.length - 1; i >= 0; i--) {
         trails[i].trailLife -= dt;
         if (trails[i].trailLife <= 0) trails.splice(i, 1);
       }
-      cooldown -= dt;
+      cooldown -= dt * (shields <= 3 ? 1.3 : 1);
       if (!rockets.length && cooldown <= 0) {
         // Leave newly spawned and almost-impacting meteors to the player.
         const candidates = meteors.filter(
@@ -39,15 +43,16 @@ export function createEarthDefense(random = Math.random) {
         );
         if (opening && !candidates.length && openingTarget)
           candidates.push(openingTarget());
+        candidates.sort((a, b) => Number(!!b.giant) - Number(!!a.giant));
         const salvo = difficulty.randomSalvo
-          ? 1 + Math.floor(random() * 3)
+          ? 2 + Math.floor(random() * 2)
           : meteors.length > 8
             ? 2
             : 1;
         const count = Math.min(candidates.length, salvo);
         for (let slot = 0; slot < count; slot++) {
           const [target] = candidates.splice(
-            Math.floor(random() * candidates.length),
+            candidates[0]?.giant ? 0 : Math.floor(random() * candidates.length),
             1,
           );
           earthAnchor(player, anchor);
@@ -104,8 +109,9 @@ export function createEarthDefense(random = Math.random) {
           // Keep coasting after a player kill; never retarget or detonate in air.
           rocket.position.addScaledVector(rocket.direction, 18 * dt);
         } else if (rocket.age >= rocket.duration) {
-          meteors.splice(index, 1);
-          onHit(rocket.target);
+          const destroyed = damageMeteor(rocket.target, 8);
+          if (destroyed) meteors.splice(index, 1);
+          onHit(rocket.target, destroyed);
           rocket.retired = true;
           rocket.trailLife = 3;
           trails.push(rocket);

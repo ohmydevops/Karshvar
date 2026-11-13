@@ -219,9 +219,29 @@ test("occasional tuning sounds occupy quiet radio gaps and remain spaced apart",
       !n.buffer?.id &&
       Math.abs(n.end - n.startedAt - 1) < 0.01,
   );
-  assert.ok(tuning.length >= 1 && tuning.length <= 6);
+  assert.ok(tuning.length >= 1 && tuning.length <= 15);
   tuning.forEach((n, i) => {
-    if (i) assert.ok(n.startedAt - tuning[i - 1].startedAt >= 25);
+    if (i) assert.ok(n.startedAt - tuning[i - 1].startedAt >= 10);
+  });
+  audio.pause();
+});
+
+test("radio keeps choosing shuffled recordings without adjacent repeats", async (t) => {
+  const fixture = audioFixture(t),
+    audio = createGameAudio();
+  audio.boot();
+  await new Promise(setImmediate);
+  for (let time = 0; time < 500; time += 0.5) {
+    fixture.context.advance(time);
+    audio.radio();
+  }
+  const voices = fixture.started
+    .filter((n) => n.buffer?.id?.includes("nasa-"))
+    .map((n) => n.buffer.id);
+  assert.ok(voices.length > 20);
+  assert.equal(new Set(voices).size, 16);
+  voices.forEach((voice, i) => {
+    if (i) assert.notEqual(voice, voices[i - 1]);
   });
   audio.pause();
 });

@@ -6,6 +6,8 @@ import {
 } from "../public/save-earth-difficulty.js";
 test("normal preserves pacing while hard starts crowded, accelerates sooner and adds support", () => {
   assert.equal(missionDifficulty("normal").initialMeteors, 1);
+  assert.equal(missionDifficulty("normal").shields, 5);
+  assert.equal(missionDifficulty("hard").shields, 10);
   assert.equal(missionDifficulty("normal").firstSpawn, 10);
   assert.equal(meteorSpawnInterval("normal", 0), 8);
   assert.equal(meteorSpawnInterval("normal", 60), 5.6);

@@ -8,9 +8,9 @@ export function createGameAudio() {
     firstPerson = false,
     radioSource = null,
     nextRadio = 0,
-    nextTuning = 18,
+    nextTuning = 8,
     nextFlyby = 0,
-    radioIndex = 0;
+    lastRadio = -1;
   let narrationSource = null,
     narrationGain = null;
   const transient = new Set();
@@ -34,7 +34,36 @@ export function createGameAudio() {
     "nasa-discovery-looking.mp3",
     "nasa-discovery-vector.mp3",
     "nasa-discovery-orbit.mp3",
+    "nasa-radio-apu.mp3",
+    "nasa-radio-picture.mp3",
+    "nasa-radio-houston-two.mp3",
+    "nasa-radio-meco.mp3",
+    "nasa-radio-on-way.mp3",
+    "nasa-radio-ato.mp3",
+    "nasa-radio-eagle.mp3",
+    "nasa-radio-zero-g.mp3",
   ];
+  let radioBag = [];
+  function chooseRadio() {
+    if (!radioBag.length) {
+      radioBag = recordings
+        .map((buffer, index) => (buffer ? index : -1))
+        .filter((index) => index >= 0);
+      for (let i = radioBag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [radioBag[i], radioBag[j]] = [radioBag[j], radioBag[i]];
+      }
+      if (radioBag.length > 1 && radioBag.at(-1) === lastRadio)
+        [radioBag[0], radioBag[radioBag.length - 1]] = [
+          radioBag.at(-1),
+          radioBag[0],
+        ];
+    }
+    const index = radioBag.pop();
+    if (index === undefined) return null;
+    lastRadio = index;
+    return recordings[index];
+  }
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const audible = () =>
     context && active && !muted && context.state === "running";
@@ -304,7 +333,7 @@ export function createGameAudio() {
       nextRadio - context.currentTime > 1.5 &&
       context.currentTime < nextSagan - 1.5
     ) {
-      nextTuning = context.currentTime + 25 + Math.random() * 30;
+      nextTuning = context.currentTime + 10 + Math.random() * 12;
       const source = context.createBufferSource(),
         filter = context.createBiquadFilter(),
         gain = context.createGain();
@@ -312,8 +341,11 @@ export function createGameAudio() {
       source.buffer = noise;
       filter.type = "bandpass";
       filter.Q.value = 1.2;
-      filter.frequency.setValueAtTime(550, time);
-      filter.frequency.exponentialRampToValueAtTime(1900, time + 0.35);
+      filter.frequency.setValueAtTime(400 + Math.random() * 700, time);
+      filter.frequency.exponentialRampToValueAtTime(
+        1400 + Math.random() * 1200,
+        time + 0.35,
+      );
       filter.frequency.exponentialRampToValueAtTime(800, time + 0.85);
       gain.gain.setValueAtTime(0.0001, time);
       gain.gain.linearRampToValueAtTime(0.045, time + 0.12);
@@ -335,13 +367,9 @@ export function createGameAudio() {
     const narration =
       !narrationSource && saganRecording && context.currentTime >= nextSagan;
     if (!narration && radioSource) return false;
-    let buffer = narration
-      ? saganRecording
-      : recordings[radioIndex % radioFiles.length];
-    if (!buffer) buffer = recordings.find(Boolean);
+    const buffer = narration ? saganRecording : chooseRadio();
     if (!buffer) return false;
-    if (!narration) radioIndex++;
-    else nextSagan = Infinity;
+    if (narration) nextSagan = Infinity;
     const source = context.createBufferSource(),
       highpass = context.createBiquadFilter();
     const lowpass = context.createBiquadFilter(),
@@ -353,7 +381,7 @@ export function createGameAudio() {
     lowpass.type = "lowpass";
     lowpass.frequency.value = narration ? 8000 : 2800;
     gain.gain.setValueAtTime(0, time);
-    const voiceLevel = 0.24;
+    const voiceLevel = narration ? 0.24 : 0.29;
     gain.gain.linearRampToValueAtTime(
       voiceLevel,
       time + (narration ? 1.2 : 0.08),
@@ -369,7 +397,8 @@ export function createGameAudio() {
       narrationGain = gain;
     } else radioSource = track(source, [source, highpass, lowpass, gain]);
     // Controller may poll frequently; overlap and the brief quiet gap live here.
-    if (!narration) nextRadio = time + buffer.duration + 5 + Math.random() * 4;
+    if (!narration)
+      nextRadio = time + buffer.duration + 2.5 + Math.random() * 3.5;
     updateBreathing();
     if (!narration) {
       burst(0.06, 0.035, 2400);

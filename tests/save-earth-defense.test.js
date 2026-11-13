@@ -53,7 +53,7 @@ test("crowded scenes allow two simultaneous rockets on distinct targets, then a 
   let hits = 0,
     time = 0;
   const launches = [];
-  for (let i = 0; i < 1300; i++) {
+  for (let i = 0; i < 1100; i++) {
     time += 0.02;
     defense.update(
       0.02,
@@ -132,10 +132,10 @@ test("a player kill lets the rocket coast without another hit, and a missing ope
   assert.equal(defense.rockets.length, 0);
 });
 
-test("hard salvos randomly launch one, two or three rockets from separate locations", () => {
+test("hard salvos randomly launch two or three rockets from separate locations", () => {
   for (const [random, count] of [
-    [0, 1],
-    [0.5, 2],
+    [0, 2],
+    [0.5, 3],
     [0.99, 3],
   ]) {
     const defense = createEarthDefense(() => random),
@@ -153,4 +153,36 @@ test("hard salvos randomly launch one, two or three rockets from separate locati
           defense.rockets[i].origin.distanceTo(defense.rockets[j].origin) > 2,
         );
   }
+});
+
+test("critical shields accelerate support without bypassing the cooldown", () => {
+  function nextSalvo(shields) {
+    const defense = createEarthDefense(() => 0),
+      pilot = createPilot();
+    const meteors = Array.from({ length: 20 }, () => {
+      const m = createMeteor(() => 0.5, pilot);
+      m.age = 10;
+      return m;
+    });
+    let launches = 0,
+      time = 0;
+    while (launches < 4 && time < 35) {
+      time += 0.02;
+      defense.update(
+        0.02,
+        pilot,
+        meteors,
+        () => {},
+        undefined,
+        () => launches++,
+        shields,
+      );
+    }
+    assert.equal(launches, 4);
+    return time;
+  }
+  const healthy = nextSalvo(8),
+    critical = nextSalvo(3);
+  assert.ok(healthy > 23 && healthy < 25);
+  assert.ok(critical > 17 && critical < healthy - 4);
 });

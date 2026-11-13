@@ -76,7 +76,7 @@
         </div>
         <div class="mission-stats">
           <span>Puan <strong id="score">0</strong></span>
-          <span>Dünya’nın kalkanı <strong id="shield">8</strong></span>
+          <span>Dünya’nın kalkanı <strong id="shield">5</strong></span>
           <button
             id="sound-toggle"
             type="button"
@@ -108,23 +108,53 @@
             data-desktop="Yalnızca masaüstü; klavye ve fare gerektirir."
             data-loading="3B sahne yükleniyor…"
             data-error="Sahne yüklenemedi. Sayfayı yenile."
-            data-lost="Dünya’nın kalkanı çöktü."
+            data-lost="Bu kez kaybettik ama bir dahaki sefere daha çok çabalayacağız!"
             data-ended="Tur bitti."
             role="status"
           >
             Göktaşlarını Dünya’ya çarpmadan durdur.
           </p>
+          <div id="launch-options">
+            <fieldset id="launch-location">
+              <legend>1 · Başlangıç yerini seç</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="space"
+                />Uzay</label
+              ><label
+                ><input type="radio" name="launch-location" value="moon" />Ay
+                yörüngesi</label
+              >
+            </fieldset>
+            <fieldset id="launch-difficulty" hidden disabled>
+              <legend>2 · Zorluğu seç</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="normal"
+                />Normal</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="hard"
+                />Zor</label
+              >
+            </fieldset>
+          </div>
           <div class="difficulty-buttons">
             <button
               id="start"
               disabled
               type="button"
               data-resume="Devam et"
-              data-normal="Normal"
+              data-normal="Oyunu başlat"
             >
-              Normal
+              Oyunu başlat
             </button>
-            <button id="start-hard" disabled type="button">Zor</button>
           </div>
         </div>
       </div>
@@ -147,7 +177,7 @@
           HAREKET: W ileri, S geri, A sola, D sağa hareket ettirir. Space ile
           yüksel, Shift ile alçal. ŞARJÖR: 30 mermilik şarjörü değiştirmek için
           R tuşuna bas. UÇUŞ: Q ve E ile vücudunu kendi ekseninde döndür.
-          Sürüklenmeyi yavaşlatmak için F tuşunu basılı tut. KAMERA: V görünümü
+          Yavaşlamak veya durmak için ters yönde itki uygula. KAMERA: V görünümü
           değiştirir. Astronotun etrafına bakmak için Ctrl tuşunu basılı tutup
           fareyi hareket ettir; bu görünümde de ateş edebilirsin. KONTROLLER:
           Esc duraklatır, M sesi açıp kapatır, H yardımı gösterir.
@@ -232,7 +262,7 @@
         </button>
         <p id="controls" hidden>
           WASD: uçuş · Fare: bakış · Space / Shift: yukarı / aşağı · Q / E:
-          yatış · F: fren · V: kamera · Esc: duraklat
+          yatış· V: kamera · Esc: duraklat
         </p>
         <button id="end" type="button" hidden>Turu bitir</button>
       </div>
@@ -249,42 +279,7 @@
         </nav>
       </details>
       <p class="scene-credits">
-        <a href="../sources/#home-scene-credits">Dünya · Astronot · Göktaşı</a>
-        ·
-        <a
-          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
-          >Hafif makineli tüfek — Drus</a
-        >
-        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-        <a href="../../audio/nasa-radio-SOURCE.txt">NASA telsizi · kaynaklar</a>
-        ·
-        <a href="../../audio/helmet-breathing-SOURCE.txt">Nefes sesi · CC0</a> ·
-        <a
-          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
-          >Andromeda: R. Gendler</a
-        >
-        ·
-        <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · uyarlanmıştır</a> ·
-        <a href="https://www.solarsystemscope.com/textures/"
-          >Gezegen dokuları: Solar System Scope / INOVE</a
-        >
-        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> ·
-        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> ·
-        <a href="../../art/rocket-SOURCE.txt"
-          >Test Rocket — Joe_Y · CC BY-NC 4.0</a
-        >
-        ·
-        <a href="../../art/explosion-SOURCE.txt"
-          >Sparks/explosion — OPREXT · CC BY 4.0</a
-        >
-        ·
-        <a href="../../audio/meteor-explosions-SOURCE.txt"
-          >Explosion audio · CC0</a
-        >
-        ·
-        <a href="../../audio/rocket-engine-SOURCE.txt"
-          >Rocket launch — Félix Blume · CC0</a
-        >
+        <a href="../sources/#save-earth-credits">Kaynaklar</a>
       </p>
     </main>
     <dialog

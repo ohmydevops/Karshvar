@@ -52,3 +52,43 @@ https://www.nasa.gov/wp-content/uploads/2015/01/640170main_Roger20Roll.mp3
 nasa-discovery-vector.mp3
 Title: Discovery - Vector transfer
 https://www.nasa.gov/wp-content/uploads/2015/01/640173main_Vector20Transfer.mp3
+
+nasa-radio-apu.mp3
+Discovery – APU shutdown
+https://www.nasa.gov/wp-content/uploads/2015/01/640148main_APU20Shutdown.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-picture.mp3
+Discovery – Good Picture of Steve
+https://www.nasa.gov/wp-content/uploads/2015/01/639893main_Good_Picture_of_Steve.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-houston-two.mp3
+Discovery – Houston Discovery 2
+https://www.nasa.gov/wp-content/uploads/2015/01/639896main_Houston_Discovery_2.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-meco.mp3
+Discovery – MECO
+https://www.nasa.gov/wp-content/uploads/2015/01/640166main_MECO.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-on-way.mp3
+Discovery – On its way to orbit
+https://www.nasa.gov/wp-content/uploads/2015/01/640168main_On20its20way20to20Orbit.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-ato.mp3
+Discovery – Press to ATO
+https://www.nasa.gov/wp-content/uploads/2015/01/640169main_Press20to20ATO.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-eagle.mp3
+Apollo 11: Eagle Has Landed
+https://www.nasa.gov/wp-content/uploads/2015/01/569462main_eagle_has_landed.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.
+
+nasa-radio-zero-g.mp3
+Mercury 6: Zero G
+https://www.nasa.gov/wp-content/uploads/2015/01/582367main_Mercury-6_Zero-G.mp3
+Original NASA archival MP3, unchanged. Added 2026-11-13.

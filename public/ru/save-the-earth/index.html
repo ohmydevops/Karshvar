@@ -76,7 +76,7 @@
         </div>
         <div class="mission-stats">
           <span>Очки <strong id="score">0</strong></span>
-          <span>Щит Земли <strong id="shield">8</strong></span>
+          <span>Щит Земли <strong id="shield">5</strong></span>
           <button
             id="sound-toggle"
             type="button"
@@ -108,23 +108,56 @@
             data-desktop="Только для компьютера с клавиатурой и мышью."
             data-loading="Загрузка 3D-сцены…"
             data-error="Не удалось загрузить сцену. Обнови страницу."
-            data-lost="Щит Земли разрушен."
+            data-lost="В этот раз мы проиграли, но в следующий раз постараемся лучше!"
             data-ended="Раунд завершён."
             role="status"
           >
             Перехватывай метеоры, пока они не достигли Земли.
           </p>
+          <div id="launch-options">
+            <fieldset id="launch-location">
+              <legend>1 · Выбери место старта</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="space"
+                />Космос</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="moon"
+                />Орбита Луны</label
+              >
+            </fieldset>
+            <fieldset id="launch-difficulty" hidden disabled>
+              <legend>2 · Выбери сложность</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="normal"
+                />Обычная</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="hard"
+                />Сложная</label
+              >
+            </fieldset>
+          </div>
           <div class="difficulty-buttons">
             <button
               id="start"
               disabled
               type="button"
               data-resume="Продолжить"
-              data-normal="Обычный"
+              data-normal="Начать игру"
             >
-              Обычный
+              Начать игру
             </button>
-            <button id="start-hard" disabled type="button">Сложный</button>
           </div>
         </div>
       </div>
@@ -147,10 +180,11 @@
           приближения. ДВИЖЕНИЕ: W — вперёд, S — назад, A — влево, D — вправо.
           Пробел — вверх, Shift — вниз. ПЕРЕЗАРЯДКА: Нажми R, чтобы заменить
           магазин на 30 патронов. ПОЛЁТ: Q и E вращают тело вокруг продольной
-          оси. Удерживай F, чтобы замедлить дрейф. КАМЕРА: V меняет вид.
-          Удерживай Ctrl и двигай мышью, чтобы осмотреть космонавта; в этом
-          режиме тоже можно стрелять. УПРАВЛЕНИЕ: Esc — пауза, M — включение или
-          отключение звука, H — справка.
+          оси. Чтобы замедлиться или остановиться, направь тягу в
+          противоположную сторону. КАМЕРА: V меняет вид. Удерживай Ctrl и двигай
+          мышью, чтобы осмотреть космонавта; в этом режиме тоже можно стрелять.
+          УПРАВЛЕНИЕ: Esc — пауза, M — включение или отключение звука, H —
+          справка.
         </p>
         <p class="briefing-typed" aria-hidden="true"></p>
       </aside>
@@ -231,8 +265,8 @@
           Помощь · H
         </button>
         <p id="controls" hidden>
-          WASD: полёт · Мышь: обзор · Space / Shift: вверх / вниз · Q / E: крен
-          · F: тормоз · V: камера · Esc: пауза
+          WASD: полёт · Мышь: обзор · Space / Shift: вверх / вниз · Q / E: крен·
+          V: камера · Esc: пауза
         </p>
         <button id="end" type="button" hidden>Завершить раунд</button>
       </div>
@@ -251,45 +285,7 @@
         </nav>
       </details>
       <p class="scene-credits">
-        <a href="../sources/#home-scene-credits"
-          >Земля · Космонавт · Метеорит</a
-        >
-        ·
-        <a
-          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
-          >Пистолет-пулемёт — Drus</a
-        >
-        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-        <a href="../../audio/nasa-radio-SOURCE.txt"
-          >Радиосвязь NASA · источники</a
-        >
-        · <a href="../../audio/helmet-breathing-SOURCE.txt">Дыхание · CC0</a> ·
-        <a
-          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
-          >Андромеда: R. Gendler</a
-        >
-        ·
-        <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · адаптировано</a> ·
-        <a href="https://www.solarsystemscope.com/textures/"
-          >Текстуры планет: Solar System Scope / INOVE</a
-        >
-        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> ·
-        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> ·
-        <a href="../../art/rocket-SOURCE.txt"
-          >Test Rocket — Joe_Y · CC BY-NC 4.0</a
-        >
-        ·
-        <a href="../../art/explosion-SOURCE.txt"
-          >Sparks/explosion — OPREXT · CC BY 4.0</a
-        >
-        ·
-        <a href="../../audio/meteor-explosions-SOURCE.txt"
-          >Explosion audio · CC0</a
-        >
-        ·
-        <a href="../../audio/rocket-engine-SOURCE.txt"
-          >Rocket launch — Félix Blume · CC0</a
-        >
+        <a href="../sources/#save-earth-credits">Источники</a>
       </p>
     </main>
     <dialog

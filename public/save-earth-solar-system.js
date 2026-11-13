@@ -25,7 +25,18 @@ export const solarSystem = Object.freeze(
 // Display coordinates, deliberately separate from the physical reference data.
 // The observer is near Earth. Distances are compressed and phases are authored:
 // this is a legible game composition, not current planetary positions or scale.
-export const solarSystemSunPosition = Object.freeze([-950, 500, 1100]);
+export const solarSystemSunPosition = Object.freeze([1450, 260, 100]);
+export const moonDisplayRadius = 3.6;
+export function moonOrbitPosition(elapsed = 0) {
+  // A broad, mostly face-on display orbit keeps the Moon's silhouette clear
+  // of Earth's limb from the gameplay camera, including its shoulder offset.
+  const phase = elapsed * 0.012 + 2.7;
+  return [
+    34 * Math.cos(phase),
+    34 * Math.sin(phase) * Math.cos(0.35),
+    34 * Math.sin(phase) * Math.sin(0.35),
+  ];
+}
 const radians = Math.PI / 180;
 const cross = (a, b) => [
   a[1] * b[2] - a[2] * b[1],

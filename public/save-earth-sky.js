@@ -1,11 +1,10 @@
+import { solarSystemSunPosition } from "./save-earth-solar-system.js";
 import * as THREE from "./vendor/three.module.min.js";
 import { addCelestialBodies } from "./save-earth-celestial.js";
 
-export const celestialSunDirection = new THREE.Vector3(
-  -950,
-  500,
-  1100,
-).normalize();
+export const celestialSunDirection = new THREE.Vector3()
+  .fromArray(solarSystemSunPosition)
+  .normalize();
 
 // Distant scenery stays centred on the pilot, but never follows their rotation.
 export function createDeepSky() {
@@ -110,7 +109,7 @@ export function createDeepSky() {
         }`,
     }),
   );
-  sun.position.set(-950, 500, 1100);
+  sun.position.fromArray(solarSystemSunPosition);
   sun.name = "Sun";
   sky.add(sun);
   // Analytic billboard glow: no low-resolution texels to enlarge while aiming.

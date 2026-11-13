@@ -76,7 +76,7 @@
         </div>
         <div class="mission-stats">
           <span>امتیاز <strong id="score">0</strong></span>
-          <span>سپر زمین <strong id="shield">8</strong></span>
+          <span>سپر زمین <strong id="shield">5</strong></span>
           <button
             id="sound-toggle"
             type="button"
@@ -108,23 +108,53 @@
             data-desktop="فقط برای دسکتاپ؛ با صفحه‌کلید و موس بازی کن."
             data-loading="در حال بارگذاری صحنهٔ سه‌بعدی…"
             data-error="صحنهٔ سه‌بعدی بارگذاری نشد. صفحه را دوباره بارگذاری کن."
-            data-lost="سپر زمین از بین رفت."
+            data-lost="این بار باختیم، ولی دفعهٔ بعد بهتر تلاش می‌کنیم!"
             data-ended="دور تمام شد."
             role="status"
           >
             قبل از رسیدن شهاب‌ها به زمین، آن‌ها را بزن.
           </p>
+          <div id="launch-options">
+            <fieldset id="launch-location">
+              <legend>1 · محل شروع را انتخاب کن</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-location"
+                  value="space"
+                />فضا</label
+              ><label
+                ><input type="radio" name="launch-location" value="moon" />مدار
+                ماه</label
+              >
+            </fieldset>
+            <fieldset id="launch-difficulty" hidden disabled>
+              <legend>2 · درجهٔ سختی را انتخاب کن</legend>
+              <label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="normal"
+                />نرمال</label
+              ><label
+                ><input
+                  type="radio"
+                  name="launch-difficulty"
+                  value="hard"
+                />سخت</label
+              >
+            </fieldset>
+          </div>
           <div class="difficulty-buttons">
             <button
               id="start"
               disabled
               type="button"
               data-resume="ادامهٔ بازی"
-              data-normal="شروع نرمال"
+              data-normal="شروع بازی"
             >
-              شروع نرمال
+              شروع بازی
             </button>
-            <button id="start-hard" disabled type="button">شروع سخت</button>
           </div>
         </div>
       </div>
@@ -146,11 +176,11 @@
           را نگه دار تا شلیک کنی. حرکت: با W جلو و با S عقب برو؛ A و D حرکت به
           چپ و راست هستند. با Space بالا و با Shift پایین برو. تعویض خشاب: با R
           خشاب ۳۰تایی اسلحه را عوض کن. کنترل پرواز: با Q و E به دور محور بدنت
-          بچرخ. F را نگه دار تا حرکتت آرام بگیرد. دوربین: V نما را عوض می‌کند.
-          Ctrl را نگه دار و موس را حرکت بده تا دور فضانورد را ببینی؛ در این حالت
-          هم می‌توانی شلیک کنی. دکمهٔ راست موس را برای زوم نگه دار. کنترل‌ها:
-          Esc بازی را متوقف می‌کند؛ M صدا را قطع یا وصل می‌کند و H راهنما را
-          نشان می‌دهد.
+          بچرخ. برای کم‌کردن سرعت یا توقف، در جهت مخالف نیرو وارد کن. دوربین: V
+          نما را عوض می‌کند. Ctrl را نگه دار و موس را حرکت بده تا دور فضانورد را
+          ببینی؛ در این حالت هم می‌توانی شلیک کنی. دکمهٔ راست موس را برای زوم
+          نگه دار. کنترل‌ها: Esc بازی را متوقف می‌کند؛ M صدا را قطع یا وصل
+          می‌کند و H راهنما را نشان می‌دهد.
         </p>
         <p class="briefing-typed" aria-hidden="true"></p>
       </aside>
@@ -231,8 +261,8 @@
           راهنما · H
         </button>
         <p id="controls" hidden>
-          WASD: پرواز · موس: چرخش · Space / Shift: بالا / پایین · Q / E: غلتش ·
-          F: ترمز · V: دوربین · Esc: مکث
+          WASD: پرواز · موس: چرخش · Space / Shift: بالا / پایین · Q / E: غلتش·
+          V: دوربین · Esc: مکث
         </p>
         <button id="end" type="button" hidden>پایان دور</button>
       </div>
@@ -251,39 +281,7 @@
         </nav>
       </details>
       <p class="scene-credits">
-        <a href="../sources/#home-scene-credits">زمین · فضانورد · شهاب‌سنگ</a> ·
-        <a
-          href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277"
-          >مسلسل دستی — Drus</a
-        >
-        · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> ·
-        <a href="../../audio/nasa-radio-SOURCE.txt">رادیوی ناسا · منابع</a> ·
-        <a href="../../audio/helmet-breathing-SOURCE.txt">صدای تنفس · CC0</a> ·
-        <a
-          href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/"
-          >آندرومدا: R. Gendler</a
-        >
-        · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · اقتباس‌شده</a> ·
-        <a href="https://www.solarsystemscope.com/textures/"
-          >بافت سیاره‌ها: Solar System Scope / INOVE</a
-        >
-        · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> ·
-        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> ·
-        <a href="../../art/rocket-SOURCE.txt"
-          >Test Rocket — Joe_Y · CC BY-NC 4.0</a
-        >
-        ·
-        <a href="../../art/explosion-SOURCE.txt"
-          >Sparks/explosion — OPREXT · CC BY 4.0</a
-        >
-        ·
-        <a href="../../audio/meteor-explosions-SOURCE.txt"
-          >Explosion audio · CC0</a
-        >
-        ·
-        <a href="../../audio/rocket-engine-SOURCE.txt"
-          >Rocket launch — Félix Blume · CC0</a
-        >
+        <a href="../sources/#save-earth-credits">منابع</a>
       </p>
     </main>
     <dialog

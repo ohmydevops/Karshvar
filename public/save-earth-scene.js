@@ -1,3 +1,11 @@
+import { syncSceneDepth } from "./save-earth-depth.js";
+import { createMeteorLooks } from "./save-earth-meteor-looks.js";
+import {
+  moonOrbitPosition,
+  moonDisplayRadius,
+} from "./save-earth-solar-system.js";
+import { MeshoptDecoder } from "./vendor/meshopt_decoder.mjs";
+import { createLunarSite, constrainLunarPilot } from "./save-earth-lunar.js";
 import { rumbleStrength } from "./save-earth-rumble.js";
 import { createMeteorExplosions } from "./save-earth-explosions.js";
 import { createSpaceStation } from "./save-earth-station.js";
@@ -8,7 +16,7 @@ import { createDeepSky, celestialSunDirection } from "./save-earth-sky.js";
 import * as THREE from "./vendor/three.module.min.js";
 import { GLTFLoader } from "./vendor/GLTFLoader.js";
 import { createHomeScene, earthAxialTilt } from "./home-scene.js";
-import { createPlanet } from "./save-earth-planet.js";
+import { createModelPlanet } from "./save-earth-planet.js";
 import { createMagazineAnimation } from "./save-earth-weapon.js";
 import { createCelestialLabels } from "./save-earth-labels.js";
 import { createRocketView } from "./save-earth-rocket-view.js";
@@ -21,6 +29,7 @@ export async function createSpaceRenderer(canvas, width, height) {
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
+    logarithmicDepthBuffer: true,
     powerPreference: "high-performance",
   });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -28,62 +37,65 @@ export async function createSpaceRenderer(canvas, width, height) {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
   const textures = new THREE.TextureLoader(),
-    models = new GLTFLoader();
+    models = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const url = (name) => new URL("./art/" + name, import.meta.url).href;
-  const [day, night, cloud, person, rock, blaster, station, rocket, explosion] =
-    await Promise.all([
-      ...["earth-texture.webp", "earth-night.webp", "earth-clouds.webp"].map(
-        (n) => textures.loadAsync(url(n)),
-      ),
-      ...["astronaut.glb", "meteorite.glb", "smg-gun.glb"].map((n) =>
-        models.loadAsync(url(n)),
-      ),
-      createSpaceStation(models),
-      models.loadAsync(url("earth-rocket.glb")),
-      models.loadAsync(url("meteor-explosion.glb")),
-    ]);
-  day.colorSpace = night.colorSpace = THREE.SRGBColorSpace;
-  day.anisotropy = night.anisotropy = Math.min(
-    8,
-    renderer.capabilities.getMaxAnisotropy(),
-  );
+  const [
+    person,
+    rock,
+    blaster,
+    station,
+    rocket,
+    explosion,
+    lunarSite,
+    earthAsset,
+  ] = await Promise.all([
+    ...["astronaut.glb", "meteorite.glb", "smg-gun.glb"].map((n) =>
+      models.loadAsync(url(n)),
+    ),
+    createSpaceStation(models),
+    models.loadAsync(url("earth-rocket.glb")),
+    models.loadAsync(url("meteor-explosion.glb")),
+    createLunarSite(models, textures),
+    models.loadAsync(url("game-earth.glb")),
+  ]);
   const scene = new THREE.Scene();
+  scene.add(lunarSite);
+  let lunarMode = false;
   const rocketView = createRocketView(rocket.scene, scene);
   scene.add(station.object);
   const background = new THREE.Scene();
   background.background = new THREE.Color(0x030812);
-  const camera = new THREE.PerspectiveCamera(68, width / height, 0.04, 5000);
+  const camera = new THREE.PerspectiveCamera(68, width / height, 0.04, 8000000);
   camera.position.set(0, 3.55, 46);
   const sun = new THREE.DirectionalLight(0xffffff, 3.2);
   sun.position.copy(celestialSunDirection);
   const rim = new THREE.DirectionalLight(0x5bafff, 3);
   rim.position.set(200, 50, -100);
-  scene.add(sun, rim, new THREE.HemisphereLight(0xb6d9ff, 0x152841, 2));
+  const ambient = new THREE.HemisphereLight(0xb6d9ff, 0x152841, 2);
+  scene.add(sun, rim, ambient);
   const settings = createHomeScene(),
     planet = new THREE.Group(),
     axialFrame = new THREE.Group();
   axialFrame.rotation.set(0, settings.axisHeading, earthAxialTilt);
   planet.add(axialFrame);
   background.add(planet);
-  const { earth, clouds } = createPlanet(
+  const { earth, clouds } = createModelPlanet(
     axialFrame,
     settings,
-    day,
-    night,
-    cloud,
+    earthAsset.scene,
     sun,
   );
   const halo = new THREE.Mesh(
-    new THREE.SphereGeometry(1.045, 64, 48),
+    new THREE.SphereGeometry(1.035, 96, 64),
     new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       uniforms: { impact: { value: 0 } },
       vertexShader:
-        "varying vec3 n;void main(){n=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
+        "varying vec3 n;varying vec3 viewDirection;void main(){n=normalMatrix*normal;vec4 p=modelViewMatrix*vec4(position,1.);viewDirection=-p.xyz;gl_Position=projectionMatrix*p;}",
       fragmentShader:
-        "varying vec3 n;uniform float impact;void main(){float a=pow(1.-abs(n.z),4.);gl_FragColor=vec4(mix(vec3(.12,.45,1.),vec3(1.,.2,.05),impact),a*.65);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}",
+        "varying vec3 n;varying vec3 viewDirection;uniform float impact;void main(){float facing=abs(dot(normalize(n),normalize(viewDirection)));float a=pow(1.-facing,3.5)*smoothstep(0.,.12,facing);gl_FragColor=vec4(mix(vec3(.28,.48,.68),vec3(1.,.2,.05),impact),a*.24);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}",
     }),
   );
   planet.add(halo);
@@ -92,8 +104,8 @@ export async function createSpaceRenderer(canvas, width, height) {
   const moon = sky.getObjectByName("Moon");
   // Keep the Moon in the same distant reference frame as Earth.
   // Its back hemisphere stays behind Earth, with a visible offset at mission start.
-  moon.scale.setScalar(3.6);
-  moon.position.set(-16, 9, -18);
+  moon.scale.setScalar(moonDisplayRadius);
+  moon.position.fromArray(moonOrbitPosition());
   const unshakenCamera = new THREE.Quaternion(),
     rumbleRotation = new THREE.Quaternion(),
     rumbleAngles = new THREE.Euler();
@@ -347,13 +359,14 @@ export async function createSpaceRenderer(canvas, width, height) {
   heldRig.add(astronaut, arms, weapon);
   const magazineAnimation = createMagazineAnimation(gun);
   const template = normalize(rock.scene, 2);
+  const meteorLooks = createMeteorLooks(template);
   const pool = (count, make) =>
     Array.from({ length: count }, () => {
       const m = make();
       scene.add(m);
       return m;
     });
-  const meteors = pool(64, () => template.clone(true));
+  const meteors = pool(64, () => meteorLooks.create());
   const shotGeometry = new THREE.CylinderGeometry(0.065, 0.065, 2.1, 8);
   shotGeometry.rotateZ(Math.PI / 2);
   const shotMaterial = new THREE.MeshBasicMaterial({
@@ -434,8 +447,11 @@ export async function createSpaceRenderer(canvas, width, height) {
     rig.updateMatrixWorld(true);
     magazineAnimation.update(reload);
   }
+  syncSceneDepth(scene, background);
+  lunarSite.visible = true;
   await renderer.compileAsync(scene, camera);
   await motionBlur.warmup(scene, camera, background);
+  lunarSite.visible = false;
   return {
     shot(player, thirdPerson, time) {
       posePilot(player, thirdPerson, time);
@@ -495,7 +511,21 @@ export async function createSpaceRenderer(canvas, width, height) {
       meteor.spawnPosition.copy(meteor.position);
     },
     resetStation: station.reset,
-    constrainPilot: station.constrainPilot,
+    setLocation(location) {
+      lunarMode = location === "moon";
+      lunarSite.visible = lunarMode;
+      moon.visible = !lunarMode;
+      station.object.visible = true;
+      if (lunarMode) station.place(new THREE.Vector3(-170, 260, -460));
+      rim.intensity = lunarMode ? 0 : 3;
+      ambient.intensity = lunarMode ? 0.35 : 2;
+      ambient.color.setHex(lunarMode ? 0xffffff : 0xb6d9ff);
+      ambient.groundColor.setHex(lunarMode ? 0x333333 : 0x152841);
+    },
+    constrainPilot(pilot) {
+      if (lunarMode) constrainLunarPilot(pilot);
+      station.constrainPilot(pilot);
+    },
     draw(state) {
       aimingDownSight = !!state.aiming;
       const targetFov = aimingDownSight ? 25 : 68;
@@ -542,12 +572,7 @@ export async function createSpaceRenderer(canvas, width, height) {
       }
       muzzleFlash.visible = state.cooldown > 0.16;
       sky.position.copy(planet.position);
-      const moonPhase = state.elapsed * 0.012;
-      moon.position.set(
-        -16 * Math.cos(moonPhase),
-        9 + 3 * Math.sin(moonPhase),
-        -18 - 6 * Math.sin(moonPhase),
-      );
+      moon.position.fromArray(moonOrbitPosition(state.elapsed));
       // The LROC map is centered at longitude zero (U=.5, local +X).
       // Keep this near hemisphere facing Earth instead of spinning freely.
       moon.lookAt(planet.position);
@@ -557,6 +582,7 @@ export async function createSpaceRenderer(canvas, width, height) {
         const p = state.meteors[i];
         m.visible = !!p;
         if (p) {
+          meteorLooks.apply(m, p.appearance);
           m.position.copy(p.position);
           m.scale.setScalar(
             template.scale.x *

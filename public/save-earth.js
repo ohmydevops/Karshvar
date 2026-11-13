@@ -6,6 +6,7 @@ import { createEarthDefense } from "./save-earth-defense.js";
 import {
   missionDifficulty,
   meteorSpawnInterval,
+  giantMeteorInterval,
 } from "./save-earth-difficulty.js";
 const defense = createEarthDefense();
 import { analytics } from "./save-earth-analytics.js";
@@ -15,6 +16,7 @@ import {
   turnPilot,
   flyPilot,
   createMeteor,
+  createGiantMeteor,
   nearMeteorCue,
   damageMeteor,
   shotHits,
@@ -56,7 +58,6 @@ const movementKeys = new Set([
   "ShiftRight",
   "KeyQ",
   "KeyE",
-  "KeyF",
 ]);
 const shotInterval = 0.2;
 let ammo = 30,
@@ -75,8 +76,30 @@ const shieldLabel = document.querySelector("#shield");
 const overlay = document.querySelector("#round-overlay");
 const status = document.querySelector("#round-status");
 const startButton = document.querySelector("#start");
-const hardButton = document.querySelector("#start-hard");
+const launchOptions = document.querySelector("#launch-options");
+const difficultyOptions = document.querySelector("#launch-difficulty");
+let selectedLocation =
+    launchOptions.querySelector('[name="launch-location"]:checked')?.value ??
+    null,
+  selectedDifficulty =
+    launchOptions.querySelector('[name="launch-difficulty"]:checked')?.value ??
+    null;
+function syncLaunch() {
+  launchOptions.hidden = Boolean(round) || !desktop.matches;
+  difficultyOptions.hidden = !selectedLocation;
+  difficultyOptions.disabled = !selectedLocation;
+  startButton.disabled =
+    !ready || !desktop.matches || (!round && !selectedDifficulty);
+}
+launchOptions.addEventListener("change", (event) => {
+  if (event.target.name === "launch-location")
+    selectedLocation = event.target.value;
+  if (event.target.name === "launch-difficulty")
+    selectedDifficulty = event.target.value;
+  syncLaunch();
+});
 let difficulty = "normal";
+let location = "space";
 const endButton = document.querySelector("#end");
 const history = document.querySelector("#scores");
 const empty = document.querySelector("#no-scores");
@@ -96,11 +119,13 @@ const meteors = [];
 const shots = [];
 const bursts = [];
 let round;
+// Honor a location selected before this module finished loading.
+syncLaunch();
 let score = 0;
-const maximumShields = 8;
-let shields = maximumShields;
+let shields = missionDifficulty("normal").shields;
 let elapsed = 0;
 let spawnIn = 0;
+let nextGiantAt = Infinity;
 let radioIn = 3;
 let cooldown = 0;
 let shotVisual = 0;
@@ -272,6 +297,15 @@ function advance(dt) {
   shotVisual = Math.max(0, shotVisual - dt);
   if (firing && cooldown <= 0) fire();
   elapsed += dt;
+  if (elapsed >= nextGiantAt) {
+    // Reserve a slot for the scheduled giant even in a crowded hard round.
+    if (meteors.length >= 64) {
+      const replace = meteors.findIndex((meteor) => !meteor.giant);
+      if (replace >= 0) meteors.splice(replace, 1);
+    }
+    meteors.push(createGiantMeteor(Math.random, player));
+    nextGiantAt += giantMeteorInterval(difficulty);
+  }
   radioIn -= dt;
   if (radioIn <= 0) {
     sound.radio?.();
@@ -288,11 +322,13 @@ function advance(dt) {
     dt,
     player,
     meteors,
-    (meteor) => {
-      addExplosion(meteor, 1.5);
+    (meteor, destroyed) => {
+      addExplosion(meteor, destroyed ? 1.5 : 0.3);
       sound.impact(meteor.position, player);
     },
     spawnOpeningMeteor,
+    undefined,
+    shields,
   );
   sound.syncRockets(defense.rockets, player);
   for (let i = bursts.length - 1; i >= 0; i--) {
@@ -330,7 +366,7 @@ function advance(dt) {
     if (arrived) {
       meteors.splice(i, 1);
       sound.impact(meteor.position, player);
-      shields--;
+      shields = Math.max(0, shields - (meteor.earthDamage ?? 1));
       flash = 0.23;
       updateStats();
       if (shields === 0) {
@@ -378,18 +414,21 @@ function tick(now) {
   scheduleFrame();
 }
 
-function start(mode = "normal") {
+function start(mode = "space", level = "normal") {
   if (!ready || !desktop.matches) return;
   if (round) {
     lockMouse();
     return;
   }
   document.body.classList.add("playing");
-  difficulty = mode === "hard" ? "hard" : "normal";
+  location = mode === "moon" ? "moon" : "space";
+  difficulty = level === "hard" ? "hard" : "normal";
+  view.setLocation(location);
   const settings = missionDifficulty(difficulty);
   const at = Date.now();
   round = { id: crypto.randomUUID?.() ?? at + "-" + Math.random(), at };
   round.difficulty = difficulty;
+  round.location = location;
   analytics.track("save-earth-start", {
     language: document.documentElement.lang,
   });
@@ -397,10 +436,11 @@ function start(mode = "normal") {
   ammo = 30;
   reloadIn = 0;
   updateAmmo();
-  shields = maximumShields;
+  shields = settings.shields;
   elapsed = 0;
   briefing.start();
   spawnIn = settings.firstSpawn;
+  nextGiantAt = giantMeteorInterval(difficulty);
   radioIn = 3;
   cooldown = 0;
   shotVisual = 0;
@@ -409,10 +449,15 @@ function start(mode = "normal") {
   const previewMeteor = meteors[0];
   meteors.length = shots.length = bursts.length = 0;
   player = createPilot();
+  if (location === "moon") {
+    player.position.set(0, 160, 130);
+    player.velocity.set(0.12, 0, 0);
+    player.orientation.setFromAxisAngle({ x: 1, y: 0, z: 0 }, -1.0);
+  }
   defense.reset(difficulty);
   // Visible opening target for the interceptor launched at second two.
   sound.startRound();
-  if (previewMeteor) meteors.push(previewMeteor);
+  if (previewMeteor && location === "space") meteors.push(previewMeteor);
   else spawnOpeningMeteor();
   while (meteors.length < settings.initialMeteors) spawnOpeningMeteor();
 
@@ -453,7 +498,7 @@ function finish(lost) {
   clearInput();
   status.textContent = lost ? status.dataset.lost : status.dataset.ended;
   startButton.textContent = startButton.dataset.normal;
-  hardButton.hidden = false;
+  syncLaunch();
   overlay.hidden = false;
   endButton.hidden = true;
   pauseButton.hidden = true;
@@ -464,6 +509,8 @@ function finish(lost) {
   elapsed = 0;
   meteors.length = shots.length = bursts.length = 0;
   defense.reset();
+  location = "space";
+  view.setLocation(location);
   view.resetStation(player);
   spawnOpeningMeteor();
   draw();
@@ -498,7 +545,7 @@ function pause() {
   last = 0;
   overlay.hidden = false;
   status.textContent = status.dataset.paused;
-  hardButton.hidden = true;
+  syncLaunch();
   startButton.textContent = startButton.dataset.resume;
   draw();
 }
@@ -533,8 +580,9 @@ document.querySelector("#briefing-close").addEventListener("click", () => {
   briefing.hide();
   document.querySelector("#mission-help").focus();
 });
-startButton.addEventListener("click", () => start("normal"));
-hardButton.addEventListener("click", () => start("hard"));
+startButton.addEventListener("click", () =>
+  start(selectedLocation, selectedDifficulty),
+);
 endButton.addEventListener("click", () => finish(false));
 document.addEventListener("mousemove", (event) => {
   if (!round || paused || document.pointerLockElement !== canvas) return;
@@ -645,17 +693,19 @@ draw();
 const initialMessage = status.textContent;
 let preparing = false;
 async function prepare() {
-  startButton.disabled = hardButton.disabled = true;
+  startButton.disabled = true;
   if (!desktop.matches) {
     if (round) finish(false);
     status.textContent = status.dataset.desktop;
-    startButton.hidden = hardButton.hidden = true;
+    startButton.hidden = true;
+    launchOptions.hidden = true;
     return;
   }
-  startButton.hidden = hardButton.hidden = false;
+  startButton.hidden = false;
+  launchOptions.hidden = false;
   if (ready) {
     status.textContent = initialMessage;
-    startButton.disabled = hardButton.disabled = false;
+    syncLaunch();
     return;
   }
   if (preparing) return;
@@ -675,8 +725,8 @@ async function prepare() {
     status.textContent = desktop.matches
       ? initialMessage
       : status.dataset.desktop;
-    startButton.disabled = hardButton.disabled = !desktop.matches;
-    startButton.hidden = hardButton.hidden = !desktop.matches;
+    syncLaunch();
+    startButton.hidden = !desktop.matches;
   } catch (error) {
     console.error(error);
     status.textContent = status.dataset.error;
@@ -689,7 +739,7 @@ canvas.addEventListener("webglcontextlost", (event) => {
   event.preventDefault();
   if (round) finish(false);
   ready = false;
-  startButton.disabled = hardButton.disabled = true;
+  startButton.disabled = true;
   status.textContent = status.dataset.error;
 });
 prepare();
