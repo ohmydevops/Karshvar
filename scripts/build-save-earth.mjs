@@ -366,16 +366,20 @@ ${alternates}
       <div><a class="mission-back" href="../">${back}</a><h1 lang="en">${title}</h1></div>
       <div class="mission-stats">
         <span>${score} <strong id="score">0</strong></span>
-        <span>${shield} <strong id="shield">5</strong></span>
+        <span>${shield} <strong id="shield">8</strong></span>
         <button id="sound-toggle" type="button" aria-pressed="false" data-on="${soundCopy[lang][0]}" data-off="${soundCopy[lang][1]}">${soundCopy[lang][0]}</button>
 
       </div>
     </header>
     <div class="arena">
+      <button id="focus-hint" class="focus-hint" type="button" hidden>${{ fa: "برای برگشت به بازی کلیک کنید", en: "Click to return to the game", ar: "انقر للعودة إلى اللعبة", tr: "Oyuna dönmek için tıklayın", fr: "Cliquez pour revenir au jeu", ru: "Нажмите, чтобы вернуться в игру" }[lang]}</button>
       <canvas id="arena" width="800" height="470" tabindex="0" aria-label="${title}" aria-describedby="controls"></canvas>
       <div id="round-overlay" class="round-overlay">
         <p id="round-status" data-paused="${flightCopy[lang][1]}" data-lock="${flightCopy[lang][3]}" data-desktop="${sceneMessages[lang][0]}" data-loading="${sceneMessages[lang][1]}" data-error="${sceneMessages[lang][2]}" data-lost="${lost}" data-ended="${ended}" role="status">${description}</p>
-        <button id="start" disabled type="button" data-resume="${flightCopy[lang][2]}" data-replay="${replay}">${start}</button>
+        <div class="difficulty-buttons">
+        <button id="start" disabled type="button" data-resume="${flightCopy[lang][2]}" data-normal="${{ fa: "شروع نرمال", en: "Normal", ar: "عادي", tr: "Normal", fr: "Normal", ru: "Обычный" }[lang]}">${{ fa: "شروع نرمال", en: "Normal", ar: "عادي", tr: "Normal", fr: "Normal", ru: "Обычный" }[lang]}</button>
+        <button id="start-hard" disabled type="button">${{ fa: "شروع سخت", en: "Hard", ar: "صعب", tr: "Zor", fr: "Difficile", ru: "Сложный" }[lang]}</button>
+        </div>
       </div>
     </div>
     <aside id="mission-briefing" class="mission-briefing" hidden aria-label="${title}">
@@ -404,6 +408,7 @@ ${alternates}
       </div>
     </aside>
     <div class="mission-controls">
+      <button id="mission-pause" type="button" hidden data-pause="${{ fa: "توقف", en: "Pause", ar: "إيقاف مؤقت", tr: "Duraklat", fr: "Pause", ru: "Пауза" }[lang]}" data-resume="${{ fa: "ادامه", en: "Resume", ar: "متابعة", tr: "Devam", fr: "Reprendre", ru: "Продолжить" }[lang]}">${{ fa: "توقف", en: "Pause", ar: "إيقاف مؤقت", tr: "Duraklat", fr: "Pause", ru: "Пауза" }[lang]} · P / Esc</button>
       <button id="mission-help" type="button" aria-controls="mission-briefing">${missionUI[lang][0]} · H</button>
       <p id="controls" hidden>${flightCopy[lang][0]}</p>
       <button id="end" type="button" hidden>${end}</button>
@@ -416,7 +421,7 @@ ${alternates}
       <ol id="scores"></ol>
       <nav id="scores-pagination" hidden aria-label="${missionUI[lang][4]}"><button id="scores-prev" type="button">${{ fa: "قبلی", en: "Previous", ar: "السابق", fr: "Précédent", ru: "Назад", tr: "Önceki" }[lang]}</button><span id="scores-page" aria-live="polite"></span><button id="scores-next" type="button">${{ fa: "بعدی", en: "Next", ar: "التالي", fr: "Suivant", ru: "Далее", tr: "Sonraki" }[lang]}</button></nav>
     </details>
-    <p class="scene-credits"><a href="../sources/#home-scene-credits">${missionUI[lang][5]}</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">${missionUI[lang][6]} — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">${missionUI[lang][7]}</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">${missionUI[lang][8]} · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">${missionUI[lang][9]}: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · ${missionUI[lang][10]}</a> · <a href="https://www.solarsystemscope.com/textures/">${missionUI[lang][11]}: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> · <a href="../../art/moon-SOURCE.txt">NASA / LRO</a></p>
+    <p class="scene-credits"><a href="../sources/#home-scene-credits">${missionUI[lang][5]}</a> · <a href="https://sketchfab.com/3d-models/smg-gun-9586ff6a08744cee9f89fd563bd0a277">${missionUI[lang][6]} — Drus</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="../../audio/nasa-radio-SOURCE.txt">${missionUI[lang][7]}</a> · <a href="../../audio/helmet-breathing-SOURCE.txt">${missionUI[lang][8]} · CC0</a> · <a href="https://supernova.eso.org/exhibition/images/0808_andromeda_visible/">${missionUI[lang][9]}: R. Gendler</a> · <a href="../../art/andromeda-SOURCE.txt">CC BY 4.0 · ${missionUI[lang][10]}</a> · <a href="https://www.solarsystemscope.com/textures/">${missionUI[lang][11]}: Solar System Scope / INOVE</a> · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> · <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> · <a href="../../art/rocket-SOURCE.txt">Test Rocket — Joe_Y · CC BY-NC 4.0</a> · <a href="../../art/explosion-SOURCE.txt">Sparks/explosion — OPREXT · CC BY 4.0</a> · <a href="../../audio/meteor-explosions-SOURCE.txt">Explosion audio · CC0</a> · <a href="../../audio/rocket-engine-SOURCE.txt">Rocket launch — Félix Blume · CC0</a></p>
   </main>
   ${saveEarthDialog(lang, true)}
 </body>

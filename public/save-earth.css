@@ -48,12 +48,98 @@ h1 {
   color: #90dfff;
   font-variant-numeric: tabular-nums;
 }
+.mission-stats .shield-critical {
+  position: relative;
+  color: #ffd0c8;
+  background: #461d29;
+  outline: 1px solid #ff806f;
+}
+.mission-stats .shield-critical strong {
+  color: #ffb3a2;
+}
+.playing:not(.mission-paused) .shield-critical {
+  animation: shield-heartbeat var(--shield-pulse, 1.2s) ease-in-out infinite;
+  will-change: transform;
+}
+.shield-critical::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid #ff806f;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+.playing:not(.mission-paused) .shield-critical::after {
+  animation: shield-warning-ring var(--shield-pulse, 1.2s) ease-out infinite;
+}
+@keyframes shield-heartbeat {
+  0%,
+  42%,
+  100% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.09);
+  }
+  25% {
+    transform: scale(1.02);
+  }
+  34% {
+    transform: scale(1.06);
+  }
+}
+@keyframes shield-warning-ring {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  15% {
+    opacity: 0.65;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playing:not(.mission-paused) .shield-critical,
+  .playing:not(.mission-paused) .shield-critical::after {
+    animation: none;
+    will-change: auto;
+  }
+}
 .arena {
   position: relative;
   margin-top: 8px;
   background: #0b1627;
   border: 1px solid #365371;
   border-radius: 14px;
+}
+.celestial-name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  pointer-events: none;
+  color: #d7e7f1;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-shadow: 0 1px 6px #0009;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  will-change: transform, opacity;
+}
+.celestial-name.is-visible {
+  opacity: 0.62;
+}
+@media (prefers-reduced-motion: reduce) {
+  .celestial-name {
+    transition: none;
+  }
 }
 canvas {
   display: block;
@@ -98,6 +184,16 @@ button {
   margin: 12px 0;
   color: #b9ccdf;
   font-size: 0.9rem;
+}
+.difficulty-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+#start-hard {
+  background: #efab78;
+  color: #17131a;
 }
 .mission-controls p {
   margin: 0;
@@ -504,6 +600,23 @@ h1 {
 .mission-controls {
   right: 295px;
   align-items: flex-end;
+  display: grid;
+  grid-template-columns: max-content 1fr max-content;
+  direction: ltr;
+}
+#mission-help {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+}
+#mission-pause {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+}
+#end {
+  grid-column: 3;
+  grid-row: 2;
 }
 .mission-controls p {
   max-width: min(680px, 75%);
@@ -643,4 +756,20 @@ h1 {
 #scores-pagination button:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.focus-hint {
+  position: fixed;
+  top: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  max-width: calc(100vw - 48px);
+  padding: 12px 22px;
+  color: #d7e7f1;
+  background: #0a1828db;
+  border: 1px solid #8bc4df55;
+  border-radius: 12px;
+  font-size: 15px;
+  cursor: pointer;
 }

@@ -1,0 +1,12 @@
+Rocket Launch Rumble at Canaveral — Félix Blume
+https://freesound.org/people/felix.blume/sounds/613855/
+https://cdn.freesound.org/previews/613/613855_1661766-hq.mp3
+License: Creative Commons Zero 1.0
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Actual rocket launch recorded at New Smyrna Beach, Florida, about 20 km from
+Kennedy Space Center; Schoeps CCM41/CCM8 and Sound Devices MixPre6, December 2021.
+Adaptation for Karshvar: excerpt starting at 31 seconds, mono 22050 Hz PCM,
+65 Hz highpass to remove inaudible sub-bass, normalized, with a 100 ms loop
+crossfade (7.9 seconds), played at 1.25x. Runtime gain, lowpass
+filter and stereo placement follow the rocket's distance and listener heading.

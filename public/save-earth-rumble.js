@@ -1,0 +1,17 @@
+// Cosmetic camera motion only; gameplay position and aiming remain unchanged.
+export function explosionDelay(distance) {
+  return 0.5 + Math.min(1, Math.max(0, distance) / 160);
+}
+export function rumbleStrength(state) {
+  if (!state.active) return 0;
+  let strength = 0;
+
+  for (const burst of state.bursts || []) {
+    const distance = burst.position.distanceTo(state.player.position);
+    const age = burst.age - explosionDelay(distance);
+    if (age >= 0 && age < 0.8)
+      strength +=
+        (0.05 * Math.sin((Math.PI * age) / 0.8) ** 2) / (1 + distance / 40);
+  }
+  return Math.min(0.065, strength);
+}

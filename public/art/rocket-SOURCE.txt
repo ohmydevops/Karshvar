@@ -1,0 +1,8 @@
+Test Rocket by Joe_Y
+https://sketchfab.com/3d-models/test-rocket-875d5e3a190b41de9dcc75c959273853
+License: Creative Commons Attribution-NonCommercial (as stated on the source download).
+https://creativecommons.org/licenses/by-nc/4.0/
+Adapted for Karshvar: removed texture/detail maps, UV/tangent streams and source
+exhaust planes; compacted indexed geometry; replaced exhaust with a simple GPU mesh.
+Original downloaded file: test_rocket.glb (4,545,844 bytes).
+Rebuild: node scripts/optimize-rocket.mjs <original.glb> public/art/earth-rocket.glb

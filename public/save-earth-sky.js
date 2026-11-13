@@ -16,30 +16,53 @@ export function createDeepSky() {
     return seed / 4294967296;
   };
   const positions = new Float32Array(9000),
-    colors = new Float32Array(9000);
+    colors = new Float32Array(9000),
+    magnitudes = new Float32Array(3000);
   for (let i = 0; i < 3000; i++) {
     const y = random() * 2 - 1,
       a = random() * Math.PI * 2,
       r = Math.sqrt(1 - y * y),
       d = 1700 + random() * 400;
     positions.set([Math.cos(a) * r * d, y * d, Math.sin(a) * r * d], i * 3);
-    const warm = random();
-    colors.set(
-      [0.65 + warm * 0.35, 0.7 + random() * 0.3, 1 - warm * 0.25],
-      i * 3,
-    );
+    const temperature = random();
+    const tint =
+      temperature < 0.12
+        ? [1, 0.66, 0.4]
+        : temperature < 0.4
+          ? [1, 0.88, 0.7]
+          : temperature < 0.84
+            ? [0.9, 0.95, 1]
+            : [0.62, 0.79, 1];
+    colors.set(tint, i * 3);
+    magnitudes[i] =
+      random() < 0.035
+        ? 0.8 + random() * 0.5
+        : 0.09 + 0.55 * Math.pow(random(), 3);
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute("magnitude", new THREE.BufferAttribute(magnitudes, 1));
   sky.add(
     new THREE.Points(
       geometry,
-      new THREE.PointsMaterial({
-        size: 1.4,
-        sizeAttenuation: false,
-        vertexColors: true,
+      new THREE.ShaderMaterial({
+        uniforms: {
+          pixelRatio: { value: Math.min(globalThis.devicePixelRatio || 1, 2) },
+        },
+        transparent: true,
         depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        vertexColors: true,
+        toneMapped: false,
+        vertexShader: `attribute float magnitude; uniform float pixelRatio; varying vec3 starColor; varying float light;
+          void main(){starColor=color;light=magnitude;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);
+          gl_PointSize=(2.2+4.*magnitude)*pixelRatio;}`,
+        fragmentShader: `varying vec3 starColor; varying float light;
+          void main(){vec2 p=gl_PointCoord*2.-1.;float radius=length(p);if(radius>1.)discard;
+          float core=exp(-dot(p,p)*22.);float halo=exp(-dot(p,p)*4.5)*.15*smoothstep(.55,1.2,light);
+          float alpha=(core+halo)*light*(1.-smoothstep(.75,1.,radius));
+          gl_FragColor=vec4(starColor,alpha);}`,
       }),
     ),
   );
@@ -161,7 +184,7 @@ function addAndromeda(sky) {
 
 function addDistantMeteors(sky) {
   const time = { value: 0 };
-  const geometry = new THREE.PlaneGeometry(95, 6);
+  const geometry = new THREE.PlaneGeometry(68, 1.35);
   const placements = [
     [-12, 18, -0.32],
     [44, 30, 0.45],
@@ -179,7 +202,7 @@ function addDistantMeteors(sky) {
       uniforms: {
         time,
         start: { value: 7 + index * (52 / 6) },
-        duration: { value: 0.95 + index * 0.065 },
+        duration: { value: 0.5 + index * 0.045 },
       },
       vertexShader: `uniform float time,start,duration;varying vec2 vUv;varying float life;
         void main(){vUv=uv;life=mod(time-start+52.,52.)/duration;
@@ -189,10 +212,12 @@ function addDistantMeteors(sky) {
       fragmentShader: `varying vec2 vUv;varying float life;
         void main(){if(life>1.)discard;
           float fade=smoothstep(0.,.12,life)*(1.-smoothstep(.6,1.,life));
-          float tail=pow(vUv.x,2.7)*exp(-pow((vUv.y-.5)*5.,2.));
-          float head=exp(-pow((vUv.x-.94)*24.,2.)-pow((vUv.y-.5)*2.8,2.));
-          vec3 color=mix(vec3(3.2,.12,.035),vec3(5.,1.5,.35),head);
-          gl_FragColor=vec4(color,min(1.,tail*.65+head*.9)*fade);
+          // One narrow luminous streak: no fireball or enlarged head.
+          float edge=abs(vUv.y-.5)*2.;
+          float line=exp(-edge*edge*7.);
+          float tail=smoothstep(0.,.8,vUv.x)*(1.-smoothstep(.94,1.,vUv.x));
+          vec3 color=vec3(1.35,1.3,1.15);
+          gl_FragColor=vec4(color,line*tail*fade*.65);
           #include <tonemapping_fragment>
           #include <colorspace_fragment>
         }`,

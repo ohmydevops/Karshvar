@@ -1,4 +1,5 @@
 import * as THREE from "./vendor/three.module.min.js";
+import { createSolarArrayMotion } from "./save-earth-solar-motion.js";
 
 // Static nearby geometry stays in local flight space, unlike the distant sky.
 export async function createSpaceStation(loader) {
@@ -33,6 +34,7 @@ export async function createSpaceStation(loader) {
   });
   model.updateMatrixWorld(true);
   const sourceBounds = new THREE.Box3().setFromObject(model);
+  const solarMotion = createSolarArrayMotion(model);
   const size = sourceBounds.getSize(new THREE.Vector3());
   model.position.sub(sourceBounds.getCenter(new THREE.Vector3()));
   const object = new THREE.Group();
@@ -52,7 +54,7 @@ export async function createSpaceStation(loader) {
     if (!mesh.isMesh) return;
     mesh.castShadow = false;
     mesh.receiveShadow = false;
-    mesh.geometry.computeBoundingBox();
+    if (!mesh.userData.solarMotion) mesh.geometry.computeBoundingBox();
     const box = mesh.geometry.boundingBox
       .clone()
       .applyMatrix4(mesh.matrixWorld);
@@ -117,7 +119,8 @@ export async function createSpaceStation(loader) {
   }
   const displacement = new THREE.Vector3();
   let previousHeight = 0;
-  function update(time) {
+  function update(time, reducedMotion = false) {
+    solarMotion.update(time, reducedMotion);
     const height = Math.sin(time * 0.08) * 0.8;
     displacement.set(0, height - previousHeight, 0);
     object.position.add(displacement);
@@ -126,6 +129,7 @@ export async function createSpaceStation(loader) {
     previousHeight = height;
   }
   function reset(pilot) {
+    solarMotion.update(0);
     const azimuth = Math.random() * Math.PI * 2;
     const elevation = (Math.random() - 0.5) * 1.4;
     const distance = 220 + Math.random() * 30;

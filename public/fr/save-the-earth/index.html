@@ -76,7 +76,7 @@
         </div>
         <div class="mission-stats">
           <span>Score <strong id="score">0</strong></span>
-          <span>Bouclier terrestre <strong id="shield">5</strong></span>
+          <span>Bouclier terrestre <strong id="shield">8</strong></span>
           <button
             id="sound-toggle"
             type="button"
@@ -89,6 +89,9 @@
         </div>
       </header>
       <div class="arena">
+        <button id="focus-hint" class="focus-hint" type="button" hidden>
+          Cliquez pour revenir au jeu
+        </button>
         <canvas
           id="arena"
           width="800"
@@ -111,15 +114,18 @@
           >
             Intercepte les météores avant qu’ils ne frappent la Terre.
           </p>
-          <button
-            id="start"
-            disabled
-            type="button"
-            data-resume="Reprendre"
-            data-replay="Rejouer"
-          >
-            Commencer
-          </button>
+          <div class="difficulty-buttons">
+            <button
+              id="start"
+              disabled
+              type="button"
+              data-resume="Reprendre"
+              data-normal="Normal"
+            >
+              Normal
+            </button>
+            <button id="start-hard" disabled type="button">Difficile</button>
+          </div>
         </div>
       </div>
       <aside
@@ -209,6 +215,15 @@
       </aside>
       <div class="mission-controls">
         <button
+          id="mission-pause"
+          type="button"
+          hidden
+          data-pause="Pause"
+          data-resume="Reprendre"
+        >
+          Pause · P / Esc
+        </button>
+        <button
           id="mission-help"
           type="button"
           aria-controls="mission-briefing"
@@ -259,7 +274,22 @@
           >Textures des planètes: Solar System Scope / INOVE</a
         >
         · <a href="../../art/solar-system-SOURCE.txt">CC BY 4.0</a> ·
-        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a>
+        <a href="../../art/moon-SOURCE.txt">NASA / LRO</a> ·
+        <a href="../../art/rocket-SOURCE.txt"
+          >Test Rocket — Joe_Y · CC BY-NC 4.0</a
+        >
+        ·
+        <a href="../../art/explosion-SOURCE.txt"
+          >Sparks/explosion — OPREXT · CC BY 4.0</a
+        >
+        ·
+        <a href="../../audio/meteor-explosions-SOURCE.txt"
+          >Explosion audio · CC0</a
+        >
+        ·
+        <a href="../../audio/rocket-engine-SOURCE.txt"
+          >Rocket launch — Félix Blume · CC0</a
+        >
       </p>
     </main>
     <dialog

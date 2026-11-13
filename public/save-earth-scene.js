@@ -1,3 +1,5 @@
+import { rumbleStrength } from "./save-earth-rumble.js";
+import { createMeteorExplosions } from "./save-earth-explosions.js";
 import { createSpaceStation } from "./save-earth-station.js";
 import { createMotionBlur } from "./save-earth-motion-blur.js";
 import { createFlightMotion } from "./save-earth-motion.js";
@@ -8,6 +10,8 @@ import { GLTFLoader } from "./vendor/GLTFLoader.js";
 import { createHomeScene, earthAxialTilt } from "./home-scene.js";
 import { createPlanet } from "./save-earth-planet.js";
 import { createMagazineAnimation } from "./save-earth-weapon.js";
+import { createCelestialLabels } from "./save-earth-labels.js";
+import { createRocketView } from "./save-earth-rocket-view.js";
 import {
   createWeaponHands,
   createHelmetSleeves,
@@ -26,8 +30,8 @@ export async function createSpaceRenderer(canvas, width, height) {
   const textures = new THREE.TextureLoader(),
     models = new GLTFLoader();
   const url = (name) => new URL("./art/" + name, import.meta.url).href;
-  const [day, night, cloud, person, rock, blaster, station] = await Promise.all(
-    [
+  const [day, night, cloud, person, rock, blaster, station, rocket, explosion] =
+    await Promise.all([
       ...["earth-texture.webp", "earth-night.webp", "earth-clouds.webp"].map(
         (n) => textures.loadAsync(url(n)),
       ),
@@ -35,14 +39,16 @@ export async function createSpaceRenderer(canvas, width, height) {
         models.loadAsync(url(n)),
       ),
       createSpaceStation(models),
-    ],
-  );
+      models.loadAsync(url("earth-rocket.glb")),
+      models.loadAsync(url("meteor-explosion.glb")),
+    ]);
   day.colorSpace = night.colorSpace = THREE.SRGBColorSpace;
   day.anisotropy = night.anisotropy = Math.min(
     8,
     renderer.capabilities.getMaxAnisotropy(),
   );
   const scene = new THREE.Scene();
+  const rocketView = createRocketView(rocket.scene, scene);
   scene.add(station.object);
   const background = new THREE.Scene();
   background.background = new THREE.Color(0x030812);
@@ -88,6 +94,17 @@ export async function createSpaceRenderer(canvas, width, height) {
   // Its back hemisphere stays behind Earth, with a visible offset at mission start.
   moon.scale.setScalar(3.6);
   moon.position.set(-16, 9, -18);
+  const unshakenCamera = new THREE.Quaternion(),
+    rumbleRotation = new THREE.Quaternion(),
+    rumbleAngles = new THREE.Euler();
+  const celestialLabels = createCelestialLabels(
+    canvas.parentElement,
+    camera,
+    planet,
+    sky,
+    width,
+    height,
+  );
   function normalize(model, size, rotation) {
     const group = new THREE.Group();
     group.add(model);
@@ -372,19 +389,7 @@ export async function createSpaceRenderer(canvas, width, height) {
     shot.add(core);
     return shot;
   });
-  const burstGeometry = new THREE.RingGeometry(0.85, 1, 32);
-  const bursts = pool(
-    32,
-    () =>
-      new THREE.Mesh(
-        burstGeometry,
-        new THREE.MeshBasicMaterial({
-          color: 0xffb66e,
-          transparent: true,
-          depthWrite: false,
-        }),
-      ),
-  );
+  const explosions = createMeteorExplosions(scene, explosion.scene);
 
   const muzzleFlash = new THREE.Mesh(
     new THREE.SphereGeometry(0.12, 12, 8),
@@ -461,6 +466,8 @@ export async function createSpaceRenderer(canvas, width, height) {
       };
     },
     resize(w, h) {
+      height = h;
+      celestialLabels.resize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
@@ -496,7 +503,7 @@ export async function createSpaceRenderer(canvas, width, height) {
         camera.fov = targetFov;
         camera.updateProjectionMatrix();
       }
-      station.update(state.elapsed);
+      station.update(state.elapsed, reducedMotion.matches);
       lastMeteors = state.meteors;
       visualMotion = motion.update(
         state.player,
@@ -571,17 +578,24 @@ export async function createSpaceRenderer(canvas, width, height) {
           m.quaternion.setFromUnitVectors(forward, direction);
         }
       });
-      bursts.forEach((m, i) => {
-        const p = state.bursts[i];
-        m.visible = !!p;
-        if (p) {
-          m.position.copy(p.position);
-          m.quaternion.copy(camera.quaternion);
-          m.scale.setScalar(p.radius * (0.7 + 3 * p.age));
-          m.material.opacity = 1 - p.age / 0.32;
-        }
-      });
+      explosions.update(state.bursts);
+      rocketView.update(state.rockets, camera, state.rocketTrails);
+      unshakenCamera.copy(camera.quaternion);
+      const rumble = reducedMotion.matches ? 0 : rumbleStrength(state);
+      // A tiny angular tremor moves distant scenery as well as the astronaut.
+      // Restore the camera afterwards so aiming never accumulates shake.
+      rumbleAngles.set(
+        Math.sin(state.elapsed * 37) * rumble * 0.018,
+        Math.sin(state.elapsed * 43) * rumble * 0.024,
+        0,
+      );
+      rumbleRotation.setFromEuler(rumbleAngles);
+      camera.quaternion.multiply(rumbleRotation);
+      camera.updateMatrixWorld();
       motionBlur.render(scene, camera, visualMotion.blur, background);
+      celestialLabels.update(state.active);
+      camera.quaternion.copy(unshakenCamera);
+      camera.updateMatrixWorld();
     },
   };
   // Read only by the shot query between render frames.

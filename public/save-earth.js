@@ -2,6 +2,12 @@ import { createMissionBriefing } from "./save-earth-briefing.js";
 import { createMagazineHUD } from "./save-earth-magazine.js";
 import { DESKTOP_MEDIA } from "./save-earth-access.js";
 import { createGameAudio } from "./save-earth-audio.js";
+import { createEarthDefense } from "./save-earth-defense.js";
+import {
+  missionDifficulty,
+  meteorSpawnInterval,
+} from "./save-earth-difficulty.js";
+const defense = createEarthDefense();
 import { analytics } from "./save-earth-analytics.js";
 const sound = createGameAudio();
 import {
@@ -18,6 +24,17 @@ const briefing = createMissionBriefing(
   document.querySelector("#mission-briefing"),
 );
 const canvas = document.querySelector("#arena");
+const focusHint = document.querySelector("#focus-hint");
+function updateFocusHint() {
+  focusHint.hidden =
+    !round ||
+    paused ||
+    !document.querySelector("#mission-briefing").hidden ||
+    (document.pointerLockElement === canvas && document.hasFocus());
+}
+focusHint.addEventListener("click", () => {
+  if (round && !paused) lockMouse();
+});
 let view;
 let ready = false;
 const desktop = matchMedia(DESKTOP_MEDIA);
@@ -58,6 +75,8 @@ const shieldLabel = document.querySelector("#shield");
 const overlay = document.querySelector("#round-overlay");
 const status = document.querySelector("#round-status");
 const startButton = document.querySelector("#start");
+const hardButton = document.querySelector("#start-hard");
+let difficulty = "normal";
 const endButton = document.querySelector("#end");
 const history = document.querySelector("#scores");
 const empty = document.querySelector("#no-scores");
@@ -78,13 +97,16 @@ const shots = [];
 const bursts = [];
 let round;
 let score = 0;
-let shields = 5;
+const maximumShields = 8;
+let shields = maximumShields;
 let elapsed = 0;
 let spawnIn = 0;
 let radioIn = 3;
 let cooldown = 0;
 let shotVisual = 0;
 let frame = 0;
+let backgroundFrame = 0;
+const pauseButton = document.querySelector("#mission-pause");
 let last = 0;
 let firing = false;
 let aiming = false;
@@ -158,9 +180,18 @@ function showHistory() {
 function updateStats() {
   scoreLabel.textContent = number.format(score);
   shieldLabel.textContent = number.format(shields);
+  shieldLabel.parentElement.classList.toggle(
+    "shield-critical",
+    shields > 0 && shields <= 3,
+  );
+  shieldLabel.parentElement.style.setProperty(
+    "--shield-pulse",
+    shields === 1 ? "0.75s" : shields === 2 ? "0.95s" : "1.2s",
+  );
 }
 
 function draw() {
+  updateFocusHint();
   view?.draw({
     player,
     thirdPerson: orbit.active ? true : aiming ? false : thirdPerson,
@@ -169,6 +200,8 @@ function draw() {
     meteors,
     shots,
     bursts,
+    rockets: defense.rockets,
+    rocketTrails: defense.trails,
     elapsed,
     flash,
     reloadIn,
@@ -182,6 +215,27 @@ function spawnMeteor() {
     view.placeMeteorOutsideView(meteor);
     meteors.push(meteor);
   }
+}
+function spawnOpeningMeteor() {
+  const meteor = createMeteor(Math.random, player);
+  const angle = Math.random() * Math.PI * 2;
+  meteor.position.copy(player.position).add({
+    x: Math.cos(angle) * (13 + Math.random() * 5),
+    y: 7 + Math.sin(angle) * 8,
+    z: -48,
+  });
+  meteor.spawnPosition.copy(meteor.position);
+  meteors.push(meteor);
+  return meteor;
+}
+function addExplosion(meteor, power = 1) {
+  bursts.push({
+    position: meteor.position.clone(),
+    radius: meteor.renderRadius * power * (0.8 + Math.random() * 0.55),
+    age: 0,
+    seed: Math.random(),
+    duration: 1 + Math.random() * 4,
+  });
 }
 function fire() {
   if (reloadIn > 0 || paused) return;
@@ -227,12 +281,23 @@ function advance(dt) {
   spawnIn -= dt;
   if (spawnIn <= 0) {
     spawnMeteor();
-    spawnIn = Math.max(1.5, 8 * Math.pow(0.7, Math.floor(elapsed / 60)));
+    spawnIn = meteorSpawnInterval(difficulty, elapsed);
   }
   flash = Math.max(0, flash - dt);
+  defense.update(
+    dt,
+    player,
+    meteors,
+    (meteor) => {
+      addExplosion(meteor, 1.5);
+      sound.impact(meteor.position, player);
+    },
+    spawnOpeningMeteor,
+  );
+  sound.syncRockets(defense.rockets, player);
   for (let i = bursts.length - 1; i >= 0; i--) {
     bursts[i].age += dt;
-    if (bursts[i].age >= 0.32) bursts.splice(i, 1);
+    if (bursts[i].age >= Math.max(bursts[i].duration, 2.3)) bursts.splice(i, 1);
   }
   for (let i = shots.length - 1; i >= 0; i--) {
     const shot = shots[i];
@@ -242,12 +307,9 @@ function advance(dt) {
       const destroyed = damageMeteor(meteor);
       if (destroyed) meteors.splice(hit, 1);
       shots.splice(i, 1);
-      bursts.push({
-        position: meteor.position.clone(),
-        radius: meteor.renderRadius * (destroyed ? 1 : 0.3),
-        age: 0,
-      });
-      sound.hit();
+      addExplosion(meteor, destroyed ? 1 : 0.3);
+      if (destroyed) sound.impact(meteor.position, player);
+      else sound.hit();
       if (destroyed) {
         score += 10;
         updateStats();
@@ -267,7 +329,7 @@ function advance(dt) {
     meteor.hitFlash = Math.max(0, meteor.hitFlash - dt);
     if (arrived) {
       meteors.splice(i, 1);
-      sound.impact();
+      sound.impact(meteor.position, player);
       shields--;
       flash = 0.23;
       updateStats();
@@ -279,10 +341,24 @@ function advance(dt) {
   }
 }
 
+function scheduleFrame() {
+  cancelAnimationFrame(frame);
+  clearTimeout(backgroundFrame);
+  frame = backgroundFrame = 0;
+  if (!round || paused) return;
+  if (document.hidden)
+    backgroundFrame = setTimeout(() => tick(performance.now()), 250);
+  else frame = requestAnimationFrame(tick);
+}
 function tick(now) {
   frame = 0;
-  if (!round || paused || document.hidden) return;
-  advance(last ? Math.min((now - last) / 1000, 0.035) : 0.001);
+  if (!round || paused) return;
+  let remaining = last ? Math.min((now - last) / 1000, 5) : 0.001;
+  while (remaining > 0 && round && !paused) {
+    const dt = Math.min(remaining, 0.035);
+    advance(dt);
+    remaining -= dt;
+  }
   if (last) {
     const gap = now - last;
     frameTotal += gap;
@@ -295,20 +371,25 @@ function tick(now) {
     }
   }
   last = now;
-  briefing.update(elapsed);
-  draw();
-  if (round) frame = requestAnimationFrame(tick);
+  if (!document.hidden) {
+    briefing.update(elapsed);
+    draw();
+  }
+  scheduleFrame();
 }
 
-function start() {
+function start(mode = "normal") {
   if (!ready || !desktop.matches) return;
   if (round) {
     lockMouse();
     return;
   }
   document.body.classList.add("playing");
+  difficulty = mode === "hard" ? "hard" : "normal";
+  const settings = missionDifficulty(difficulty);
   const at = Date.now();
   round = { id: crypto.randomUUID?.() ?? at + "-" + Math.random(), at };
+  round.difficulty = difficulty;
   analytics.track("save-earth-start", {
     language: document.documentElement.lang,
   });
@@ -316,23 +397,31 @@ function start() {
   ammo = 30;
   reloadIn = 0;
   updateAmmo();
-  shields = 5;
+  shields = maximumShields;
   elapsed = 0;
   briefing.start();
-  spawnIn = 10;
+  spawnIn = settings.firstSpawn;
   radioIn = 3;
   cooldown = 0;
   shotVisual = 0;
   flash = 0;
   last = 0;
+  const previewMeteor = meteors[0];
   meteors.length = shots.length = bursts.length = 0;
   player = createPilot();
+  defense.reset(difficulty);
+  // Visible opening target for the interceptor launched at second two.
+  sound.startRound();
+  if (previewMeteor) meteors.push(previewMeteor);
+  else spawnOpeningMeteor();
+  while (meteors.length < settings.initialMeteors) spawnOpeningMeteor();
 
   updateStats();
   saveRound();
   showHistory();
   overlay.hidden = true;
   endButton.hidden = false;
+  pauseButton.hidden = false;
   canvas.focus({ preventScroll: true });
   paused = true;
   lockMouse();
@@ -351,25 +440,32 @@ function finish(lost) {
   saveRound();
   round = null;
   briefing.hide();
-  sound.pause();
+  sound.pause({ impactTail: lost });
   document.exitPointerLock?.();
   paused = false;
   reloadIn = 0;
   updateAmmo();
   document.body.classList.remove("playing");
+  document.body.classList.remove("mission-paused");
+  shieldLabel.parentElement.classList.remove("shield-critical");
   cancelAnimationFrame(frame);
   frame = 0;
   clearInput();
   status.textContent = lost ? status.dataset.lost : status.dataset.ended;
-  startButton.textContent = startButton.dataset.replay;
+  startButton.textContent = startButton.dataset.normal;
+  hardButton.hidden = false;
   overlay.hidden = false;
   endButton.hidden = true;
+  pauseButton.hidden = true;
+  clearTimeout(backgroundFrame);
   showHistory();
   // Prepare the next round before showing its preview, not on Start.
   player = createPilot();
   elapsed = 0;
   meteors.length = shots.length = bursts.length = 0;
+  defense.reset();
   view.resetStation(player);
+  spawnOpeningMeteor();
   draw();
   startButton.focus({ preventScroll: true });
 }
@@ -377,17 +473,24 @@ function finish(lost) {
 function lockMouse() {
   sound.setFirstPerson?.(!thirdPerson);
   sound.boot();
+  if (paused) {
+    paused = false;
+    document.body.classList.remove("mission-paused");
+    overlay.hidden = true;
+    pauseButton.textContent = pauseButton.dataset.pause + " · P / Esc";
+    last = performance.now();
+    scheduleFrame();
+  }
   const result = canvas.requestPointerLock?.();
-  result?.catch(() => {
-    paused = true;
-    overlay.hidden = false;
-    status.textContent = status.dataset.lock;
-    startButton.textContent = startButton.dataset.resume;
-  });
+  result?.catch(clearInput);
 }
 function pause() {
   if (!round) return;
   paused = true;
+  clearTimeout(backgroundFrame);
+  pauseButton.textContent = pauseButton.dataset.resume + " · P / Esc";
+  document.exitPointerLock?.();
+  document.body.classList.add("mission-paused");
   sound.pause();
   clearInput();
   cancelAnimationFrame(frame);
@@ -395,26 +498,32 @@ function pause() {
   last = 0;
   overlay.hidden = false;
   status.textContent = status.dataset.paused;
+  hardButton.hidden = true;
   startButton.textContent = startButton.dataset.resume;
   draw();
 }
 document.addEventListener("pointerlockchange", () => {
-  if (!round) return;
-  if (document.pointerLockElement === canvas) {
-    paused = false;
-    overlay.hidden = true;
-    last = 0;
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(tick);
-  } else pause();
+  clearInput();
+  updateFocusHint();
 });
 document.addEventListener("pointerlockerror", () => {
-  pause();
-  status.textContent = status.dataset.lock;
+  clearInput();
+  updateFocusHint();
 });
+function togglePause() {
+  if (!round) return;
+  if (paused) lockMouse();
+  else pause();
+}
+pauseButton.addEventListener("click", togglePause);
 function showHelp() {
+  if (!document.querySelector("#mission-briefing").hidden) {
+    briefing.hide();
+    if (round && !paused) lockMouse();
+    return;
+  }
   if (round) {
-    pause();
+    clearInput();
     document.exitPointerLock?.();
   }
   briefing.show();
@@ -424,7 +533,8 @@ document.querySelector("#briefing-close").addEventListener("click", () => {
   briefing.hide();
   document.querySelector("#mission-help").focus();
 });
-startButton.addEventListener("click", start);
+startButton.addEventListener("click", () => start("normal"));
+hardButton.addEventListener("click", () => start("hard"));
 endButton.addEventListener("click", () => finish(false));
 document.addEventListener("mousemove", (event) => {
   if (!round || paused || document.pointerLockElement !== canvas) return;
@@ -439,6 +549,10 @@ document.addEventListener("mousemove", (event) => {
 // Mouse events fire for each button even when another button is held.
 canvas.addEventListener("mousedown", (event) => {
   if (!round || paused) return;
+  if (document.pointerLockElement !== canvas) {
+    lockMouse();
+    return;
+  }
   if (event.button === 2) {
     if (orbit.active) return;
     aiming = true;
@@ -454,6 +568,15 @@ document.addEventListener("mouseup", (event) => {
   if (event.button === 0) firing = false;
 });
 document.addEventListener("keydown", (event) => {
+  if (
+    (event.code === "KeyP" || event.code === "Escape") &&
+    !event.repeat &&
+    round
+  ) {
+    event.preventDefault();
+    togglePause();
+    return;
+  }
   if (event.code === "ControlLeft" || event.code === "ControlRight") {
     if (round && !paused) {
       event.preventDefault();
@@ -501,21 +624,13 @@ document.addEventListener("keyup", (event) => {
 });
 addEventListener("blur", () => {
   clearInput();
-  if (round) {
-    document.exitPointerLock?.();
-    pause();
-  }
+  updateFocusHint();
 });
+addEventListener("focus", updateFocusHint);
 document.addEventListener("visibilitychange", () => {
   clearInput();
-  cancelAnimationFrame(frame);
-  frame = 0;
-  last = 0;
-  if (document.hidden && round) {
-    document.exitPointerLock?.();
-    pause();
-  }
-  if (!document.hidden && round && !paused) frame = requestAnimationFrame(tick);
+  if (document.hidden) document.exitPointerLock?.();
+  scheduleFrame();
 });
 addEventListener("pagehide", () => {
   if (round) saveRound();
@@ -530,17 +645,17 @@ draw();
 const initialMessage = status.textContent;
 let preparing = false;
 async function prepare() {
-  startButton.disabled = true;
+  startButton.disabled = hardButton.disabled = true;
   if (!desktop.matches) {
     if (round) finish(false);
     status.textContent = status.dataset.desktop;
-    startButton.hidden = true;
+    startButton.hidden = hardButton.hidden = true;
     return;
   }
-  startButton.hidden = false;
+  startButton.hidden = hardButton.hidden = false;
   if (ready) {
     status.textContent = initialMessage;
-    startButton.disabled = false;
+    startButton.disabled = hardButton.disabled = false;
     return;
   }
   if (preparing) return;
@@ -554,13 +669,14 @@ async function prepare() {
       canvas.clientHeight,
     );
     view.resetStation(player);
+    if (!meteors.length) spawnOpeningMeteor();
     ready = true;
     resize();
     status.textContent = desktop.matches
       ? initialMessage
       : status.dataset.desktop;
-    startButton.disabled = !desktop.matches;
-    startButton.hidden = !desktop.matches;
+    startButton.disabled = hardButton.disabled = !desktop.matches;
+    startButton.hidden = hardButton.hidden = !desktop.matches;
   } catch (error) {
     console.error(error);
     status.textContent = status.dataset.error;
@@ -573,7 +689,7 @@ canvas.addEventListener("webglcontextlost", (event) => {
   event.preventDefault();
   if (round) finish(false);
   ready = false;
-  startButton.disabled = true;
+  startButton.disabled = hardButton.disabled = true;
   status.textContent = status.dataset.error;
 });
 prepare();

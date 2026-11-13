@@ -1,4 +1,5 @@
 import { createAmbientScore } from "./save-earth-music.js";
+import { distanceAudio } from "./save-earth-spatial-audio.js";
 
 export function createGameAudio() {
   let context, master, hum, noise, breathing, music;
@@ -7,11 +8,20 @@ export function createGameAudio() {
     firstPerson = false,
     radioSource = null,
     nextRadio = 0,
+    nextTuning = 18,
     nextFlyby = 0,
     radioIndex = 0;
   let narrationSource = null,
     narrationGain = null;
   const transient = new Set();
+  const impacts = new Set();
+  let suspensionTimer;
+  let lastImpact = -1;
+  const impactRecordings = [];
+  let rocketRecording;
+  const rocketVoices = new Map();
+  const spatial = {};
+  let impactEndsAt = 0;
   const recordings = [];
   let saganRecording,
     nextSagan = 10;
@@ -29,13 +39,16 @@ export function createGameAudio() {
   const audible = () =>
     context && active && !muted && context.state === "running";
 
-  function track(source, nodes) {
+  function track(source, nodes, impact = false) {
     transient.add(source);
+    if (impact) impacts.add(source);
     source.onended = () => {
       transient.delete(source);
+      impacts.delete(source);
       if (source === narrationSource) {
         narrationSource = null;
         narrationGain = null;
+        updateBreathing();
       }
       if (source === radioSource) {
         radioSource = null;
@@ -45,17 +58,19 @@ export function createGameAudio() {
     };
     return source;
   }
-  function stopTransient(preserveNarration = false) {
+  function stopTransient(preserveNarration = false, preserveImpacts = false) {
+    rocketVoices.clear();
     for (const source of transient) {
       if (preserveNarration && source === narrationSource) continue;
+      if (preserveImpacts && impacts.has(source)) continue;
       try {
         source.stop();
       } catch {
         /* A source may have finished this frame. */
       }
+      transient.delete(source);
+      impacts.delete(source);
     }
-    transient.clear();
-    if (preserveNarration && narrationSource) transient.add(narrationSource);
     radioSource = null;
     if (!preserveNarration) narrationSource = narrationGain = null;
     nextRadio = 0;
@@ -68,7 +83,7 @@ export function createGameAudio() {
     }
     if (narrationGain)
       narrationGain.gain.setTargetAtTime(
-        radioSource ? 0.025 : 0.12,
+        radioSource ? 0.06 : 0.24,
         context.currentTime,
         0.35,
       );
@@ -81,6 +96,8 @@ export function createGameAudio() {
     );
   }
   function boot() {
+    clearTimeout(suspensionTimer);
+    if (!active && impacts.size) stopTransient(true);
     active = true;
     if (!context) {
       const Audio = globalThis.AudioContext || globalThis.webkitAudioContext;
@@ -88,8 +105,38 @@ export function createGameAudio() {
       context = new Audio();
       master = context.createGain();
       master.gain.value = muted ? 0 : 0.35;
-      master.connect(context.destination);
+      const limiter = context.createDynamicsCompressor();
+      limiter.threshold.value = -10;
+      limiter.knee.value = 18;
+      limiter.ratio.value = 5;
+      limiter.attack.value = 0.004;
+      limiter.release.value = 0.3;
+      master.connect(limiter).connect(context.destination);
       music = createAmbientScore(context, master);
+      fetch(new URL("./audio/rocket-engine.wav", import.meta.url))
+        .then((response) => {
+          if (!response.ok) throw new Error("Rocket audio unavailable");
+          return response.arrayBuffer();
+        })
+        .then((bytes) => context.decodeAudioData(bytes))
+        .then((buffer) => {
+          rocketRecording = buffer;
+        })
+        .catch((error) => console.warn("Rocket audio could not load", error));
+      for (let i = 0; i < 3; i++) {
+        fetch(new URL(`./audio/meteor-explosion-${i + 1}.mp3`, import.meta.url))
+          .then((response) => {
+            if (!response.ok) throw new Error("Explosion audio unavailable");
+            return response.arrayBuffer();
+          })
+          .then((bytes) => context.decodeAudioData(bytes))
+          .then((buffer) => {
+            impactRecordings[i] = buffer;
+          })
+          .catch((error) =>
+            console.warn("Explosion audio could not load", error),
+          );
+      }
       fetch(new URL("./audio/carl-sagan-pale-blue-dot.m4a", import.meta.url))
         .then((response) => {
           if (!response.ok) throw new Error("Narration unavailable");
@@ -191,7 +238,14 @@ export function createGameAudio() {
       })
       .catch(() => {});
   }
-  function tone(frequency, duration, volume, type = "sine", delay = 0) {
+  function tone(
+    frequency,
+    duration,
+    volume,
+    type = "sine",
+    delay = 0,
+    impact = false,
+  ) {
     if (!audible()) return;
     const time = context.currentTime + delay;
     const osc = context.createOscillator(),
@@ -205,28 +259,74 @@ export function createGameAudio() {
     gain.gain.setValueAtTime(volume, time);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
     osc.connect(gain).connect(master);
-    track(osc, [osc, gain]);
+    track(osc, [osc, gain], impact);
     osc.start(time);
     osc.stop(time + duration);
   }
-  function burst(duration, volume, cutoff, delay = 0) {
+  function burst(
+    duration,
+    volume,
+    cutoff,
+    delay = 0,
+    impact = false,
+    pan = 0,
+    attack = 0,
+  ) {
     if (!audible()) return;
     const source = context.createBufferSource(),
       filter = context.createBiquadFilter(),
       gain = context.createGain();
     const time = context.currentTime + delay;
     source.buffer = noise;
+    source.loop = duration > noise.duration;
     filter.type = "lowpass";
     filter.frequency.value = cutoff;
-    gain.gain.setValueAtTime(volume, time);
+    gain.gain.setValueAtTime(attack ? 0.0001 : volume, time);
+    if (attack) gain.gain.linearRampToValueAtTime(volume, time + attack);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-    source.connect(filter).connect(gain).connect(master);
-    track(source, [source, filter, gain]);
+    const nodes = [source, filter, gain];
+    source.connect(filter).connect(gain);
+    if (impact) {
+      const panner = context.createStereoPanner();
+      panner.pan.value = pan;
+      gain.connect(panner).connect(master);
+      nodes.push(panner);
+    } else gain.connect(master);
+    track(source, nodes, impact);
     source.start(time);
     source.stop(time + duration);
   }
   function radio() {
     if (!audible()) return false;
+    if (
+      !radioSource &&
+      context.currentTime >= nextTuning &&
+      nextRadio - context.currentTime > 1.5 &&
+      context.currentTime < nextSagan - 1.5
+    ) {
+      nextTuning = context.currentTime + 25 + Math.random() * 30;
+      const source = context.createBufferSource(),
+        filter = context.createBiquadFilter(),
+        gain = context.createGain();
+      const time = context.currentTime;
+      source.buffer = noise;
+      filter.type = "bandpass";
+      filter.Q.value = 1.2;
+      filter.frequency.setValueAtTime(550, time);
+      filter.frequency.exponentialRampToValueAtTime(1900, time + 0.35);
+      filter.frequency.exponentialRampToValueAtTime(800, time + 0.85);
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(0.045, time + 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.0001, time + 1);
+      source.connect(filter).connect(gain).connect(master);
+      track(source, [source, filter, gain]);
+      source.start(time);
+      source.stop(time + 1);
+      if (Math.random() < 0.5) {
+        tone(920, 0.06, 0.025, "sine", 0.64);
+        tone(690, 0.08, 0.02, "sine", 0.78);
+      }
+    }
     if (
       context.currentTime < nextRadio &&
       !(saganRecording && context.currentTime >= nextSagan)
@@ -241,7 +341,7 @@ export function createGameAudio() {
     if (!buffer) buffer = recordings.find(Boolean);
     if (!buffer) return false;
     if (!narration) radioIndex++;
-    else nextSagan = context.currentTime + buffer.duration + 240;
+    else nextSagan = Infinity;
     const source = context.createBufferSource(),
       highpass = context.createBiquadFilter();
     const lowpass = context.createBiquadFilter(),
@@ -253,7 +353,7 @@ export function createGameAudio() {
     lowpass.type = "lowpass";
     lowpass.frequency.value = narration ? 8000 : 2800;
     gain.gain.setValueAtTime(0, time);
-    const voiceLevel = narration ? 0.12 : 0.24;
+    const voiceLevel = 0.24;
     gain.gain.linearRampToValueAtTime(
       voiceLevel,
       time + (narration ? 1.2 : 0.08),
@@ -336,9 +436,91 @@ export function createGameAudio() {
       burst(0.18, 0.22, 900);
       tone(120, 0.18, 0.18);
     },
-    impact() {
-      burst(0.35, 0.3, 350);
-      tone(75, 0.45, 0.35);
+    startRound() {
+      if (narrationSource) {
+        narrationSource.stop();
+        narrationSource = null;
+        narrationGain = null;
+      }
+      nextSagan = (context?.currentTime || 0) + 10;
+      updateBreathing();
+    },
+    syncRockets(rockets, listener) {
+      if (!audible() || !rocketRecording) return;
+      for (const [rocket, voice] of rocketVoices) {
+        if (rockets.includes(rocket)) continue;
+        voice.gain.gain.setTargetAtTime(0.0001, context.currentTime, 0.12);
+        voice.source.stop(context.currentTime + 0.6);
+        rocketVoices.delete(rocket);
+      }
+      for (const rocket of rockets) {
+        let voice = rocketVoices.get(rocket);
+        if (!voice) {
+          const source = context.createBufferSource(),
+            filter = context.createBiquadFilter(),
+            gain = context.createGain(),
+            pan = context.createStereoPanner();
+          source.buffer = rocketRecording;
+          source.loop = true;
+          source.playbackRate.value = 1.25;
+          filter.type = "lowpass";
+          gain.gain.value = 0;
+          source.connect(filter).connect(gain).connect(pan).connect(master);
+          track(source, [source, filter, gain, pan]);
+          source.start();
+          voice = { source, filter, gain, pan };
+          rocketVoices.set(rocket, voice);
+        }
+        distanceAudio(rocket.position, listener, spatial);
+        voice.gain.gain.setTargetAtTime(
+          spatial.gain * 1.4 * Math.min(1, rocket.age / 0.35),
+          context.currentTime,
+          0.15,
+        );
+        voice.filter.frequency.setTargetAtTime(
+          spatial.cutoff,
+          context.currentTime,
+          0.15,
+        );
+        voice.pan.pan.setTargetAtTime(spatial.pan, context.currentTime, 0.1);
+      }
+    },
+    impact(position, listener) {
+      if (!audible()) return;
+      const available = [0, 1, 2].filter(
+        (i) => impactRecordings[i] && i !== lastImpact,
+      );
+      if (!available.length) return;
+      lastImpact = available[Math.floor(Math.random() * available.length)];
+      const source = context.createBufferSource();
+      const bass = context.createBiquadFilter(),
+        air = context.createBiquadFilter();
+      const gain = context.createGain(),
+        panner = context.createStereoPanner();
+      source.buffer = impactRecordings[lastImpact];
+      source.playbackRate.value = 0.96 + Math.random() * 0.08;
+      distanceAudio(position, listener, spatial);
+      bass.type = "lowshelf";
+      bass.frequency.value = 150;
+      bass.gain.value = 5;
+      air.type = "lowpass";
+      air.frequency.value = spatial.cutoff;
+      gain.gain.value = spatial.gain * 0.9;
+      panner.pan.value = spatial.pan;
+      source
+        .connect(bass)
+        .connect(air)
+        .connect(gain)
+        .connect(panner)
+        .connect(master);
+      track(source, [source, bass, air, gain, panner], true);
+      const end =
+        context.currentTime +
+        source.buffer.duration / source.playbackRate.value +
+        0.02;
+      impactEndsAt = Math.max(impactEndsAt, end);
+      source.start();
+      source.stop(end);
     },
     empty() {
       tone(420, 0.035, 0.13, "triangle");
@@ -353,10 +535,11 @@ export function createGameAudio() {
           0.15,
         );
     },
-    pause() {
+    pause({ impactTail = false } = {}) {
       active = false;
+      clearTimeout(suspensionTimer);
       if (context) {
-        stopTransient(true);
+        stopTransient(!impactTail, impactTail);
         music?.setActive(false);
         hum.gain.cancelScheduledValues(context.currentTime);
         hum.gain.value = 0;
@@ -364,7 +547,14 @@ export function createGameAudio() {
           breathing.gain.cancelScheduledValues(context.currentTime);
           breathing.gain.value = 0;
         }
-        context.suspend().catch(() => {});
+        if (impactTail && impacts.size)
+          suspensionTimer = setTimeout(
+            () => {
+              if (!active) context.suspend().catch(() => {});
+            },
+            Math.max(0, impactEndsAt - context.currentTime) * 1000 + 50,
+          );
+        else context.suspend().catch(() => {});
       }
     },
     toggle() {
