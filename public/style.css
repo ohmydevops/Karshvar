@@ -2415,6 +2415,34 @@ html:is([data-page="about"], [data-page="sources"]) main {
   line-height: 2;
   margin: 0 0 20px;
 }
+.info-page #aboutBody h2 {
+  color: var(--text);
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 800;
+  line-height: 1.6;
+  margin: 32px 0 14px;
+}
+.info-page #aboutBody h2:first-child {
+  margin-top: 0;
+}
+@media (min-width: 1000px) {
+  .about-page.info-page .info-content {
+    position: relative;
+    max-width: none;
+    min-height: 560px;
+    padding-left: 40%;
+  }
+  .about-page.info-page .info-content::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: 0;
+    width: 35%;
+    height: 540px;
+    background: url("./art/about-world.svg") center top / contain no-repeat;
+    pointer-events: none;
+  }
+}
 .info-page a {
   display: inline-flex;
   align-items: center;

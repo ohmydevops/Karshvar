@@ -24,7 +24,7 @@ import {
   loadProductionAnalytics,
 } from "./analytics.js";
 import { resetCopy } from "./reset.js";
-import { aboutCopy, seoCopy } from "./about.js";
+import { aboutCopy, aboutHeadings, seoCopy } from "./about.js";
 import {
   continents,
   labels,
@@ -1096,9 +1096,14 @@ function localize() {
   const about = aboutCopy[lang];
   ["aboutOpen", "aboutTitle"].forEach((id) => ($(id).textContent = about[0]));
   $("aboutBody").replaceChildren(
-    ...about[1].split("\n\n").map((text) => {
+    ...about[1].split("\n\n").flatMap((text, index) => {
       const p = document.createElement("p");
       p.textContent = text;
+      if (index === 0 || index === 3) {
+        const heading = document.createElement("h2");
+        heading.textContent = aboutHeadings[lang][index === 0 ? 0 : 1];
+        return [heading, p];
+      }
       return p;
     }),
   );
