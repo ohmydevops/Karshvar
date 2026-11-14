@@ -1,3 +1,7 @@
+import {
+  atmosphereMask,
+  createAtmosphereDamage,
+} from "./save-earth-atmosphere.js";
 import * as THREE from "./vendor/three.module.min.js";
 export function createPlanet(
   axialFrame,
@@ -6,18 +10,22 @@ export function createPlanet(
   nightTexture,
   cloudTexture,
   sun,
+  atmosphere = createAtmosphereDamage(),
 ) {
   const earth = new THREE.Mesh(
     new THREE.SphereGeometry(1, 96, 64),
     new THREE.ShaderMaterial({
       uniforms: {
+        ...atmosphere.uniforms,
         dayMap: { value: texture },
         nightMap: { value: nightTexture },
         sunDirection: { value: sun.position.clone().normalize() },
       },
-      vertexShader: `varying vec2 vUv;varying vec3 vNormalWorld;
-      void main(){vUv=uv;vNormalWorld=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-      fragmentShader: `uniform sampler2D dayMap;uniform sampler2D nightMap;uniform vec3 sunDirection;
+      vertexShader: `varying vec2 vUv;varying vec3 vNormalWorld;varying vec3 vDamageDirection;
+      void main(){vDamageDirection=normalize(normal);vUv=uv;vNormalWorld=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+      fragmentShader: `${atmosphereMask}
+      varying vec3 vDamageDirection;
+      uniform sampler2D dayMap;uniform sampler2D nightMap;uniform vec3 sunDirection;
       varying vec2 vUv;varying vec3 vNormalWorld;
       void main(){
         float sunlight=dot(normalize(vNormalWorld),normalize(sunDirection));
@@ -25,7 +33,9 @@ export function createPlanet(
         vec3 surface=texture2D(dayMap,vUv).rgb;
 
         vec3 cities=texture2D(nightMap,vUv).rgb;
-        vec3 color=surface*(0.008+day*0.12+max(sunlight,0.0)*1.35)+cities*(1.0-day)*1.6;
+        float clearSurface = 1. - atmosphereCoverage(normalize(vDamageDirection));
+        float ambient = mix(.008, .10, clearSurface);
+        vec3 color=surface*(ambient+day*0.12+max(sunlight,0.0)*1.35)+cities*(1.0-day)*1.6;
         gl_FragColor=vec4(color,1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -41,10 +51,20 @@ export function createPlanet(
       depthWrite: false,
       uniforms: {
         cloudMap: { value: cloudTexture },
+        ...atmosphere.uniforms,
         sunDirection: { value: sun.position.clone().normalize() },
       },
-      vertexShader: earth.material.vertexShader,
+      vertexShader: `varying vec2 vUv; varying vec3 vNormalWorld; varying vec3 vDamageDirection;
+        uniform float cloudDrift;
+        void main() {
+          vUv = uv; vNormalWorld = normalize(mat3(modelMatrix) * normal);
+          float c = cos(cloudDrift), s = sin(cloudDrift);
+          vDamageDirection = vec3(c * normal.x + s * normal.z, normal.y, -s * normal.x + c * normal.z);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+        }`,
       fragmentShader: `
+          ${atmosphereMask}
+          varying vec3 vDamageDirection;
           uniform sampler2D cloudMap;
           uniform vec3 sunDirection;
           varying vec2 vUv;
@@ -52,7 +72,7 @@ export function createPlanet(
           void main() {
             float light = max(dot(normalize(vNormalWorld), sunDirection), 0.0);
             float density = texture2D(cloudMap, vUv).a;
-            gl_FragColor = vec4(vec3(0.015 + light * 1.15), density * 0.82);
+            gl_FragColor = vec4(vec3(0.015 + light * 1.15), density * mix(.10, .82, atmosphereCoverage(normalize(vDamageDirection))));
             #include <tonemapping_fragment>
             #include <colorspace_fragment>
           }`,
@@ -65,7 +85,13 @@ export function createPlanet(
 }
 
 // Use the downloaded model's geometry, UVs and maps only in Save Earth.
-export function createModelPlanet(axialFrame, settings, source, sun) {
+export function createModelPlanet(
+  axialFrame,
+  settings,
+  source,
+  sun,
+  atmosphere,
+) {
   source.updateMatrixWorld(true);
   const surfaces = [],
     cloudParts = [];
@@ -94,6 +120,7 @@ export function createModelPlanet(axialFrame, settings, source, sun) {
     surfaces[0].material.emissiveMap,
     cloudParts[0].material.map,
     sun,
+    atmosphere,
   );
   const earth = new THREE.Group(),
     clouds = new THREE.Group();

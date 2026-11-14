@@ -1,3 +1,4 @@
+import { reportError } from "./analytics.js";
 import { withUpdateTimeout } from "./update-loading.js";
 import { createDownloadManager } from "./update-download.js";
 
@@ -190,6 +191,22 @@ async function setupOffline() {
     );
     const offerUpdate = (activate = false) => {
       let worker = registration.waiting;
+      if (activate && !worker) {
+        // Another tab may already have activated the downloaded release.
+        if (registration.active?.state === "activated") {
+          approved = true;
+          reloadIfApproved();
+        } else {
+          reportError(
+            new Error("Ready update has no waiting or active worker"),
+            "update-apply",
+          );
+          downloads
+            .check(true)
+            .catch((error) => reportError(error, "update-recheck"));
+        }
+        return;
+      }
       // Initial installation is silent; only offer a fully downloaded replacement.
       if (
         !worker ||
@@ -228,6 +245,10 @@ async function setupOffline() {
       };
       let activationTimer;
       const restoreUpdate = () => {
+        reportError(
+          new Error("Update activation failed or timed out"),
+          "update-activation",
+        );
         approved = false;
         window.clearTimeout(activationTimer);
         update.disabled = false;
@@ -303,7 +324,8 @@ async function setupOffline() {
             worker.addEventListener?.("statechange", activated);
           }
           worker.postMessage({ type: "ACTIVATE_UPDATE" });
-        } catch {
+        } catch (error) {
+          reportError(error, "update-activate-request");
           restoreUpdate();
         }
       };
@@ -362,7 +384,8 @@ async function setupOffline() {
             showCheckStatus(5);
             offerUpdate();
           } else showCheckStatus(result);
-        } catch {
+        } catch (error) {
+          reportError(error, "update-manual-check");
           showCheckStatus(
             registration.waiting ? 5 : registration.installing ? 2 : 4,
           );
@@ -386,7 +409,8 @@ async function setupOffline() {
       try {
         await downloads.check();
         offerUpdate();
-      } catch {
+      } catch (error) {
+        reportError(error, "update-check");
         // A failed connection must not interrupt offline play or delay a retry.
         lastCheck = 0;
       } finally {
@@ -400,6 +424,7 @@ async function setupOffline() {
     checkForUpdate();
     return true;
   } catch (error) {
+    reportError(error, "offline-setup");
     console.warn("Offline setup failed", error);
     showCheckStatus(4);
     if (checkButton) {

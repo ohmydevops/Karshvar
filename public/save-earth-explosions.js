@@ -1,7 +1,16 @@
 import * as THREE from "./vendor/three.module.min.js";
 
+export function explosionLifetime(burst) {
+  return Math.max(4.2, burst.duration || 4.2);
+}
+
+export function explosionScale(age) {
+  // Keep drifting outward throughout the fade, rather than reaching a fixed size.
+  return 0.45 + Math.max(0, age) * 1.65;
+}
+
 // Authored OPREXT spark cards, baked once and shared across all impact slots.
-// Animation is driven by uniforms on the GPU, without creating objects on hits.
+// Reuse geometry and pooled groups; expansion and opacity fade run together.
 export function createMeteorExplosions(scene, source) {
   source.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(source);
@@ -18,44 +27,45 @@ export function createMeteorExplosions(scene, source) {
   });
   const pool = Array.from({ length: 16 }, () => {
     const group = new THREE.Group();
-    const phase = { value: 0 };
     for (const part of parts) {
       const material = part.material.clone();
       material.transparent = true;
       material.depthWrite = false;
+      // Alpha testing clips faint spark edges, making a fading blast look smaller.
+      material.alphaTest = 0;
+      material.alphaHash = false;
       material.blending = THREE.AdditiveBlending;
       material.toneMapped = false;
       material.vertexColors = false;
-      material.onBeforeCompile = (shader) => {
-        shader.uniforms.explosionAge = phase;
-        shader.vertexShader =
-          "uniform float explosionAge;\n" + shader.vertexShader;
-        shader.vertexShader = shader.vertexShader.replace(
-          "#include <begin_vertex>",
-          "#include <begin_vertex>\n transformed *= .25 + 3.5 * (1. - exp(-explosionAge * 4.5));",
-        );
-      };
       const mesh = new THREE.Mesh(part.geometry, material);
       mesh.frustumCulled = false;
       group.add(mesh);
     }
     group.visible = false;
     scene.add(group);
-    return { group, phase };
+    return { group };
   });
   return {
     update(bursts) {
       for (let i = 0; i < pool.length; i++) {
-        const { group, phase } = pool[i],
+        const { group } = pool[i],
           burst = bursts[bursts.length - 1 - i];
         group.visible = !!burst;
         if (!burst) continue;
         group.position.copy(burst.position);
-        group.scale.setScalar(burst.radius);
+        group.scale.setScalar(burst.radius * explosionScale(burst.age));
         const seed = (burst.seed ?? 0.5) * Math.PI * 2;
-        group.rotation.set(seed, seed * 0.7 + burst.age * 0.15, seed * 0.3);
-        phase.value = burst.age * (0.85 + (burst.seed ?? 0.5) * 0.45);
-        const fade = Math.max(0, 1 - burst.age / (burst.duration || 1.8));
+        group.rotation.set(seed, seed * 0.7, seed * 0.3);
+        // A brief ignition, followed by simultaneous outward spread and fading.
+        const fadeStart = 0.18;
+        const fade = Math.max(
+          0,
+          Math.min(
+            1,
+            1 -
+              (burst.age - fadeStart) / (explosionLifetime(burst) - fadeStart),
+          ),
+        );
         for (const mesh of group.children) {
           mesh.material.opacity = fade * fade * (3 - 2 * fade);
           mesh.material.color.setRGB(

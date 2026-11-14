@@ -1,3 +1,4 @@
+let errorRelease;
 export function isProduction(location) {
   return location?.protocol === "https:" && location.hostname === "karshvar.ir";
 }
@@ -14,6 +15,17 @@ export function loadProductionAnalytics(document, location) {
     script.dataset.domains = "karshvar.ir";
     script.dataset.errors = "true";
     script.dataset.environment = "production";
+    fetch(new URL("./build-info.json", import.meta.url))
+      .then((r) => r.json())
+      .then((info) => {
+        errorRelease = String(info.version);
+        script.dataset.release = errorRelease;
+        globalThis.umamiConfig = {
+          ...globalThis.umamiConfig,
+          release: String(info.version),
+        };
+      })
+      .catch(() => {});
     document.head.append(script);
     return script;
   } catch {
@@ -118,4 +130,16 @@ export function createAnalytics({
     flush();
   }
   return { track, flush };
+}
+
+// Handled failures need explicit reporting; never let telemetry break recovery.
+export function reportError(error, stage) {
+  if (!isProduction(globalThis.location)) return;
+  try {
+    const failure = error instanceof Error ? error : new Error(String(error));
+    globalThis.umami?.captureException?.(failure, {
+      tags: { stage },
+      release: errorRelease,
+    });
+  } catch {}
 }

@@ -105,7 +105,11 @@ async function setup(
   vm.runInNewContext(
     timeoutSource +
       source
-        .replace(/^import .*withUpdateTimeout.*\n/, "")
+        .replace(
+          /^import .*reportError.*\r?\n/m,
+          "const reportError = () => {};\n",
+        )
+        .replace(/^import .*withUpdateTimeout.*\r?\n/m, "")
         .replace(/^import .*createDownloadManager.*\n/m, "")
         .replace("export const offlineReady", "const offlineReady")
         .replaceAll(

@@ -1,3 +1,4 @@
+import { reportError } from "./analytics.js";
 // Small release discovery is separate from the browser-owned offline download.
 const copy = {
   en: [
@@ -100,6 +101,11 @@ export function createDownloadManager({
   };
   function show(phase, completed = 0, total = 0) {
     if (suspended) return;
+    if (phase === "error" && displayedPhase !== "error")
+      reportError(
+        new Error("Update download failed or stalled"),
+        "update-download",
+      );
     if (!banner) {
       banner = make("dialog");
       banner.className = "update-download";
@@ -264,7 +270,8 @@ export function createDownloadManager({
           stopWatch();
         }
       }
-    } catch {
+    } catch (error) {
+      reportError(error, "update-storage");
       /* A transient storage failure must not block navigation. */
     }
   }

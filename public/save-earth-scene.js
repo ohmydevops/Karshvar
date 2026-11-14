@@ -1,3 +1,7 @@
+import {
+  atmosphereMask,
+  createAtmosphereDamage,
+} from "./save-earth-atmosphere.js";
 import { syncSceneDepth } from "./save-earth-depth.js";
 import { createMeteorLooks } from "./save-earth-meteor-looks.js";
 import {
@@ -79,11 +83,13 @@ export async function createSpaceRenderer(canvas, width, height) {
   axialFrame.rotation.set(0, settings.axisHeading, earthAxialTilt);
   planet.add(axialFrame);
   background.add(planet);
+  const atmosphere = createAtmosphereDamage();
   const { earth, clouds } = createModelPlanet(
     axialFrame,
     settings,
     earthAsset.scene,
     sun,
+    atmosphere,
   );
   const halo = new THREE.Mesh(
     new THREE.SphereGeometry(1.035, 96, 64),
@@ -91,11 +97,30 @@ export async function createSpaceRenderer(canvas, width, height) {
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      uniforms: { impact: { value: 0 } },
+      uniforms: { impact: { value: 0 }, ...atmosphere.uniforms },
       vertexShader:
-        "varying vec3 n;varying vec3 viewDirection;void main(){n=normalMatrix*normal;vec4 p=modelViewMatrix*vec4(position,1.);viewDirection=-p.xyz;gl_Position=projectionMatrix*p;}",
-      fragmentShader:
-        "varying vec3 n;varying vec3 viewDirection;uniform float impact;void main(){float facing=abs(dot(normalize(n),normalize(viewDirection)));float a=pow(1.-facing,3.5)*smoothstep(0.,.12,facing);gl_FragColor=vec4(mix(vec3(.28,.48,.68),vec3(1.,.2,.05),impact),a*.24);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}",
+        "varying vec3 localDirection;varying vec3 n;varying vec3 viewDirection;void main(){localDirection=normal;n=normalMatrix*normal;vec4 p=modelViewMatrix*vec4(position,1.);viewDirection=-p.xyz;gl_Position=projectionMatrix*p;}",
+      fragmentShader: `
+        varying vec3 localDirection;
+        varying vec3 n;
+        varying vec3 viewDirection;
+        uniform float impact;
+        ${atmosphereMask}
+        void main() {
+          vec3 p = normalize(localDirection);
+          float facing = abs(dot(normalize(n), normalize(viewDirection)));
+          float rim = pow(1. - facing, 3.5) * smoothstep(0., .12, facing);
+          float coverage = atmosphereCoverage(p);
+          // A thin blue scattering layer, with soft translucent gaps.
+          float edge = 4. * coverage * (1. - coverage);
+          vec3 blue = mix(vec3(.22,.52,.85), vec3(.6,.8,1.), impact * .6);
+          vec3 color = mix(blue, vec3(.42, .72, 1.), edge * .35);
+          float alpha = (rim * .32 + .025) * coverage + edge * .035;
+          gl_FragColor = vec4(color, alpha);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }
+      `,
     }),
   );
   planet.add(halo);
@@ -511,6 +536,7 @@ export async function createSpaceRenderer(canvas, width, height) {
       meteor.spawnPosition.copy(meteor.position);
     },
     resetStation: station.reset,
+    resetAtmosphere: atmosphere.reset,
     setLocation(location) {
       lunarMode = location === "moon";
       lunarSite.visible = lunarMode;
@@ -546,6 +572,13 @@ export async function createSpaceRenderer(canvas, width, height) {
       earthAnchor(state.player, planet.position);
       earth.rotation.y = settings.earthRotation + state.elapsed * 0.02;
       clouds.rotation.y = earth.rotation.y + state.elapsed * 0.006;
+      atmosphere.uniforms.cloudDrift.value = state.elapsed * 0.006;
+      halo.rotation.copy(axialFrame.rotation);
+      halo.rotateY(earth.rotation.y);
+      halo.material.uniforms.damage.value = Math.max(
+        0,
+        Math.min(1, state.atmosphereDamage ?? 0),
+      );
       halo.material.uniforms.impact.value = state.flash > 0 ? 1 : 0;
       posePilot(
         state.player,

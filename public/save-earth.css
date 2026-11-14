@@ -657,7 +657,7 @@ h1 {
   display: none;
 }
 .briefing-heading {
-  direction: ltr;
+  direction: inherit;
   display: flex;
   justify-content: space-between;
   font-size: 11px;
@@ -668,24 +668,38 @@ h1 {
   font-size: 9px;
 }
 .briefing-typed {
-  white-space: pre-line;
-  margin: 12px 0 0;
-  min-height: 9em;
-}
-.briefing-typed::after {
-  content: " ▌";
-  color: #b1ffca;
+  display: none;
 }
 .briefing-source {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
+  margin: 14px 0 0;
 }
-.briefing-fading {
-  opacity: 0;
+.briefing-goal {
+  margin: 0 0 14px;
+  color: #e2ffeb;
+  font-weight: 700;
 }
+.briefing-controls {
+  margin: 0;
+}
+.briefing-controls > div {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid #9dffba22;
+}
+.briefing-controls dt {
+  color: #d5ffe2;
+  font-weight: 700;
+}
+.briefing-controls dd {
+  margin: 0;
+}
+.briefing-controls bdi {
+  font-family: monospace;
+  color: #fff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mission-briefing {
     transition: none;
@@ -697,9 +711,16 @@ h1 {
   font-size: 15px;
   line-height: 1.75;
 }
-.briefing-typed {
-  max-height: calc(100vh - 240px);
-  overflow: hidden;
+.mission-briefing {
+  max-height: calc(100dvh - 220px);
+  overflow-y: auto;
+  pointer-events: auto;
+}
+@media (max-width: 480px) {
+  .briefing-controls > div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }
 #mission-help {
   pointer-events: auto;

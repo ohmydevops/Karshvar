@@ -1,3 +1,4 @@
+import { explosionLifetime } from "./save-earth-explosions.js";
 import { createMissionBriefing } from "./save-earth-briefing.js";
 import { createMagazineHUD } from "./save-earth-magazine.js";
 import { DESKTOP_MEDIA } from "./save-earth-access.js";
@@ -230,6 +231,7 @@ function draw() {
     rocketTrails: defense.trails,
     elapsed,
     flash,
+    atmosphereDamage: 1 - shields / missionDifficulty(difficulty).shields,
     reloadIn,
     cooldown: shotVisual,
     active: !!round && !paused,
@@ -335,7 +337,7 @@ function advance(dt) {
   sound.syncRockets(defense.rockets, player);
   for (let i = bursts.length - 1; i >= 0; i--) {
     bursts[i].age += dt;
-    if (bursts[i].age >= Math.max(bursts[i].duration, 2.3)) bursts.splice(i, 1);
+    if (bursts[i].age >= explosionLifetime(bursts[i])) bursts.splice(i, 1);
   }
   for (let i = shots.length - 1; i >= 0; i--) {
     const shot = shots[i];
@@ -429,6 +431,7 @@ function start(mode = "space", level = "normal") {
   location = mode === "moon" ? "moon" : "space";
   difficulty = level === "hard" ? "hard" : "normal";
   view.setLocation(location);
+  view.resetAtmosphere();
   const settings = missionDifficulty(difficulty);
   const at = Date.now();
   round = { id: crypto.randomUUID?.() ?? at + "-" + Math.random(), at };

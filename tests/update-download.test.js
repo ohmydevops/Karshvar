@@ -8,6 +8,7 @@ const source = (
     "utf8",
   )
 )
+  .replace(/^import .*reportError.*\r?\n/m, "const reportError = () => {};\n")
   .replace("export function", "function")
   .replaceAll("import.meta.url", '"https://example.test/update-download.js"');
 const oldVersion = "a".repeat(20),
