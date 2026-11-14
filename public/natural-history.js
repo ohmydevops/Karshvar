@@ -26,6 +26,9 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     try {
       if (localStorage.getItem(welcomeKey) === "1") return;
     } catch {}
+    showWelcome();
+  }
+  function showWelcome() {
     const welcome = make("dialog", null, "fossil-dialog fossil-welcome");
     welcome.setAttribute("aria-labelledby", "fossil-welcome-title");
     const title = make(
@@ -68,6 +71,12 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     welcome.showModal();
   }
   const heading = document.querySelector(".explore-heading");
+  const experimental = make("button", "Experimental", "fossil-experimental");
+  experimental.type = "button";
+  experimental.lang = "en";
+  experimental.setAttribute("aria-haspopup", "dialog");
+  experimental.onclick = showWelcome;
+  heading.before(experimental);
   heading.querySelector("h1").textContent = t(
     "اطلس کشفیات فسیلی",
     "Fossil discovery atlas",
