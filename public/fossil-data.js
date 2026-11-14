@@ -1,3 +1,8 @@
+export const homininColors = {
+  sapiens: "#26c4c3",
+  neanderthal: "#ffb454",
+  hominin: "#d79aff",
+};
 export function homininCategory(record) {
   if (record.group !== "hominin") return null;
   if (record.name === "Homo sapiens") return "sapiens";
@@ -32,8 +37,13 @@ export function groupFossils(records) {
         lon: record.lon,
         lat: record.lat,
         records: [],
+        categories: {},
       });
-    groups.get(key).records.push(record);
+    const group = groups.get(key);
+    group.records.push(record);
+    const category = homininCategory(record);
+    if (category)
+      group.categories[category] = (group.categories[category] || 0) + 1;
   }
   return [...groups.values()];
 }

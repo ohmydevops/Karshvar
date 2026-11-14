@@ -36,11 +36,11 @@ const rows = [
     "Гоминины: следы древней жизни на современной Земле. Выберите точку, чтобы изучить находки и источники.",
   ],
   [
-    "Teal: hominins — Homo sapiens, Neanderthals and other hominins. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
-    "الفيروزي: الإنسان العاقل والنياندرتال وأشباه البشر الآخرون. التواريخ أعمار تقديرية للأحافير وليست سنوات اكتشافها. تُجمع السجلات المتقاربة.",
-    "Turkuaz: Homo sapiens, Neandertaller ve diğer homininler. Tarihler tahmini fosil yaşlarıdır, keşif yılları değildir. Yakın kayıtlar gruplanır.",
-    "Turquoise : Homo sapiens, Néandertaliens et autres homininés. Les dates sont des âges estimés, pas des années de découverte. Les données proches sont regroupées.",
-    "Бирюзовый: Homo sapiens, неандертальцы и другие гоминины. Даты — предполагаемый возраст, а не годы открытия. Близкие находки сгруппированы.",
+    "Teal: Homo sapiens · Orange: Neanderthals · Purple: other hominins. Shared sites use multiple colors. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
+    "الفيروزي: الإنسان العاقل · البرتقالي: النياندرتال · البنفسجي: أشباه البشر الآخرون. المواقع المشتركة متعددة الألوان. التواريخ أعمار تقديرية للأحافير وليست سنوات اكتشافها. تُجمع السجلات المتقاربة.",
+    "Turkuaz: Homo sapiens · Turuncu: Neandertaller · Mor: diğer homininler. Ortak yerler çok renklidir. Tarihler tahmini fosil yaşlarıdır, keşif yılları değildir. Yakın kayıtlar gruplanır.",
+    "Turquoise : Homo sapiens · Orange : Néandertaliens · Violet : autres homininés. Les sites partagés sont multicolores. Les dates sont des âges estimés, pas des années de découverte. Les données proches sont regroupées.",
+    "Бирюзовый: Homo sapiens · Оранжевый: неандертальцы · Фиолетовый: другие гоминины. Общие места многоцветны. Даты — предполагаемый возраст, а не годы открытия. Близкие находки сгруппированы.",
   ],
   [
     "Coverage: georeferenced PBDB records and selected research and museum reports across six continents, not every discovery worldwide. Locations are approximate; supplementary reports describe dating methods and uncertainty. ",

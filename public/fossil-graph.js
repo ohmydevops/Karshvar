@@ -1,4 +1,5 @@
 // Expanded records remain part of the map, with no separate panel or controls.
+import { homininCategory, homininColors } from "./fossil-data.js";
 export function mountFossilGraph(host, { records, layout, number, onSelect }) {
   const world = document.createElement("div");
   world.className = "fossil-graph-world";
@@ -18,6 +19,10 @@ export function mountFossilGraph(host, { records, layout, number, onSelect }) {
     const p = layout.nodes[i];
     const b = document.createElement("button");
     b.className = "fossil-record-dot";
+    b.style.setProperty(
+      "--fossil-color",
+      homininColors[homininCategory(record)],
+    );
     b.type = "button";
     b.textContent = number.format(i + 1);
     b.style.left = `${p.x - 14}px`;

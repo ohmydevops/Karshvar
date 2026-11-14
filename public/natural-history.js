@@ -1,6 +1,8 @@
 import { createSettingsDialog } from "./settings-dialog.js";
 import { mountFossilGraph } from "./fossil-graph.js";
 import { naturalHistoryText } from "./natural-history-i18n.js";
+import { homininColors } from "./fossil-data.js";
+const homininPalette = Object.entries(homininColors);
 export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   svg.attr("role", "group");
   svg.selectAll(":scope > *").attr("aria-hidden", "true");
@@ -81,6 +83,7 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   const controlLabels = {};
   function input(key, label, type, value) {
     const wrap = make("label", null, "population-switch " + key);
+    wrap.style.setProperty("--fossil-color", homininColors[key]);
     const el = make("input");
     el.type = type;
     el.setAttribute("role", "switch");
@@ -154,8 +157,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     make(
       "p",
       t(
-        "فیروزه‌ای: انسان‌تبارها؛ هومو ساپینس، نئاندرتال و سایر انسان‌تبارها. زمان‌ها سن تخمینی فسیل‌اند، نه سال کشف. نقاط نزدیک گروه‌بندی شده‌اند.",
-        "Teal: hominins — Homo sapiens, Neanderthals and other hominins. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
+        "فیروزه‌ای: هومو ساپینس · نارنجی: نئاندرتال · بنفش: سایر انسان‌تبارها. نقاط مشترک چندرنگ‌اند. زمان‌ها سن تخمینی فسیل‌اند، نه سال کشف. نقاط نزدیک گروه‌بندی شده‌اند.",
+        "Teal: Homo sapiens · Orange: Neanderthals · Purple: other hominins. Shared sites use multiple colors. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
       ),
       "fossil-note",
     ),
@@ -292,7 +295,7 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   function renderSpread() {
     graph?.dispose();
     const { records, group, layout } = expanded;
-    spreadBody.style.setProperty("--fossil-color", "#26c4c3");
+    spreadBody.style.setProperty("--fossil-color", "#a9bacb");
     graph = mountFossilGraph(spreadBody, {
       records,
       layout,
@@ -601,10 +604,21 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         const [x, y] = projection([g.lon, g.lat]);
         if (x < x0 - 10 || x > x1 + 10 || y < y0 - 10 || y > y1 + 10) continue;
         const radius = Math.min(7, 3 + Math.log2(g.count + 1) * 0.55);
+        let angle = -Math.PI / 2;
+        for (const [category, color] of homininPalette) {
+          const count = g.categories[category] || 0;
+          if (!count) continue;
+          const end = angle + (count / g.count) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.arc(x, y, radius, angle, end);
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+          angle = end;
+        }
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = "#26c4c3";
-        ctx.fill();
         ctx.strokeStyle = "#16283a";
         ctx.lineWidth = 0.8;
         ctx.stroke();

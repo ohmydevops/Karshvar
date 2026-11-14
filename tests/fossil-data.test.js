@@ -170,4 +170,16 @@ test("grouping conserves every record and separates categories at shared sites",
     records.length,
   );
   assert.ok(grouped.every((g) => g.records.every((r) => r.group === g.group)));
+  const shared = groupFossils([
+    { group: "hominin", name: "Homo sapiens", lat: 40, lon: 30 },
+    { group: "hominin", name: "Homo sapiens", lat: 40, lon: 30 },
+    { group: "hominin", name: "Homo neanderthalensis", lat: 40, lon: 30 },
+    { group: "hominin", name: "Homo erectus", lat: 40, lon: 30 },
+  ]);
+  assert.equal(shared.length, 1);
+  assert.deepEqual(shared[0].categories, {
+    sapiens: 2,
+    neanderthal: 1,
+    hominin: 1,
+  });
 });

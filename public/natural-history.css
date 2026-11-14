@@ -43,6 +43,16 @@ html[data-natural-history] .explore-heading {
     0 1px 3px #000,
     0 0 5px #000;
 }
+.fossil-controls .population-switch[style] > span::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-inline-end: 6px;
+  border-radius: 50%;
+  background: var(--fossil-color);
+  box-shadow: 0 0 0 1px #16283a;
+}
 .fossil-settings-open {
   display: none;
 }
