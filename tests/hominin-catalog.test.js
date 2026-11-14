@@ -17,7 +17,13 @@ test("migration preserves active identities, coordinates, taxonomy and age bound
     ...read("hominin-museums").records,
   ]).filter((record) => record.group === "hominin");
   const migrated = new Map(
-    catalogMapRecords(catalog).map((record) => [record.id, record]),
+    catalogMapRecords(catalog)
+      .filter(
+        (record) =>
+          !record.id.startsWith("paleohumans:") &&
+          record.id !== "museum:lucy-al-288-1",
+      )
+      .map((record) => [record.id, record]),
   );
   assert.equal(migrated.size, previous.length);
   for (const record of previous) {
@@ -25,7 +31,13 @@ test("migration preserves active identities, coordinates, taxonomy and age bound
     for (const key of ["name", "lat", "lon", "younger", "older"])
       assert.equal(current[key], record[key], `${record.id}: ${key}`);
   }
-  assert.equal(catalog.findings.length, 423);
+  assert.equal(
+    catalog.findings.filter(
+      (row) =>
+        !row.id.startsWith("paleohumans:") && row.id !== "museum:lucy-al-288-1",
+    ).length,
+    423,
+  );
   assert.equal(catalog.findings.filter((row) => row.supersededBy).length, 11);
 });
 test("collection ages retain their scope, unknowns and raw source", () => {

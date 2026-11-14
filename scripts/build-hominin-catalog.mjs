@@ -6,7 +6,7 @@ export function buildHomininCatalog() {
       new URL("../public/data/hominin-catalog.json", import.meta.url),
     ),
   );
-  const records = catalogMapRecords(catalog);
+  const records = catalogMapRecords(catalog, { verifiedRemainsOnly: true });
   fs.writeFileSync(
     new URL("../public/data/hominin-map.json", import.meta.url),
     JSON.stringify({

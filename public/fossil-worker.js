@@ -1,9 +1,4 @@
-import {
-  filterFossils,
-  homininCategory,
-  groupFossils,
-  layoutFossilGraph,
-} from "./fossil-data.js";
+import { filterFossils, homininCategory, groupFossils } from "./fossil-data.js";
 let data,
   totals,
   groups = new Map();
@@ -26,7 +21,6 @@ self.onmessage = async ({ data: message }) => {
         type: "details",
         id: message.id,
         records: group?.records || [],
-        layout: layoutFossilGraph(group?.records.length || 0),
       });
       return;
     }
@@ -43,7 +37,8 @@ self.onmessage = async ({ data: message }) => {
       groups: clustered.map(({ records, ...g }) => ({
         ...g,
         count: records.length,
-        name: records[0].name,
+        name: records[0].place || records[0].name,
+        nameFa: records[0].placeFa,
       })),
     });
   } catch {

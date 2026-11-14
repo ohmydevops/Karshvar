@@ -62,10 +62,32 @@ export function validateCatalog(catalog) {
   return indexes;
 }
 
-export function catalogMapRecords(catalog) {
+export function catalogMapRecords(
+  catalog,
+  { verifiedRemainsOnly = false } = {},
+) {
   const tables = validateCatalog(catalog);
+  const reportsByFinding = new Map();
+  for (const report of catalog.reports) {
+    const source = tables.sources.get(report.sourceId);
+    const references = reportsByFinding.get(report.findingId) || [];
+    references.push({
+      id: report.id,
+      provider: report.provenance.provider,
+      recordUrl: report.provenance.recordUrl,
+      catalogUrl: report.provenance.catalogUrl,
+      citation: source.citation,
+      referenceUrl: source.url,
+    });
+    reportsByFinding.set(report.findingId, references);
+  }
   return catalog.findings
-    .filter((finding) => !finding.supersededBy)
+    .filter(
+      (finding) =>
+        !finding.supersededBy &&
+        (!verifiedRemainsOnly ||
+          ["human-remains", "skeletal remains"].includes(finding.evidenceType)),
+    )
     .map((finding) => {
       const site = tables.sites.get(finding.siteId);
       const report = tables.reports.get(finding.preferredReportId);
@@ -87,6 +109,7 @@ export function catalogMapRecords(catalog) {
         interval: report.age.interval || "",
         reference: source.citation,
         sourceUrl: source.url,
+        references: reportsByFinding.get(finding.id),
         ageTarget: report.age.target,
         catalogSiteId: site.id,
         catalogReportId: report.id,

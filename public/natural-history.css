@@ -197,6 +197,82 @@ html[data-natural-history] .explore-heading > .fossil-status.fossil-error {
 .fossil-dialog a {
   color: var(--accent, #1973b8);
 }
+.fossil-facts {
+  display: grid;
+  gap: 0.65rem;
+  margin-block: 0.75rem;
+}
+.fossil-location {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5rem), 1fr));
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+}
+.fossil-site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block-end: 0.65rem;
+  border-bottom: 1px solid var(--line);
+}
+.fossil-site-header h2 {
+  margin: 0;
+  font-size: clamp(1.15rem, 3vw, 1.5rem);
+}
+.fossil-site-dialog .fossil-site-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.fossil-site-close::before,
+.fossil-site-close::after {
+  content: "";
+  grid-area: 1 / 1;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+.fossil-site-close::after {
+  transform: rotate(-45deg);
+}
+.fossil-site-dialog .fossil-site-close:hover,
+.fossil-site-dialog .fossil-site-close:active {
+  background: var(--line);
+}
+.fossil-site-dialog .fossil-finds-title {
+  direction: inherit;
+  font-size: 1rem;
+  margin-block: 1rem 0.5rem;
+}
+.fossil-site-dialog .fossil-find {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  padding: 0.8rem 1rem;
+  margin-block-end: 0.65rem;
+}
+.fossil-find h4 {
+  margin: 0;
+  text-align: match-parent;
+}
+.fossil-facts dt {
+  font-weight: 600;
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+.fossil-facts dd {
+  margin: 0;
+  text-align: match-parent;
+}
 .fossil-sources {
   margin-top: 16px;
 }

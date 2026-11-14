@@ -1,5 +1,4 @@
 import { createSettingsDialog } from "./settings-dialog.js";
-import { mountFossilGraph } from "./fossil-graph.js";
 import { naturalHistoryText } from "./natural-history-i18n.js";
 import { homininColors } from "./fossil-data.js";
 const homininPalette = Object.entries(homininColors);
@@ -81,6 +80,12 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   bar.onsubmit = (e) => e.preventDefault();
   const controls = {};
   const controlLabels = {};
+  const filterCookie = "karshvar-fossil-filters";
+  const filterKeys = ["sapiens", "neanderthal", "hominin"];
+  const savedFilters = document.cookie
+    .split(/;\s*/)
+    .find((entry) => entry.startsWith(filterCookie + "="))
+    ?.slice(filterCookie.length + 1);
   function input(key, label, type, value) {
     const wrap = make("label", null, "population-switch " + key);
     wrap.style.setProperty("--fossil-color", homininColors[key]);
@@ -101,6 +106,11 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   input("sapiens", t("هومو ساپینس", "Homo sapiens"), "checkbox", true);
   input("neanderthal", t("نئاندرتال", "Neanderthals"), "checkbox", true);
   input("hominin", t("سایر انسان‌تبارها", "Other hominins"), "checkbox", true);
+  if (/^[01]{3}$/.test(savedFilters ?? "")) {
+    filterKeys.forEach((key, index) => {
+      controls[key].checked = savedFilters[index] === "1";
+    });
+  }
   const satelliteControl = document.querySelector(".satellite-control");
   if (satelliteControl) bar.append(satelliteControl);
   const satelliteStatus = satelliteControl?.querySelector(
@@ -168,8 +178,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     make(
       "span",
       t(
-        "پوشش: رکوردهای مختصات‌دار PBDB و گزارش‌های منتخب پژوهشی و موزه‌ای از شش قاره؛ نه تمام کشفیات جهان. مختصات تقریبی‌اند؛ نوع تاریخ‌گذاری و عدم قطعیت در گزارش‌های تکمیلی مشخص شده است. ",
-        "Coverage: georeferenced PBDB records and selected research and museum reports across six continents, not every discovery worldwide. Locations are approximate; supplementary reports describe dating methods and uncertainty. ",
+        "پوشش نقشه شامل یافته‌هایی است که منابع پژوهشی، موزه‌ای یا پایگاه‌های تخصصی برای آن‌ها بقایای جسمی انسان‌تبار ثبت کرده‌اند. مختصات می‌تواند تقریبی باشد.",
+        "The map shows physical hominin remains documented by research, museum, or specialist database records. Locations may be approximate.",
       ),
     ),
   );
@@ -199,15 +209,17 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   const listBody = make("div", null, "fossil-site-list");
   list.append(listBody);
   document.querySelector(".globe-panel").parentElement.after(list);
-  const dialog = make("dialog", null, "fossil-dialog");
+  const dialog = make("dialog", null, "fossil-dialog fossil-site-dialog");
   dialog.setAttribute("aria-labelledby", "fossil-dialog-title");
   document.body.append(dialog);
-  const header = make("header");
+  const header = make("div", null, "fossil-site-header");
   const title = make("h2", t("کشفیات این ناحیه", "Finds in this area"));
   title.id = "fossil-dialog-title";
-  const close = make("button", t("بستن", "Close"));
+  const close = make("button", null, "fossil-site-close");
+  close.setAttribute("aria-label", t("بستن", "Close"));
   close.type = "button";
   close.onclick = () => dialog.close();
+  title.dir = "auto";
   header.append(title, close);
   const content = make("div");
   dialog.append(header, content, methodology);
@@ -223,11 +235,6 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         dialog.close();
     }
   });
-  let images = {};
-  fetch(new URL("./data/fossil-images.json", import.meta.url))
-    .then((r) => (r.ok ? r.json() : {}))
-    .then((d) => (images = d))
-    .catch(() => {});
   const worker = new Worker(new URL("./fossil-worker.js", import.meta.url), {
     type: "module",
   });
@@ -247,70 +254,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     .style("height", "100%")
     .node();
   const ctx = canvas.getContext("2d");
-  let expanded = null;
-  let graph = null;
-  const spread = svg
-    .append("foreignObject")
-    .attr("class", "fossil-spread-layer")
-    .attr("width", 320)
-    .attr("height", 320)
-    .style("display", "none");
-  const spreadBody = spread
-    .append("xhtml:div")
-    .attr("class", "fossil-spread")
-    .node();
-  spreadBody.setAttribute("role", "group");
-  spreadBody.setAttribute(
-    "aria-label",
-    t("انتخاب یک رکورد", "Choose a record"),
-  );
-  for (const event of [
-    "pointerdown",
-    "mousedown",
-    "touchstart",
-    "click",
-    "dblclick",
-    "wheel",
-  ])
-    spreadBody.addEventListener(event, (e) => e.stopPropagation());
-  function collapse() {
-    graph?.dispose();
-    graph = null;
-    expanded = null;
-    selected = null;
-    spread.style("display", "none");
-    spreadBody.replaceChildren();
-  }
-  spreadBody.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      e.stopPropagation();
-      collapse();
-      svg.node().focus();
-    }
-  });
-  function openRecord(record) {
-    showRecords([record]);
-    if (!dialog.open) dialog.showModal();
-  }
-  function renderSpread() {
-    graph?.dispose();
-    const { records, group, layout } = expanded;
-    spreadBody.style.setProperty("--fossil-color", "#a9bacb");
-    graph = mountFossilGraph(spreadBody, {
-      records,
-      layout,
-      t,
-      number,
-      onSelect: openRecord,
-      onClose: () => {
-        collapse();
-        svg.node().focus();
-      },
-    });
-    redraw();
-  }
   function request() {
-    collapse();
+    selected = null;
     status.textContent = t("در حال فیلتر کردن…", "Filtering…");
     worker.postMessage({
       type: "filter",
@@ -325,13 +270,16 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
       },
     });
   }
-  bar.addEventListener("change", request);
-  function show(group) {
-    if (expanded?.group.id === group.id) {
-      collapse();
-      return;
+  bar.addEventListener("change", (event) => {
+    if (filterKeys.some((key) => controls[key] === event.target)) {
+      const value = filterKeys
+        .map((key) => Number(controls[key].checked))
+        .join("");
+      document.cookie = `${filterCookie}=${value}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
     }
-    collapse();
+    request();
+  });
+  function show(group) {
     selected = group.id;
     worker.postMessage({ type: "details", id: group.id });
   }
@@ -340,7 +288,7 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     for (const g of groups.slice(listPage * 60, (listPage + 1) * 60)) {
       const b = make(
         "button",
-        `${g.name} · ${number.format(g.count)} · ${number.format(g.lat)}, ${number.format(g.lon)}`,
+        `${(fa && g.nameFa) || g.name} · ${number.format(g.count)} · ${number.format(g.lat)}, ${number.format(g.lon)}`,
       );
       b.onclick = () => {
         list.open = false;
@@ -368,123 +316,86 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   }
   function showRecords(records) {
     content.replaceChildren();
+    const site = records[0];
+    function addFact(facts, label, value, direction = "auto") {
+      if (!value) return;
+      const detail = make("dd", value);
+      detail.dir = direction;
+      const field = make("div", null, "fossil-field");
+      field.append(make("dt", label), detail);
+      facts.append(field);
+    }
+    const location = make("dl", null, "fossil-facts fossil-location");
+    let country = site.country;
+    try {
+      country = new Intl.DisplayNames([lang, "en"], { type: "region" }).of(
+        site.country,
+      );
+    } catch {}
+    addFact(location, t("کشور", "Country"), country);
+    addFact(location, t("منطقه", "Region"), site.region);
+    addFact(location, t("عرض جغرافیایی", "Latitude"), String(site.lat), "ltr");
+    addFact(location, t("طول جغرافیایی", "Longitude"), String(site.lon), "ltr");
+    const heading = make(
+      "h3",
+      t("یافته‌های محوطه ({count})", "Site finds ({count})", {
+        count: number.format(records.length),
+      }),
+      "fossil-finds-title",
+    );
+    content.append(location, heading);
     let shown = 0;
     const add = () => {
       for (const r of records.slice(shown, shown + 20)) {
-        const article = make("article");
-        article.append(make("h3", r.name));
-        const age = `${number.format(r.younger)} – ${number.format(r.older)}`;
-        article.append(
-          make(
-            "p",
-            (fa ? r.ageLabel?.fa : r.ageLabel?.en) ||
-              t(
-                "بازهٔ زمانی مجموعه: {age} میلیون سال پیش. سن اختصاصی نمونه در این رکورد واردشده مشخص نشده است.",
-                "Collection age range: {age} million years before present. The specimen’s individual age is not specified in this imported record.",
-                { age },
-              ),
-          ),
+        const article = make("article", null, "fossil-find");
+        const findTitle = make("h4", r.individualName || r.name);
+        findTitle.dir = "auto";
+        article.append(findTitle);
+        const facts = make("dl", null, "fossil-facts");
+        const ageLabel = (fa && r.ageLabel?.fa) || r.ageLabel?.en;
+        const bounds = [r.younger, r.older];
+        const age =
+          ageLabel ||
+          (bounds.every(Number.isFinite)
+            ? t("{age} میلیون سال پیش", "{age} million years ago", {
+                age: bounds.map((value) => number.format(value)).join(" – "),
+              })
+            : t("ثبت نشده", "Unreported"));
+        if (r.individualName) addFact(facts, t("گونه", "Species"), r.name);
+        addFact(facts, t("قدمت", "Age"), age);
+        addFact(
+          facts,
+          t("دورهٔ زمین‌شناسی", "Geological interval"),
+          r.interval,
         );
-        let country = r.country;
-        try {
-          country = new Intl.DisplayNames([lang], { type: "region" }).of(
-            r.country,
-          );
-        } catch {}
-        article.append(
-          make(
-            "p",
-            [country, r.region, fa ? r.placeFa || r.place : r.place]
-              .filter(Boolean)
-              .join(" · "),
-          ),
-        );
-        article.append(
-          make(
-            "p",
-            `${t("مختصات امروزی", "Present-day coordinates")}: ${r.lat}, ${r.lon}${r.interval ? ` · ${r.interval}` : ""}${["literature", "museum"].includes(r.sourceType) ? t(" · مکان تقریبی", " · approximate location") : ""}`,
-          ),
-        );
-        const photo =
-          ["literature", "museum"].includes(r.sourceType) &&
-          r.name === "Homo sapiens"
-            ? null
-            : r.group === "hominin"
-              ? images[r.name]
-              : images[r.name] || images[r.name.split(" ")[0]];
-        if (photo) {
-          const figure = make("figure");
-          const img = make("img");
-          img.src = photo.url;
-          img.alt = r.name;
-          img.width = 640;
-          img.height = 360;
-          img.loading = "lazy";
-          img.referrerPolicy = "no-referrer";
-          img.onerror = () => {
-            img.replaceWith(
-              make(
-                "p",
-                t(
-                  "تصویر بارگیری نشد؛ نسخهٔ اصلی در پیوند زیر موجود است.",
-                  "The image could not load; use the original source link below.",
-                ),
-              ),
-            );
-          };
-          const caption = make(
-            "figcaption",
-            t(
-              "تصویر معرف گونه یا سرده؛ لزوماً نمونهٔ همین محل نیست. ",
-              "Representative species/genus image, not necessarily a specimen from this locality. ",
-            ),
-          );
-          const a = make("a", `${photo.artist} · ${photo.license}`);
-          a.href = photo.source;
-          a.target = "_blank";
-          a.rel = "noopener";
-          caption.append(a);
-          figure.append(img, caption);
-          article.append(figure);
-        } else
-          article.append(
-            make(
-              "p",
-              t(
-                "تصویر تأییدشده برای این رکورد در مجموعه موجود نیست.",
-                "No verified image is available for this record in the collection.",
-              ),
-            ),
-          );
+        article.append(facts);
         const sources = make("details", null, "fossil-sources");
         sources.append(make("summary", t("منابع علمی", "Scientific sources")));
-        sources.append(
-          make(
-            "p",
-            r.reference ||
-              t(
-                "مرجع در صفحهٔ اصلی رکورد",
-                "See the original record for its reference",
-              ),
-          ),
-        );
-        const a = make(
-          "a",
-          r.sourceUrl
-            ? r.sourceType === "museum"
-              ? t("منبع موزه ↗", "Museum source ↗")
-              : t("مقالهٔ علمی ↗", "Research paper ↗")
-            : t(
-                "رکورد و منابع علمی در PBDB ↗",
-                "Record and scientific sources at PBDB ↗",
-              ),
-        );
-        a.href =
-          r.sourceUrl ||
-          `https://paleobiodb.org/classic/basicCollectionSearch?collection_no=${r.collection.replace("col:", "")}`;
-        a.target = "_blank";
-        a.rel = "noopener";
-        sources.append(a);
+        for (const ref of r.references || []) {
+          const entry = make("div");
+          entry.append(make("strong", ref.provider), make("p", ref.citation));
+          const links = new Map([
+            [ref.recordUrl, t("صفحهٔ رکورد ↗", "Record page ↗")],
+          ]);
+          if (ref.referenceUrl !== ref.recordUrl)
+            links.set(
+              ref.referenceUrl,
+              t("مرجع علمی ↗", "Scientific reference ↗"),
+            );
+          if (ref.catalogUrl && !links.has(ref.catalogUrl))
+            links.set(ref.catalogUrl, t("پایگاه داده ↗", "Database ↗"));
+          for (const [url, label] of links) {
+            if (!url) continue;
+            const row = make("p");
+            const link = make("a", label);
+            link.href = url;
+            link.target = "_blank";
+            link.rel = "noopener";
+            row.append(link);
+            entry.append(row);
+          }
+          sources.append(entry);
+        }
         if (r.datingSource) {
           const p = make("p");
           const link = make("a", t("منبع تاریخ‌گذاری ↗", "Dating source ↗"));
@@ -535,15 +446,12 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     }
     if (data.type === "details") {
       if (data.id !== selected) return;
-      if (data.records.length === 1) openRecord(data.records[0]);
-      else if (data.records.length > 1) {
-        expanded = {
-          group: groups.find((g) => g.id === data.id),
-          records: data.records,
-          layout: data.layout,
-          needsFocus: true,
-        };
-        renderSpread();
+      const group = groups.find((g) => g.id === data.id);
+      selected = null;
+      if (group && data.records.length) {
+        title.textContent = (fa && group.nameFa) || group.name;
+        showRecords(data.records);
+        if (!dialog.open) dialog.showModal();
       }
       return;
     }
@@ -624,24 +532,6 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         ctx.stroke();
         visible.push({ g, x, y, radius });
       }
-      if (expanded) {
-        const g = expanded.group;
-        const onFront =
-          globalThis.d3.geoDistance([g.lon, g.lat], center) <
-          Math.PI / 2 - 0.012;
-        spread.style("display", onFront ? null : "none");
-        if (onFront) {
-          const [x, y] = projection([g.lon, g.lat]);
-          const graphSize = Math.max(160, Math.min(460, w - 12, h - 12));
-          graph?.resize(graphSize, projection.scale());
-          spread.attr("width", graphSize).attr("height", graphSize);
-          spread.attr("x", x - graphSize / 2).attr("y", y - graphSize / 2);
-          if (expanded.needsFocus) {
-            expanded.needsFocus = false;
-            graph?.focus();
-          }
-        }
-      }
     },
     tap(clientX, clientY) {
       const p = new DOMPoint(clientX, clientY).matrixTransform(
@@ -657,8 +547,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         }
       }
       if (best) show(best.g);
-      else if (expanded || selected) {
-        collapse();
+      else if (selected) {
+        selected = null;
         return true;
       }
       return Boolean(best);

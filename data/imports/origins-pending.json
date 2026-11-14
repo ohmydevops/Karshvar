@@ -1,0 +1,62 @@
+{
+  "retrieved": "2026-11-15",
+  "specimens": [
+    {
+      "id": "origins:specimen:828",
+      "specimenId": "B 7-39a",
+      "organismId": "B 7-39",
+      "skeletalElements": [
+        "left premolar"
+      ],
+      "locality": {
+        "name": "Omo Usno Brown Sands",
+        "country": "Ethiopia",
+        "coordinates": null
+      },
+      "status": "awaiting-coordinate-verification",
+      "source": {
+        "provider": "Origins / PaleoCore",
+        "recordUrl": "https://paleocore.org/origins/fossils/detail/828",
+        "referenceUrl": "https://doi.org/10.1016/j.jhevol.2026.103857"
+      }
+    },
+    {
+      "id": "origins:specimen:829",
+      "specimenId": "B 7-39b",
+      "organismId": "B 7-39",
+      "skeletalElements": [
+        "left premolar"
+      ],
+      "locality": {
+        "name": "Omo Usno Brown Sands",
+        "country": "Ethiopia",
+        "coordinates": null
+      },
+      "status": "awaiting-coordinate-verification",
+      "source": {
+        "provider": "Origins / PaleoCore",
+        "recordUrl": "https://paleocore.org/origins/fossils/detail/829",
+        "referenceUrl": "https://doi.org/10.1016/j.jhevol.2026.103857"
+      }
+    },
+    {
+      "id": "origins:specimen:830",
+      "specimenId": "B 7-39c",
+      "organismId": "B 7-39",
+      "skeletalElements": [
+        "molar"
+      ],
+      "locality": {
+        "name": "Omo Usno Brown Sands",
+        "country": "Ethiopia",
+        "coordinates": null
+      },
+      "status": "awaiting-coordinate-verification",
+      "source": {
+        "provider": "Origins / PaleoCore",
+        "recordUrl": "https://paleocore.org/origins/fossils/detail/830",
+        "referenceUrl": "https://doi.org/10.1016/j.jhevol.2026.103857"
+      }
+    }
+  ]
+}

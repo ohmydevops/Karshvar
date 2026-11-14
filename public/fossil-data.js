@@ -29,7 +29,8 @@ export function mergeFossilRecords(records, literature) {
 export function groupFossils(records) {
   const groups = new Map();
   for (const record of records) {
-    const key = `${record.group}:${Math.round(record.lon * 4)}:${Math.round(record.lat * 4)}`;
+    const key =
+      record.catalogSiteId ?? `${record.group}:${record.lon}:${record.lat}`;
     if (!groups.has(key))
       groups.set(key, {
         id: key,
