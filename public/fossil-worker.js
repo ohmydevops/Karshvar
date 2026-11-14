@@ -1,5 +1,6 @@
 import {
   filterFossils,
+  homininCategory,
   groupFossils,
   mergeFossilRecords,
   layoutFossilGraph,
@@ -8,18 +9,26 @@ let data,
   totals,
   groups = new Map();
 const ready = Promise.all(
-  ["fossils.json", "hominin-literature.json"].map(async (file) => {
-    const r = await fetch(new URL(`./data/${file}`, import.meta.url));
-    if (!r.ok) throw Error("data");
-    return r.json();
-  }),
-).then(([snapshot, literature]) => {
+  ["fossils.json", "hominin-literature.json", "hominin-museums.json"].map(
+    async (file) => {
+      const r = await fetch(new URL(`./data/${file}`, import.meta.url));
+      if (!r.ok) throw Error("data");
+      return r.json();
+    },
+  ),
+).then(([snapshot, literature, museums]) => {
   data = {
     ...snapshot,
-    records: mergeFossilRecords(snapshot.records, literature.records),
+    retrieved: [snapshot.retrieved, literature.reviewed, museums.reviewed]
+      .sort()
+      .at(-1),
+    records: mergeFossilRecords(snapshot.records, [
+      ...literature.records,
+      ...museums.records,
+    ]).filter((record) => record.group === "hominin"),
   };
-  totals = { dinosaur: 0, hominin: 0 };
-  for (const record of data.records) totals[record.group]++;
+  totals = { sapiens: 0, neanderthal: 0, hominin: 0 };
+  for (const record of data.records) totals[homininCategory(record)]++;
 });
 self.onmessage = async ({ data: message }) => {
   try {

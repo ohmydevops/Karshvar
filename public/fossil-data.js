@@ -1,8 +1,14 @@
+export function homininCategory(record) {
+  if (record.group !== "hominin") return null;
+  if (record.name === "Homo sapiens") return "sapiens";
+  if (record.name === "Homo neanderthalensis") return "neanderthal";
+  return "hominin";
+}
 export function filterFossils(records, filters) {
   const query = (filters.query || "").trim().toLowerCase();
   return records.filter(
     (r) =>
-      filters[r.group] &&
+      filters[homininCategory(r)] &&
       (r.younger ?? 0) <= filters.older &&
       (r.older ?? Infinity) >= filters.younger &&
       (!query ||

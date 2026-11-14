@@ -9,12 +9,12 @@ const titles = {
   ru: "Естественная история",
 };
 const descriptions = {
-  fa: "کشفیات دایناسورها و انسان‌تبارها روی کرهٔ زمین امروزی، با سن تخمینی، تصاویر و منابع علمی.",
-  en: "Explore dinosaur and hominin fossil discoveries on present-day Earth, with estimated ages, images and scientific sources.",
-  ar: "استكشف أحافير الديناصورات وأشباه البشر على الأرض الحالية، مع أعمار تقديرية وصور ومصادر علمية.",
-  tr: "Günümüz dünyasındaki dinozor ve hominin fosil keşiflerini tahmini yaşlar, görseller ve bilimsel kaynaklarla keşfedin.",
-  fr: "Explorez les découvertes de fossiles de dinosaures et d’homininés sur la Terre actuelle, avec âges estimés, images et sources scientifiques.",
-  ru: "Исследуйте находки динозавров и гоминин на современной Земле: предполагаемый возраст, изображения и научные источники.",
+  fa: "کشفیات انسان‌تبارها روی کرهٔ زمین امروزی، با سن تخمینی، تصاویر و منابع علمی.",
+  en: "Explore hominin fossil discoveries on present-day Earth, with estimated ages, images and scientific sources.",
+  ar: "استكشف أحافير أشباه البشر على الأرض الحالية، مع أعمار تقديرية وصور ومصادر علمية.",
+  tr: "Günümüz dünyasındaki hominin fosil keşiflerini tahmini yaşlar, görseller ve bilimsel kaynaklarla keşfedin.",
+  fr: "Explorez les découvertes de fossiles d’homininés sur la Terre actuelle, avec âges estimés, images et sources scientifiques.",
+  ru: "Исследуйте находки гоминин на современной Земле: предполагаемый возраст, изображения и научные источники.",
 };
 for (const [lang, title] of Object.entries(titles)) {
   const source = new URL(

@@ -1,6 +1,62 @@
 // Report content and scientific names retain their source language.
 const rows = [
   [
+    "Homo sapiens",
+    "الإنسان العاقل",
+    "Homo sapiens",
+    "Homo sapiens",
+    "Homo sapiens",
+  ],
+  [
+    "Neanderthals",
+    "النياندرتال",
+    "Neandertaller",
+    "Néandertaliens",
+    "Неандертальцы",
+  ],
+  [
+    "Other hominins",
+    "أشباه البشر الآخرون",
+    "Diğer homininler",
+    "Autres homininés",
+    "Другие гоминины",
+  ],
+  [
+    "Museum source ↗",
+    "مصدر المتحف ↗",
+    "Müze kaynağı ↗",
+    "Source du musée ↗",
+    "Источник музея ↗",
+  ],
+  [
+    "Hominins: traces of past life on today’s Earth. Select a point to explore finds and sources.",
+    "أشباه البشر: آثار الحياة الماضية على الأرض الحالية. اختر نقطة لاستكشاف المكتشفات ومصادرها.",
+    "Homininler: günümüz dünyasında geçmiş yaşamın izleri. Bulguları ve kaynakları incelemek için bir nokta seçin.",
+    "Homininés : les traces de la vie passée sur la Terre actuelle. Sélectionnez un point pour découvrir les trouvailles et leurs sources.",
+    "Гоминины: следы древней жизни на современной Земле. Выберите точку, чтобы изучить находки и источники.",
+  ],
+  [
+    "Teal: hominins — Homo sapiens, Neanderthals and other hominins. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
+    "الفيروزي: الإنسان العاقل والنياندرتال وأشباه البشر الآخرون. التواريخ أعمار تقديرية للأحافير وليست سنوات اكتشافها. تُجمع السجلات المتقاربة.",
+    "Turkuaz: Homo sapiens, Neandertaller ve diğer homininler. Tarihler tahmini fosil yaşlarıdır, keşif yılları değildir. Yakın kayıtlar gruplanır.",
+    "Turquoise : Homo sapiens, Néandertaliens et autres homininés. Les dates sont des âges estimés, pas des années de découverte. Les données proches sont regroupées.",
+    "Бирюзовый: Homo sapiens, неандертальцы и другие гоминины. Даты — предполагаемый возраст, а не годы открытия. Близкие находки сгруппированы.",
+  ],
+  [
+    "Coverage: georeferenced PBDB records and selected research and museum reports across six continents, not every discovery worldwide. Locations are approximate; supplementary reports describe dating methods and uncertainty. ",
+    "التغطية: سجلات PBDB وتقارير بحثية ومتحفية مختارة من ست قارات؛ ليست جميع الاكتشافات. المواقع تقريبية وتوضح التقارير حدود التأريخ. ",
+    "Kapsam: altı kıtadan PBDB kayıtları ve seçilmiş araştırma ve müze raporları; tüm keşifler değildir. Konumlar yaklaşık olup ek raporlar tarihleme belirsizliğini açıklar. ",
+    "Couverture : données PBDB et sélection d’études et de notices muséales de six continents ; inventaire non exhaustif. Les lieux sont approximatifs et les rapports précisent les incertitudes. ",
+    "Охват: записи PBDB и избранные исследования и музейные описания с шести континентов, не все находки. Координаты приблизительны; описания указывают неопределённость датировок. ",
+  ],
+  [
+    "Homo sapiens only",
+    "الإنسان العاقل فقط",
+    "Yalnızca Homo sapiens",
+    "Homo sapiens uniquement",
+    "Только Homo sapiens",
+  ],
+  [
     "Record graph; arrow keys to pan",
     "رسم السجلات؛ استخدم الأسهم للتحريك",
     "Kayıt grafiği; taşımak için ok tuşları",

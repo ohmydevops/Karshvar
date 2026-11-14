@@ -72,8 +72,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     "Fossil discovery atlas",
   );
   heading.querySelector("p").textContent = t(
-    "دایناسورها و انسان‌تبارها؛ ردّ زندگی گذشته روی زمینِ امروز. یک نقطه را برای دیدن کشفیات و منابع انتخاب کنید.",
-    "Dinosaurs and hominins: traces of past life on today’s Earth. Select a point to explore finds and sources.",
+    "انسان‌تبارها؛ ردّ زندگی گذشته روی زمینِ امروز. یک نقطه را برای دیدن کشفیات و منابع انتخاب کنید.",
+    "Hominins: traces of past life on today’s Earth. Select a point to explore finds and sources.",
   );
   const bar = make("form", null, "fossil-controls explore-settings-bar");
   bar.onsubmit = (e) => e.preventDefault();
@@ -95,8 +95,9 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     controls[key] = el;
     return el;
   }
-  input("dinosaur", t("نمایش دایناسورها", "Dinosaurs"), "checkbox", true);
-  input("hominin", t("نمایش انسان‌تبارها", "Hominins"), "checkbox", true);
+  input("sapiens", t("هومو ساپینس", "Homo sapiens"), "checkbox", true);
+  input("neanderthal", t("نئاندرتال", "Neanderthals"), "checkbox", true);
+  input("hominin", t("سایر انسان‌تبارها", "Other hominins"), "checkbox", true);
   const satelliteControl = document.querySelector(".satellite-control");
   if (satelliteControl) bar.append(satelliteControl);
   const satelliteStatus = satelliteControl?.querySelector(
@@ -153,8 +154,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     make(
       "p",
       t(
-        "نارنجی: دایناسورهای غیرپرنده · فیروزه‌ای: انسان‌تبارها، شامل گونه‌های پیش از انسان خردمند. زمان‌ها سن تخمینی فسیل‌اند، نه سال کشف. نقاط نزدیک گروه‌بندی شده‌اند.",
-        "Orange: non-avian dinosaurs · Teal: hominins, including species predating Homo sapiens. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
+        "فیروزه‌ای: انسان‌تبارها؛ هومو ساپینس، نئاندرتال و سایر انسان‌تبارها. زمان‌ها سن تخمینی فسیل‌اند، نه سال کشف. نقاط نزدیک گروه‌بندی شده‌اند.",
+        "Teal: hominins — Homo sapiens, Neanderthals and other hominins. Dates are estimated fossil ages, not discovery years. Nearby records are grouped.",
       ),
       "fossil-note",
     ),
@@ -164,8 +165,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
     make(
       "span",
       t(
-        "پوشش: رکوردهای مختصات‌دار PBDB و گزارش‌های منتخب پژوهشی از شش قاره؛ نه تمام کشفیات جهان. مختصات تقریبی‌اند؛ نوع تاریخ‌گذاری و عدم قطعیت در گزارش‌های تکمیلی مشخص شده است. ",
-        "Coverage: georeferenced PBDB records and selected research reports across six continents, not every discovery worldwide. Locations are approximate; supplementary reports describe dating methods and uncertainty. ",
+        "پوشش: رکوردهای مختصات‌دار PBDB و گزارش‌های منتخب پژوهشی و موزه‌ای از شش قاره؛ نه تمام کشفیات جهان. مختصات تقریبی‌اند؛ نوع تاریخ‌گذاری و عدم قطعیت در گزارش‌های تکمیلی مشخص شده است. ",
+        "Coverage: georeferenced PBDB records and selected research and museum reports across six continents, not every discovery worldwide. Locations are approximate; supplementary reports describe dating methods and uncertainty. ",
       ),
     ),
   );
@@ -291,10 +292,7 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
   function renderSpread() {
     graph?.dispose();
     const { records, group, layout } = expanded;
-    spreadBody.style.setProperty(
-      "--fossil-color",
-      group.group === "dinosaur" ? "#eb9238" : "#26c4c3",
-    );
+    spreadBody.style.setProperty("--fossil-color", "#26c4c3");
     graph = mountFossilGraph(spreadBody, {
       records,
       layout,
@@ -315,7 +313,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
       type: "filter",
       version: ++version,
       filters: {
-        dinosaur: controls.dinosaur.checked,
+        sapiens: controls.sapiens.checked,
+        neanderthal: controls.neanderthal.checked,
         hominin: controls.hominin.checked,
         older: Infinity,
         younger: 0,
@@ -375,7 +374,7 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         article.append(
           make(
             "p",
-            r.ageLabel?.en ||
+            (fa ? r.ageLabel?.fa : r.ageLabel?.en) ||
               t(
                 "سن تخمینی: {age} میلیون سال پیش. این بازه، سن ثبت‌شدهٔ مجموعهٔ فسیلی در پایگاه است.",
                 "Estimated age: {age} million years ago. This is the database’s age range for the fossil collection.",
@@ -400,11 +399,12 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         article.append(
           make(
             "p",
-            `${t("مختصات امروزی", "Present-day coordinates")}: ${r.lat}, ${r.lon}${r.interval ? ` · ${r.interval}` : ""}${r.sourceType === "literature" ? t(" · مکان تقریبی", " · approximate location") : ""}`,
+            `${t("مختصات امروزی", "Present-day coordinates")}: ${r.lat}, ${r.lon}${r.interval ? ` · ${r.interval}` : ""}${["literature", "museum"].includes(r.sourceType) ? t(" · مکان تقریبی", " · approximate location") : ""}`,
           ),
         );
         const photo =
-          r.sourceType === "literature" && r.name === "Homo sapiens"
+          ["literature", "museum"].includes(r.sourceType) &&
+          r.name === "Homo sapiens"
             ? null
             : r.group === "hominin"
               ? images[r.name]
@@ -468,7 +468,9 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         const a = make(
           "a",
           r.sourceUrl
-            ? t("مقالهٔ علمی ↗", "Research paper ↗")
+            ? r.sourceType === "museum"
+              ? t("منبع موزه ↗", "Museum source ↗")
+              : t("مقالهٔ علمی ↗", "Research paper ↗")
             : t(
                 "رکورد و منابع علمی در PBDB ↗",
                 "Record and scientific sources at PBDB ↗",
@@ -601,7 +603,7 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
         const radius = Math.min(7, 3 + Math.log2(g.count + 1) * 0.55);
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = g.group === "dinosaur" ? "#eb9238" : "#26c4c3";
+        ctx.fillStyle = "#26c4c3";
         ctx.fill();
         ctx.strokeStyle = "#16283a";
         ctx.lineWidth = 0.8;

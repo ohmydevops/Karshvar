@@ -62,6 +62,7 @@ test("literature preserves uncertainty and only replaces explicit existing repor
   assert.equal(
     filterFossils([unknown, minimum], {
       hominin: true,
+      neanderthal: true,
       older: Infinity,
       younger: 0,
     }).length,
@@ -90,6 +91,63 @@ test("snapshot has unique records, present-day coordinates and ordered ages", ()
     ),
   );
 });
+const museums = JSON.parse(
+  fs.readFileSync(
+    new URL("../public/data/hominin-museums.json", import.meta.url),
+  ),
+).records;
+test("museum accounts have distinct specimens and traceable age and location sources", () => {
+  const combined = mergeFossilRecords(records, [...literature, ...museums]);
+  assert.equal(new Set(combined.map((r) => r.id)).size, combined.length);
+  assert.equal(museums.length, 6);
+  assert.equal(new Set(museums.map((r) => r.institution)).size, 2);
+  for (const r of museums) {
+    assert.equal(r.sourceType, "museum");
+    assert.match(
+      r.sourceUrl,
+      /^https:\/\/(humanorigins.si.edu|australian.museum)\//,
+    );
+    assert.ok(r.ageLabel.fa && r.ageLabel.en && r.coordinateSource);
+    assert.ok(r.older >= r.younger && r.younger >= 0);
+    assert.ok(Math.abs(r.lat) <= 90 && Math.abs(r.lon) <= 180);
+    assert.ok(
+      ![...records, ...literature].some(
+        (p) =>
+          p.group === "hominin" &&
+          Math.abs(p.lat - r.lat) < 0.01 &&
+          Math.abs(p.lon - r.lon) < 0.01,
+      ),
+    );
+  }
+});
+test("three independent hominin filters partition records and exclude dinosaurs", () => {
+  const combined = mergeFossilRecords(records, [...literature, ...museums]);
+  for (let mask = 0; mask < 8; mask++) {
+    const filters = {
+      sapiens: !!(mask & 1),
+      neanderthal: !!(mask & 2),
+      hominin: !!(mask & 4),
+      older: Infinity,
+      younger: 0,
+    };
+    const result = filterFossils(combined, filters);
+    assert.equal(
+      result.length,
+      (filters.sapiens ? 99 : 0) +
+        (filters.neanderthal ? 15 : 0) +
+        (filters.hominin ? 298 : 0),
+    );
+    assert.ok(result.every((r) => r.group === "hominin"));
+    assert.equal(
+      result.filter((r) => r.name === "Homo sapiens").length,
+      filters.sapiens ? 99 : 0,
+    );
+    assert.equal(
+      result.filter((r) => r.name === "Homo neanderthalensis").length,
+      filters.neanderthal ? 15 : 0,
+    );
+  }
+});
 test("age filtering uses overlap, not discovery date or range midpoint", () => {
   const sample = [
     { group: "dinosaur", older: 100, younger: 90, name: "A" },
@@ -97,7 +155,7 @@ test("age filtering uses overlap, not discovery date or range midpoint", () => {
   ];
   assert.equal(
     filterFossils(sample, { dinosaur: true, older: 90, younger: 80 }).length,
-    1,
+    0,
   );
   assert.equal(
     filterFossils(sample, { hominin: true, older: 3.5, younger: 3.4 }).length,
