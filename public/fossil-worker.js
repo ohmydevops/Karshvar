@@ -2,34 +2,21 @@ import {
   filterFossils,
   homininCategory,
   groupFossils,
-  mergeFossilRecords,
   layoutFossilGraph,
 } from "./fossil-data.js";
 let data,
   totals,
   groups = new Map();
-const ready = Promise.all(
-  ["fossils.json", "hominin-literature.json", "hominin-museums.json"].map(
-    async (file) => {
-      const r = await fetch(new URL(`./data/${file}`, import.meta.url));
-      if (!r.ok) throw Error("data");
-      return r.json();
-    },
-  ),
-).then(([snapshot, literature, museums]) => {
-  data = {
-    ...snapshot,
-    retrieved: [snapshot.retrieved, literature.reviewed, museums.reviewed]
-      .sort()
-      .at(-1),
-    records: mergeFossilRecords(snapshot.records, [
-      ...literature.records,
-      ...museums.records,
-    ]).filter((record) => record.group === "hominin"),
-  };
-  totals = { sapiens: 0, neanderthal: 0, hominin: 0 };
-  for (const record of data.records) totals[homininCategory(record)]++;
-});
+const ready = fetch(new URL("./data/hominin-map.json", import.meta.url))
+  .then((response) => {
+    if (!response.ok) throw Error("data");
+    return response.json();
+  })
+  .then((catalog) => {
+    data = catalog;
+    totals = { sapiens: 0, neanderthal: 0, hominin: 0 };
+    for (const record of data.records) totals[homininCategory(record)]++;
+  });
 self.onmessage = async ({ data: message }) => {
   try {
     await ready;

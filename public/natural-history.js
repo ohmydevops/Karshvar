@@ -379,8 +379,8 @@ export function mountNaturalHistory({ svg, projection, lang, redraw, focus }) {
             "p",
             (fa ? r.ageLabel?.fa : r.ageLabel?.en) ||
               t(
-                "سن تخمینی: {age} میلیون سال پیش. این بازه، سن ثبت‌شدهٔ مجموعهٔ فسیلی در پایگاه است.",
-                "Estimated age: {age} million years ago. This is the database’s age range for the fossil collection.",
+                "بازهٔ زمانی مجموعه: {age} میلیون سال پیش. سن اختصاصی نمونه در این رکورد واردشده مشخص نشده است.",
+                "Collection age range: {age} million years before present. The specimen’s individual age is not specified in this imported record.",
                 { age },
               ),
           ),

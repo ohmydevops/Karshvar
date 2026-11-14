@@ -1,4 +1,6 @@
 import { buildTheme } from "./build-theme.mjs";
+import { buildHomininCatalog } from "./build-hominin-catalog.mjs";
+buildHomininCatalog();
 import { buildLoading } from "./build-loading.mjs";
 import { buildFonts } from "./build-fonts.mjs";
 import { buildVersion } from "./build-version.mjs";

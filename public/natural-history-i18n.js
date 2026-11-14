@@ -203,7 +203,7 @@ const rows = [
   ["Previous", "السابق", "Önceki", "Précédent", "Назад"],
   ["Next", "التالي", "Sonraki", "Suivant", "Далее"],
   [
-    "Estimated age: {age} million years ago. This is the database’s age range for the fossil collection.",
+    "Collection age range: {age} million years before present. The specimen’s individual age is not specified in this imported record.",
     "العمر التقديري: {age} مليون سنة مضت. هذا هو النطاق الزمني المسجّل للمجموعة الأحفورية في قاعدة البيانات.",
     "Tahmini yaş: {age} milyon yıl önce. Bu, fosil topluluğu için veri tabanında kayıtlı yaş aralığıdır.",
     "Âge estimé : {age} millions d’années. Il s’agit de l’intervalle d’âge enregistré dans la base pour l’ensemble fossile.",
