@@ -61,6 +61,9 @@ function fixture({
         append(...x) {
           this.children.push(...x);
         },
+        querySelector(selector) {
+          return this.children.find((n) => "." + n.className === selector);
+        },
         remove() {},
         showModal() {
           this.open = true;
@@ -285,4 +288,20 @@ test("retry hides an obsolete error after the latest worker activated", async ()
     ports[0].postMessage({ version: nextVersion });
   assert.equal(await f.manager.check(true), 1);
   assert.equal(banner.hidden, true);
+});
+
+test("activation reuses the open download dialog and freezes polling updates", async () => {
+  const f = fixture();
+  f.registration.waiting = {};
+  await f.manager.check(true);
+  const dialog = f.nodes.find((n) => n.tag === "dialog");
+  const ui = f.manager.activationUI();
+  assert.equal(ui.notice, dialog);
+  assert.equal(ui.update.textContent, "Apply and reload");
+  assert.ok(ui.description);
+  ui.title.textContent = "Applying…";
+  await f.manager.poll();
+  assert.equal(ui.title.textContent, "Applying…");
+  assert.equal(dialog.open, true);
+  assert.equal(f.nodes.filter((n) => n.tag === "dialog").length, 1);
 });

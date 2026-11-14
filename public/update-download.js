@@ -401,5 +401,18 @@ export function createDownloadManager({
   }
   registration.addEventListener("updatefound", watch);
   if (registration.installing) watch();
-  return { check, poll, hide };
+  function activationUI() {
+    if (!banner) return null;
+    suspended = true;
+    stopWatch();
+    progress.hidden = true;
+    return {
+      notice: banner,
+      title: label,
+      description: banner.querySelector(".update-hint"),
+      update: action,
+      later,
+    };
+  }
+  return { check, poll, hide, activationUI };
 }

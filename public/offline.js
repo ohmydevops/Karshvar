@@ -215,28 +215,30 @@ async function setupOffline() {
       )
         return;
       offeredWorker = worker;
-      downloads.hide();
+      const existingUI = activate ? downloads.activationUI?.() : null;
+      if (!existingUI) downloads.hide();
       activationNotice?.close();
       const copy = updateCopy[document.documentElement.lang] || updateCopy.en;
-      const notice = document.createElement("dialog");
+      const notice = existingUI?.notice || document.createElement("dialog");
       notice.className = "update-download update-activation";
       activationNotice = notice;
       notice.setAttribute("aria-labelledby", "updateTitle");
       notice.setAttribute("aria-describedby", "updateDescription");
-      const title = document.createElement("h2");
+      const title = existingUI?.title || document.createElement("h2");
       title.id = "updateTitle";
       title.textContent = copy[0];
-      const description = document.createElement("p");
+      const description =
+        existingUI?.description || document.createElement("p");
       description.id = "updateDescription";
       description.setAttribute("role", "status");
       description.setAttribute("aria-live", "polite");
       description.textContent = copy[1];
       const actions = document.createElement("div");
       actions.className = "dialog-actions";
-      const later = document.createElement("button");
+      const later = existingUI?.later || document.createElement("button");
       later.textContent = copy[3];
       later.autofocus = true;
-      const update = document.createElement("button");
+      const update = existingUI?.update || document.createElement("button");
       update.className = "primary";
       update.textContent = copy[2];
       later.onclick = () => {
@@ -253,6 +255,7 @@ async function setupOffline() {
         window.clearTimeout(activationTimer);
         update.disabled = false;
         later.disabled = false;
+        later.hidden = false;
         notice.setAttribute("data-state", "error");
         update.setAttribute("aria-busy", "false");
         update.textContent =
@@ -329,12 +332,14 @@ async function setupOffline() {
           restoreUpdate();
         }
       };
-      actions.append(later, update);
-      notice.append(title, description, actions);
-      document.body.append(notice);
+      if (!existingUI) {
+        actions.append(later, update);
+        notice.append(title, description, actions);
+        document.body.append(notice);
+      }
       notice.hidden = false;
       notice.addEventListener("cancel", closeNotice);
-      notice.showModal();
+      if (!existingUI) notice.showModal();
       if (activate) update.onclick();
     };
     const downloads = createDownloadManager({
